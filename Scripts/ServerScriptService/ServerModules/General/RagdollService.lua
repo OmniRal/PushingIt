@@ -238,4 +238,8 @@ function RagdollService:Init()
     end)
 end
 
+function RagdollService:Deferred()
+    RagdollService:SetRagdoll(game.Workspace.TestNPC)
+end
+
 return RagdollService
