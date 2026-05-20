@@ -38,6 +38,7 @@ local ControlModule
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local DataService = Remotes.DataService
+local PushService = Remotes.PushService
 local RagdollService = Remotes.RagdollService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -124,6 +125,10 @@ local function UpdateWalkSpeed()
     end
 
     PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
+end
+
+local function AttemptPush()
+
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -217,6 +222,10 @@ function MainController:Init()
     RunService.Heartbeat:Connect(function(DeltaTime: number)
         MainController:RunHeartbeat()
     end)
+
+   Mouse.Button1Down:Connect(function()
+       PushService:AttemptPush(200) 
+   end) 
 end
 
 function MainController:Deferred()
