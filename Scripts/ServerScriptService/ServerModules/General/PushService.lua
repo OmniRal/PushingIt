@@ -23,6 +23,7 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local PUSH_RANGE = 7
+local RESET_NPC = true -- Puts the NPC back to its original position after pushed; good for testing
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -67,9 +68,19 @@ function PushService.AttemptPush(Player: Player, Power: number)
         if not CanPush or not OtherRoot  then continue end
 
         task.spawn(function()
-        NPC:SetAttribute("Ragdoll", true)
-        task.wait()
-        OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * Power + Vector3.new(0, Power * 0.2, 0)
+            local OriginCF = NPC:GetPivot()
+
+            NPC:SetAttribute("Ragdoll", true)
+            task.wait()
+            OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * Power + Vector3.new(0, Power * 0.2, 0)
+
+            if not RESET_NPC then return end
+
+            task.wait(5)
+
+            NPC:SetAttribute("Ragdoll", false)
+            task.wait()
+            NPC:PivotTo(OriginCF)
         end)
     end
 
