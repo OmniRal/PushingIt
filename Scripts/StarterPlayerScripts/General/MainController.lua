@@ -157,7 +157,6 @@ function MainController:SetCharacter()
             CharacterSetup = false
             Camera.CameraSubject = PlayerInfo.Root
             RagdollService:ToggleRagdoll(true)
-
         end
     end)
 
@@ -213,20 +212,6 @@ function MainController:Init()
     UserGameSettings.RotationType = Enum.RotationType.MovementRelative
 
     UserInputService.InputBegan:Connect(function(Input)
-        if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-            --CheckPickupItems()
-        end
-
-        if Input.KeyCode == Enum.KeyCode.K then
-            local CameraType = CameraController.CameraType:Get()
-
-            if CameraType == "None" then
-                CameraController.SetCameraType("FirstPerson")
-            
-            elseif CameraType == "ThirdPerson" then
-                CameraController.SetCameraType("None")
-            end
-        end
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)

@@ -285,6 +285,14 @@
 											]
 										},
 										{
+											"name": "NPCInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/NPCInfo.lua"
+											]
+										},
+										{
 											"name": "ObjectInfo",
 											"className": "ModuleScript",
 											"children": [],
@@ -306,14 +314,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/ShopInfo.lua"
-											]
-										},
-										{
-											"name": "NPCInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/NPCInfo.lua"
 											]
 										}
 									],
@@ -2402,71 +2402,6 @@
 							"className": "Folder",
 							"children": [
 								{
-									"name": "UnitValues",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "Current",
-											"className": "Folder",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Health",
-													"className": "NumberValue",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Hidden",
-													"className": "BoolValue",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Mana",
-													"className": "NumberValue",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "Effects",
-											"className": "Folder",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Base",
-											"className": "Configuration",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "States",
-											"className": "Configuration",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "TauntGoal",
-													"className": "ObjectValue",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "PanicFrom",
-													"className": "ObjectValue",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										}
-									],
-									"filePaths": [
-										"Assets/Server/Misc/UnitValues.rbxm"
-									]
-								},
-								{
 									"name": "BaseNPC",
 									"className": "Model",
 									"children": [
@@ -3387,6 +3322,71 @@
 									],
 									"filePaths": [
 										"Assets/Server/Misc/BaseNPC.rbxm"
+									]
+								},
+								{
+									"name": "UnitValues",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Current",
+											"className": "Folder",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Health",
+													"className": "NumberValue",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Hidden",
+													"className": "BoolValue",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Mana",
+													"className": "NumberValue",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "Effects",
+											"className": "Folder",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Base",
+											"className": "Configuration",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "States",
+											"className": "Configuration",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "TauntGoal",
+													"className": "ObjectValue",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "PanicFrom",
+													"className": "ObjectValue",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Server/Misc/UnitValues.rbxm"
 									]
 								}
 							],

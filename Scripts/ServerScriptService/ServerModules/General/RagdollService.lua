@@ -122,7 +122,7 @@ end
 ----------------
 
 -- Set up ragdoll stuff for a model.
-function RagdollService:SetRagdoll(Model: Model)
+function RagdollService.SetRagdoll(Model: Model)
     if not Model then return end
     local Human = Model:FindFirstChild("Humanoid")
     if not Human then return end
@@ -205,12 +205,33 @@ function RagdollService:SetRagdoll(Model: Model)
     Model:SetAttribute("Ragdoll", false)
     Model:GetAttributeChangedSignal("Ragdoll"):Connect(function()
         local Toggle = Model:GetAttribute("Ragdoll")
+
         OtherMotor.Enabled = Toggle
         OriginalMotor.Enabled = not Toggle
         ToggleMotors(Motors, not Toggle)
+        
         if Human.Health <= 0 then
             HeadCollision.CollisionGroup = "Default"
         end
+
+        if not Model:HasTag("NPC") then return end
+
+        task.spawn(function()
+            Human.PlatformStand = Toggle
+
+            task.wait()
+            
+            -- Make all the parts in the NPC collidable
+            for _, Part in Model:GetChildren() do
+                if not Part then continue end
+                if not Part:IsA("BasePart") then continue end
+                if Part.Name == "Head" or Part.Name == "LowerWaist" or Part.Name == "HumanoidRootPart" then continue end
+                
+                Part.CanCollide = Toggle
+                warn(Part, Part.CanCollide)
+            end
+        end)
+            
         --if Toggle then
         --end
     end)
@@ -220,7 +241,7 @@ function RagdollService.PlayerAdded(Player: Player)
     if not Player then return end
 
     Player.CharacterAdded:Connect(function()
-        RagdollService:SetRagdoll(Player.Character :: Model)
+        RagdollService.SetRagdoll(Player.Character :: Model)
     end)
 end
 
@@ -239,7 +260,7 @@ function RagdollService:Init()
 end
 
 function RagdollService:Deferred()
-    RagdollService:SetRagdoll(game.Workspace.TestNPC)
+    --RagdollService.SetRagdoll(game.Workspace.TestNPC)
 end
 
 return RagdollService

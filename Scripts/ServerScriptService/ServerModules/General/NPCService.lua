@@ -7,6 +7,7 @@ local NPCService = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
@@ -18,6 +19,8 @@ local Workspace = game:GetService("Workspace")
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
+
+local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -84,6 +87,7 @@ function NPCService.Spawn(ThisPoint: CFrame?, Rarity: NPCInfo.NPCRariry?, Name: 
     Description.Pants = Info.Pants or 0
 
     Description.Parent = NewNPC
+    NewNPC:AddTag("NPC")
     NewNPC.Parent = NPCFolder
     
     local Success, Error = pcall(function() 
@@ -95,11 +99,15 @@ function NPCService.Spawn(ThisPoint: CFrame?, Rarity: NPCInfo.NPCRariry?, Name: 
         return
     end
 
+
+
     NewNPC:PivotTo(ThisPoint)
 
     NPCs[NewNPC] = {
         Dead = false
     }
+
+    RagdollService.SetRagdoll(NewNPC)
 end
 
 function NPCService:Init()
