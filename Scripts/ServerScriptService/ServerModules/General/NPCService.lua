@@ -35,6 +35,7 @@ local RagdollService = require(ServerScriptService.Source.ServerModules.General.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local SpawnPoints: {CFrame} = {}
+local SpawnNames: {[string]: {CFrame}} = {}
 
 local NPCs: {
     [Model]: {
@@ -54,6 +55,14 @@ local function GetSpawnPoints()
     for _, Spawn: BasePart in CollectionService:GetTagged("NPCSpawn") do
         if not Spawn then continue end
         table.insert(SpawnPoints, Spawn.CFrame)
+
+        local BaseName = string.sub(Spawn.Name, 10, string.len(Spawn.Name))
+        if not SpawnNames[BaseName] then
+            SpawnNames[BaseName] = {Spawn.CFrame}
+        else
+            table.insert(SpawnNames[BaseName], Spawn.CFrame)
+        end
+
         Spawn:Destroy()
     end
 end
@@ -62,9 +71,16 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function NPCService.Spawn(ThisPoint: CFrame?, Rarity: NPCInfo.NPCRariry?, Name: string?)
+function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry?, Name: string?)
     if not ThisPoint then
         ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
+
+    elseif ThisPoint and type(ThisPoint) == "string" then
+        if SpawnNames[ThisPoint] then
+            ThisPoint = SpawnNames[ThisPoint][RNG:NextInteger(1, #SpawnNames[ThisPoint])]
+        else
+            ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
+        end
     end
 
     local Info = NPCInfo.Common.John
@@ -99,8 +115,6 @@ function NPCService.Spawn(ThisPoint: CFrame?, Rarity: NPCInfo.NPCRariry?, Name: 
         return
     end
 
-
-
     NewNPC:PivotTo(ThisPoint)
 
     NPCs[NewNPC] = {
@@ -117,7 +131,8 @@ end
 function NPCService:Deferred()
     GetSpawnPoints()
 
-    NPCService.Spawn()
+    NPCService.Spawn("A")
+    NPCService.Spawn("B")
 end
 
 return NPCService

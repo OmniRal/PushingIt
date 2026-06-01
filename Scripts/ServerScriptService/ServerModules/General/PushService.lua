@@ -9,6 +9,7 @@ local PushService = {}
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
+local ModerationService = game:GetService("ModerationService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -68,9 +69,22 @@ local function CheckAliveAndClose(Root: BasePart, Model: Model): (boolean, BaseP
     return true, OtherRoot
 end
 
-local function PushModel(Player: Player, Model: Model)
-    if not Player or not Model then return end
-    
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
+    if not Model then return end
+    if not Model.PrimaryPart then return end
+    if Model:GetAttribute("Locked") then return end
+
+    if not Player and RootModel and ModelRagdolls[RootModel] and #ModelRagdolls[RootModel].Pushers > 0 then
+        Player = ModelRagdolls[RootModel].Pushers[1]
+    end
+
+    if not Player then return end
+    if Player.Name == Model.Name then return end
+
     if not ModelRagdolls[Model] then
         ModelRagdolls[Model] = {
             Pushers = {}
@@ -88,13 +102,34 @@ local function PushModel(Player: Player, Model: Model)
     if not table.find(ModelRagdolls[Model].Pushers, Player) then
         table.insert(ModelRagdolls[Model].Pushers, Player)
     end
+    
+    task.spawn(function()
+        local OriginCF = Model:GetPivot()
+        Model:SetAttribute("OriginCF", OriginCF)
+        Model:SetAttribute("Ragdoll", true)
 
-    Model:SetAttribute("Ragdoll", true)
+        if not Model:GetAttribute("StartOriginCF") then
+            Model:SetAttribute("StartOriginCF", OriginCF)
+        end
+
+        if not RESET_NPC then return end
+        
+        task.wait(5)
+
+        Model:SetAttribute("Locked", true)
+        Model:SetAttribute("Ragdoll", false)
+
+        task.wait()
+
+        Model.PrimaryPart.Anchored = true
+
+        task.wait()
+
+        Model:PivotTo(OriginCF * CFrame.new(0, 1, 0))
+        Model.PrimaryPart.Anchored = false
+        Model:SetAttribute("Locked", false)
+    end)
 end
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Public API
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function PushService.GetPushers(Model: Model): {Player}?
     if not Model then return end
@@ -124,19 +159,9 @@ function PushService.AttemptPush(Player: Player)
         if not CanPush or not OtherRoot  then continue end
 
         task.spawn(function()
-            local OriginCF = NPC:GetPivot()
-
-            PushModel(Player, NPC)
+            PushService.PushModel(Player, NPC)
             task.wait()
             OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * Power + Vector3.new(0, Power * 0.2, 0)
-
-            if not RESET_NPC then return end
-
-            task.wait(5)
-
-            NPC:SetAttribute("Ragdoll", false)
-            task.wait()
-            NPC:PivotTo(OriginCF)
         end)
     end
 

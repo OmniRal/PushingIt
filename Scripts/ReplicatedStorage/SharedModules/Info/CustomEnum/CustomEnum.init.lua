@@ -28,16 +28,6 @@ CustomEnum.RayType = {
     BlockRaycast = "BlockRaycast",
 }
 
-CustomEnum.TextDisplayType = {
-    HealthGain = "HealthGain",
-    KillerDamage = "KillerDamage",
-    VictimDamage = "VictimDamage",
-    AttackMiss = "AttackMiss",
-    Miss = "Miss",
-    Evade = "Evade",
-    Crit = "Crit",
-}
-
 export type TeleportInfo = {
     MissionID: number,
     ExpectedPlayers: {{Name: string, ID: number}}

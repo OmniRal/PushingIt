@@ -25,6 +25,8 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local DIV_VELOCITY = 4 -- How much to divide the velocity when calculating points
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,22 +141,26 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     if not Model or not Root or not BodyPart or not Hit then return end
     if not Model:GetAttribute("Ragdoll") then return end
 
-    local Velocity = math.ceil(math.abs(Root.AssemblyLinearVelocity.X) + math.abs(Root.AssemblyLinearVelocity.Y) + math.abs(Root.AssemblyLinearVelocity.Z) / 2)
+    local Velocity = math.ceil(math.abs(Root.AssemblyLinearVelocity.X) + math.abs(Root.AssemblyLinearVelocity.Y) + math.abs(Root.AssemblyLinearVelocity.Z) / DIV_VELOCITY)
+    if Velocity <= 10 then return end
 
     -- Get which players should get points
     local Pushers = PushService.GetPushers(Model)
     if Pushers then
         Remotes.PushService.ScoreUp:Fire(Pushers, Velocity)
+        Remotes.WorldUIService.SpawnTextDisplay:Fire(Pushers, "Normal", BodyPart.Position, {Amount = Velocity})
     end
+
+    local OtherRagdoll = Hit:FindFirstAncestorOfClass("Model")
+    if not OtherRagdoll or OtherRagdoll == Model then return end
+    if OtherRagdoll:GetAttribute("Ragdoll") == nil then return end
+
+    PushService.PushModel(nil, OtherRagdoll, Model)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-function RagdollService.PushModel(Player: Player, Model: Model)
-
-end
 
 -- Set up ragdoll stuff for a model.
 function RagdollService.SetRagdoll(Model: Model)

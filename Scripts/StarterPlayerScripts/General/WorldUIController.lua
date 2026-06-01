@@ -1,28 +1,50 @@
 -- OmniRal
 
-local WorldUIService = {}
+local WorldUIController = {}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
-local Debris = game:GetService("Debris")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-
-local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
-local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
--- Private API --
------------------
+-- Remotes
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function UpdateHealthLines(Attributes: any, Point: any)
+local WorldUIService = Remotes.WorldUIService
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Types
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+export type TextDisplayType = "Normal" | "Other"
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local ClientVisuals = Workspace.ClientVisuals
+local Assets = ReplicatedStorage.Assets
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--[[local function UpdateHealthLines(Attributes: any, Point: any)
     for _, OldLine in Point.UnitGui.Canvas.Frame.HealthFrame.Back.Lines:GetChildren() do
         OldLine:Destroy()
     end
@@ -34,48 +56,49 @@ function UpdateHealthLines(Attributes: any, Point: any)
         NewLine.Visible = true
         NewLine.Parent = Point.UnitGui.Canvas.Frame.HealthFrame.Back.Lines
     end
-end
+end]]
 
-function UpdateCurrentDebuff(Attributes: any): any?
-    if not Attributes then return end
+local function NormalTextAnimation(Display: any, OtherDetails: {[string]: any})
+    Display.Gui.Container.Normal.Text = OtherDetails.Amount
+    Display.Gui.Container.Normal.Visible = true
 
-    local CurrentDebuff = nil
-    local DebuffState = "None"
-    local DebuffPower = 0
-    local LastTime = 0
+    local FadeIn = TweenService:Create(Display.Gui.Container, TweenInfo.new(0.1), {GroupTransparency = 0.5})
+    local FadeOut = TweenService:Create(Display.Gui.Container, TweenInfo.new(0.2), {GroupTransparency = 1})
 
-    for _, Effect in Attributes.Effects:GetChildren() do
-        if not Effect then continue end
-        if Effect:GetAttribute("IsBuff") or Effect:GetAttribute("Duration") < 0 then continue end
-        if not Effect:FindFirstChild("Timer") then continue end
-        if Effect.Timer.Value <= 0 --[[or Effect.Timer.Value < LastTime]] then continue end
+    FadeIn.Completed:Connect(function() 
+        TweenService:Create(Display.Gui.Container.Normal.Stroke, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {Thickness = 2}):Play()
 
-        local EffectState, EffectPower = "None", 0
-        for Key, Value in CustomEnum.DebuffStatePowers do
-            if Effect:GetAttribute(Key) == nil then continue end
-            if Value < EffectPower then continue end
-            EffectState = Key
-            EffectPower = Value
-        end
+        task.wait(0.5)
+        FadeOut:Play()
+    end)
 
-        if EffectPower <= 0 then continue end
-        if EffectPower < DebuffPower then continue end
+    FadeOut.Completed:Connect(function()
+        Display:Destroy()
+    end)
 
-        CurrentDebuff = Effect
-        DebuffState = EffectState
-        DebuffPower = EffectPower
-        LastTime = Effect.Timer.Value
-    end
-
-    return CurrentDebuff, DebuffState
+    TweenService:Create(Display.Gui, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ExtentsOffset = Vector3.new(0, 1, 0)}):Play()
+    FadeIn:Play()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function WorldUIService:AddGradientChangingValues(Gradient: UIGradient, AddForColor: {}?, AddForTransparency: {}?): {}?
+function WorldUIController.SpawnTextDisplay(DisplayType: TextDisplayType, Position: Vector3, OtherDetails: {[string]: any}?)
+    --print("From: ", From, Affects, DisplayType, Position, OtherDetails)
+
+    local Display = Assets.Particles.TextDisplay:Clone()
+    Display.Transparency = 1
+    Display.CFrame = CFrame.new(Position)
+    Display.Parent = ClientVisuals
+
+    if DisplayType == "Normal" and OtherDetails then
+        NormalTextAnimation(Display, OtherDetails)
+    end
+
+end
+
+function WorldUIController.AddGradientChangingValues(Gradient: UIGradient, AddForColor: {}?, AddForTransparency: {}?): {}?
     if not Gradient then return end
 
     local NewValues = {}
@@ -135,7 +158,7 @@ function WorldUIService:AddGradientChangingValues(Gradient: UIGradient, AddForCo
     return NewValues
 end
 
-function WorldUIService:GuiPointForUnit(Unit: Model)
+--[[function WorldUIController.GuiPointForUnit(Unit: Model)
     if not Unit then return end
     local Human, Root, Attributes = Unit:FindFirstChild("Humanoid"), Unit:FindFirstChild("HumanoidRootPart"), Unit:FindFirstChild("UnitAttributes")
     if not Human or not Root or not Attributes then return end
@@ -205,62 +228,16 @@ function WorldUIService:GuiPointForUnit(Unit: Model)
 
     UpdateHealthLines(Attributes, Point)
     --Attributes.States
+end]]
+
+function WorldUIController:Init()
+
 end
 
-function WorldUIService:SpawnTextDisplay(From: string, Affects: string, DisplayType: string, Position: Vector3, OtherDetails: {[string]: any}?)
-    --print("From: ", From, Affects, DisplayType, Position, OtherDetails)
-    if not From or not Affects or not DisplayType or not Position then return end
-
-    local Display = Assets.Misc.TextDisplay:Clone()
-    Display.Transparency = 1
-    Display.CFrame = CFrame.new(Position)
-    Display.Parent = Workspace.ClientVisuals
-
-    if DisplayType == CustomEnum.TextDisplayType.HealthGain and OtherDetails then
-        Display.Gui.Heal.Text = "+" .. OtherDetails.Amount
-        Display.Gui.Heal.Visible = true
-        TweenService:Create(Display.Gui.Heal, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false, 0.5), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.Heal.Stroke, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false, 0.5), {Transparency = 1}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.new(2, 10, 2, 10)}):Play()
-
-    elseif DisplayType == CustomEnum.TextDisplayType.KillerDamage and OtherDetails then
-        Display.Gui.KillerDamage.Text = OtherDetails.Amount
-        Display.Gui.KillerDamage.Visible = true
-        TweenService:Create(Display.Gui.KillerDamage, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.KillerDamage.Stroke, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {SizeOffset = Vector2.new(0, -0.1)}):Play()
-
-    elseif DisplayType == CustomEnum.TextDisplayType.Crit and OtherDetails then
-        Display.Gui.CritDamage.Text = OtherDetails.Amount
-        Display.Gui.CritDamage.Visible = true
-        TweenService:Create(Display.Gui.CritDamage, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, false, 1.5), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.CritDamage.Stroke, TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Thickness = 7}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {SizeOffset = Vector2.new(0, 0.5)}):Play()
-        task.delay(1.5, function()
-            TweenService:Create(Display.Gui.CritDamage.Stroke, TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-        end)
-
-    elseif DisplayType == CustomEnum.TextDisplayType.VictimDamage and OtherDetails then
-        Display.Gui.VictimDamage.Text = OtherDetails.Amount
-        Display.Gui.VictimDamage.Visible = true
-        TweenService:Create(Display.Gui.VictimDamage, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.VictimDamage.Stroke, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {SizeOffset = Vector2.new(0, -0.1)}):Play()
-
-    elseif DisplayType == CustomEnum.TextDisplayType.Miss or DisplayType == CustomEnum.TextDisplayType.AttackMiss then
-        Display.Gui.Miss.Visible = true
-        TweenService:Create(Display.Gui.Miss, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.Miss.Stroke, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {SizeOffset = Vector2.new(0, -0.25)}):Play()
-
-    elseif DisplayType == CustomEnum.TextDisplayType.Evade then
-        Display.Gui.Evade.Visible = true
-        TweenService:Create(Display.Gui.Evade, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 1}):Play()
-        TweenService:Create(Display.Gui.Evade.Stroke, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 1}):Play()
-        TweenService:Create(Display.Gui, TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {SizeOffset = Vector2.new(0, -1)}):Play()
-    end
-
-    Debris:AddItem(Display, 2)
+function WorldUIController:Deferred()
+    WorldUIService.SpawnTextDisplay:Connect(function(DisplayType: TextDisplayType, Position: Vector3, OtherDetails: {[string]: any}?)
+        WorldUIController.SpawnTextDisplay(DisplayType, Position, OtherDetails)
+    end)
 end
 
-return WorldUIService
+return WorldUIController

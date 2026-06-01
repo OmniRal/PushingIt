@@ -166,8 +166,6 @@ function DataService.WaitForPlayerDataLoaded(Player)
 end
 
 function DataService:Init()
-    print("Data Service Init...")
-
     Remotes:CreateToClient("DataUpdate", {"table"}, "Reliable")
 
     --[[for WeaponName, W_Info in pairs(WeaponInfo) do

@@ -21,7 +21,6 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local WorldUIService = require(ReplicatedStorage.Source.SharedModules.UI.WorldUIService)
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 
 --local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)

@@ -340,14 +340,6 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/UI/UIBasics.lua"
 											]
-										},
-										{
-											"name": "WorldUIService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/UI/WorldUIService.lua"
-											]
 										}
 									],
 									"filePaths": [
@@ -1167,6 +1159,55 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Particles/GenericParticles.rbxm"
+									]
+								},
+								{
+									"name": "TextDisplay",
+									"className": "Part",
+									"children": [
+										{
+											"name": "Gui",
+											"className": "BillboardGui",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Normal",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Container",
+													"className": "CanvasGroup",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Normal",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Particles/TextDisplay.rbxm"
 									]
 								}
 							],
@@ -2052,19 +2093,6 @@
 									"className": "ScreenGui",
 									"children": [
 										{
-											"name": "LootCount",
-											"className": "TextLabel",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "UIStroke",
-													"className": "UIStroke",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
 											"name": "Counter",
 											"className": "Frame",
 											"filePaths": [],
@@ -2082,7 +2110,7 @@
 													"children": []
 												},
 												{
-													"name": "Frame",
+													"name": "Inner",
 													"className": "CanvasGroup",
 													"filePaths": [],
 													"children": [
@@ -2093,7 +2121,7 @@
 															"children": []
 														},
 														{
-															"name": "OG_Num",
+															"name": "OG_Index",
 															"className": "Frame",
 															"filePaths": [],
 															"children": [
@@ -2104,10 +2132,17 @@
 																	"children": []
 																},
 																{
-																	"name": "Num",
-																	"className": "TextLabel",
+																	"name": "Container",
+																	"className": "Frame",
 																	"filePaths": [],
-																	"children": []
+																	"children": [
+																		{
+																			"name": "Num",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
 																}
 															]
 														},
@@ -2297,6 +2332,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/UnitValuesService.lua"
+											]
+										},
+										{
+											"name": "WorldUIService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/WorldUIService.lua"
 											]
 										}
 									],
@@ -3554,6 +3597,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/MainUIController/MainUIController.init.lua"
+											]
+										},
+										{
+											"name": "WorldUIController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/WorldUIController.lua"
 											]
 										}
 									],
