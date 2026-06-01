@@ -2,40 +2,60 @@
 
 local AnimationController = {}
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- OmniRal
+
+local Template = {}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Remotes
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 AnimationController.Tracks = {}
 AnimationController.AnimTracks = {}
 
------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
------------------
--- Private API --
------------------
-
----------------------------------------------------------------------------------------------------------------------------------------
-
-----------------
--- Public API --
-----------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Stops the animation track.
-function AnimationController:CutAnim(KeyName: string)
-    if self.AnimTracks[KeyName] then
-        if self.AnimTracks[KeyName].T then
-            self.AnimTracks[KeyName].T:Stop()
-            self.AnimTracks[KeyName].T = nil
-            self.AnimTracks[KeyName].CanPlay = true
+function AnimationController.CutAnim(KeyName: string)
+    if AnimationController.AnimTracks[KeyName] then
+        if AnimationController.AnimTracks[KeyName].T then
+            AnimationController.AnimTracks[KeyName].T:Stop()
+            AnimationController.AnimTracks[KeyName].T = nil
+            AnimationController.AnimTracks[KeyName].CanPlay = true
         end
     end
 end
 
 -- Plays a new animation.
-function AnimationController:PlayNew(Character: any, KeyName: string, AnimName: string, Override: boolean, Speed: number, KeyframeFunc: (string, string, {}?) -> (), ExtraKeyParams: {}?)
-    if not Character or not self.Tracks[KeyName] or not self.AnimTracks[KeyName] then return end
-    if not self.Tracks[KeyName][AnimName] then return end
-    local Tracks = self.Tracks[KeyName]
-    local AnimTrack = self.AnimTracks[KeyName]
+function AnimationController.PlayNew(Character: any, KeyName: string, AnimName: string, Override: boolean, Speed: number, KeyframeFunc: (string, string, {}?) -> ()?, ...)
+    if not Character or not AnimationController.Tracks[KeyName] or not AnimationController.AnimTracks[KeyName] then return end
+    if not AnimationController.Tracks[KeyName][AnimName] then return end
+    local Tracks = AnimationController.Tracks[KeyName]
+    local AnimTrack = AnimationController.AnimTracks[KeyName]
+
+    local Params = {...}
 
     if AnimTrack.CanPlay or Override then
         if AnimTrack.T ~= nil then
@@ -48,7 +68,8 @@ function AnimationController:PlayNew(Character: any, KeyName: string, AnimName: 
                 Tracks[AnimName].Set = true
 
                 Tracks[AnimName].Track.KeyframeReached:Connect(function(Keyframe: string)
-                    KeyframeFunc(Keyframe, AnimName, ExtraKeyParams)
+                    if not KeyframeFunc then return end
+                    KeyframeFunc(Keyframe, AnimName, unpack(Params))
                 end)
             end
 
@@ -63,18 +84,22 @@ end
 -- @Character: The character to load the animations onto.
 -- @KeyName: The key name to be kept and used in the table.
 -- @AnimationsList: The table of animations to load.
-function AnimationController:LoadAnimations(Character: any, KeyName: string, AnimationsList: {[string]: {ID: number, Priority: Enum.AnimationPriority}})
+function AnimationController.LoadAnimations(Character: any, KeyName: string, AnimationsList: {[string]: {ID: number, Priority: Enum.AnimationPriority, Looped: boolean?}})
 	if not Character or not KeyName or not AnimationsList then return end
-    self.Tracks[KeyName] = {}
-    self.AnimTracks[KeyName] = {T = nil, CanPlay = true}
+    AnimationController.Tracks[KeyName] = {}
+    AnimationController.AnimTracks[KeyName] = {T = nil, CanPlay = true}
 
     for Name, Id in pairs(AnimationsList) do
         local NewAnimation = Instance.new("Animation")
         NewAnimation.AnimationId = "rbxassetid://" .. AnimationsList[Name].ID
         local NewTrack = Character.Humanoid:LoadAnimation(NewAnimation)
         NewTrack.Priority = AnimationsList[Name].Priority
+        if AnimationsList[Name].Looped ~= nil then
+            NewTrack.Looped = AnimationsList[Name].Looped
+        end
+        
 
-        self.Tracks[KeyName][Name] = {Track = NewTrack, Set = false}
+        AnimationController.Tracks[KeyName][Name] = {Track = NewTrack, Set = false}
     end
 
     print("Loaded Animation Set: ", KeyName)

@@ -17,9 +17,9 @@ end
 function Setup()
     --UserSettings.GameSettings.RotationType = Enum.RotationType.CameraRelative
     LocalPlayer.CharacterAdded:Connect(function()
-        MainController:SetCharacter()
+        MainController.SetCharacter()
     end)
-    MainController:SetCharacter()
+    MainController.SetCharacter()
 end
 
 Setup()

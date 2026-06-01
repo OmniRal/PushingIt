@@ -7,10 +7,11 @@ local MainUIController = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -45,6 +46,8 @@ local LocalPlayer = Players.LocalPlayer
 
 local Gui: ScreenGui
 
+local Counter: any
+
 local DraggingUI: {Base: GuiObject?, Element: GuiObject?, Dragging: boolean, DragStart: Vector3?, PositionElement: UDim2?} = {
     Base = nil,
     Element = nil,
@@ -77,25 +80,99 @@ local function CreateNewGui()
     end)
 end
 
-local function UpdateDrag(Input: InputObject)
-    if not DraggingUI.Base or not DraggingUI.Element or not DraggingUI.DragStart or not DraggingUI.PositionElement then return end
+local function SetCounter()
+    if not Gui then return end
 
-    local Delta: Vector3 = Input.Position - DraggingUI.DragStart
-    DraggingUI.Element.Position = UDim2.new(
-        DraggingUI.PositionElement.X.Scale,
-        DraggingUI.PositionElement.X.Offset + Delta.X,
-        DraggingUI.PositionElement.Y.Scale,
-        DraggingUI.PositionElement.Y.Offset + Delta.Y
-    )
+    local ThisCounter = Gui:FindFirstChild("Counter")
+    if not ThisCounter then return end
+
+    Counter = ThisCounter
+
+    Counter:SetAttribute("Score", 0)
+    local LastScore = 0
+
+    local UpTween
+    local DownTween
+
+    Counter.Visible = true
+
+    local Indexes = {}
+    for x = 1, 10 do
+        local Index = Counter.Inner.OG_Index:Clone()
+        Index.Name = "Index_" .. x
+        Index.Position = UDim2.fromScale((x / 10) - 0.1, 0)
+        Index.Visible = true
+        Index.Parent = Counter.Inner
+
+        for y = 1, 9 do
+            local Num = Index.Container.Num:Clone()
+            Num.Text = y
+            Num.Position = UDim2.fromScale(0, y)
+            Num.Parent = Index.Container
+        end
+
+        table.insert(Indexes, Index)
+    end
+
+    Counter:GetAttributeChangedSignal("Score"):Connect(function()
+        local Score = Counter:GetAttribute("Score")
+        local Len = string.len(Score)
+        local Text = ""
+        local Hop = false
+
+        if Score > LastScore then
+            Hop = true
+        end
+
+        if Len < 10 then
+            for _ = 1, 10 - Len do
+                Text = Text .. "0"
+            end
+        end
+
+        Text = Text .. tostring(Score)
+
+        if Hop then
+            if UpTween then UpTween:Pause() UpTween:Destroy() UpTween = nil end
+            if DownTween then DownTween:Pause() DownTween:Destroy() DownTween = nil end
+
+            Counter.Position = UDim2.fromScale(0.05, 0.85)
+            UpTween = TweenService:Create(Counter, TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.05, 0.825)})
+            DownTween = TweenService:Create(Counter, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.05, 0.85)})
+
+            UpTween.Completed:Connect(function()
+                DownTween:Play()
+            end)
+
+            DownTween.Completed:Connect(function()
+                UpTween = nil
+                DownTween = nil
+            end)
+
+            UpTween:Play()
+        end
+
+        for n, Index in ipairs(Indexes) do
+            local Pos = string.sub(Text, n, n)
+
+            TweenService:Create(Index.Container, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+                Position = UDim2.fromScale(0, -Pos)
+            }):Play()
+        end
+    end)
 end
 
 local function SetGui()
-
+    SetCounter()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function MainUIController.SetCounter(To: number)
+    Counter:SetAttribute("Score", To)
+end
 
 function MainUIController.SetCharacter()
     print("Main UI - Setting character started.")
@@ -110,12 +187,6 @@ end
 
 function MainUIController:Init()
     CreateNewGui()
-
-    UserInputService.InputChanged:Connect(function(Input: InputObject)
-        if not DraggingUI.Dragging then return end
-        if Input.UserInputType ~= Enum.UserInputType.MouseMovement and Input.UserInputType ~= Enum.UserInputType.Touch then return end
-        UpdateDrag(Input)
-    end)
 end
 
 function MainUIController:Deferred()
@@ -123,51 +194,6 @@ function MainUIController:Deferred()
 
     DeviceController.CurrentDevice:Connect(function()
         print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
-    end)
-
-    VisualService.SpawnTextDisplay:Connect(function(From: string, Affects: string, DisplayType: string, Position: Vector3, OtherDetails: {}?)
-        if not From or not Affects or not DisplayType or not Position then return end
-
-        if DisplayType == CustomEnum.TextDisplayType.HealthGain then
-            if Affects ~= LocalPlayer.Name then return end
-
-        elseif DisplayType == CustomEnum.TextDisplayType.KillerDamage or DisplayType == CustomEnum.TextDisplayType.Crit then
-            if Affects == LocalPlayer.Name then
-                DisplayType = CustomEnum.TextDisplayType.VictimDamage
-            end
-        
-        elseif DisplayType == CustomEnum.TextDisplayType.Miss then
-            if Affects == LocalPlayer.Name then
-                DisplayType = CustomEnum.TextDisplayType.Evade
-            end
-        end
-
-        WorldUIService:SpawnTextDisplay(From, Affects, DisplayType, Position, OtherDetails)
-    end)
-
-    Events.UI.StartDraggingUI.Event:Connect(function(Start: Vector3, Base: GuiObject, Element: GuiObject?, StartDrag: (GuiObject, GuiObject) -> ()?)
-        if not Base then return end
-
-        local Position = if Element then Element.Position else Base.Position
-
-        DraggingUI.DragStart = Start
-        DraggingUI.Base = Base
-        DraggingUI.Element = Element or Base
-        DraggingUI.PositionElement = Position
-        
-        DraggingUI.Dragging = true
-
-        if not StartDrag then return end
-        StartDrag(Base, Element or Base)
-    end)
-
-    Events.UI.StopDraggingUI.Event:Connect(function(Base: GuiObject, Element: GuiObject?, StopDrag: (GuiObject, GuiObject?) -> ()?)
-        DraggingUI.Dragging = false
-        DraggingUI.Base = nil
-        DraggingUI.Element = nil
-
-        if not StopDrag then return end
-        StopDrag(Base, Element or Base)
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)

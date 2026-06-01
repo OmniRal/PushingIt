@@ -45,7 +45,7 @@ end
 
 function BadgeService:Init()
     Remotes:CreateToServer("RequestClaimBadgeReward", {"string"}, "Returns", function(Player: Player, BadgeName: string)
-        local PlayerData = DataService:GetProfileTable(Player)
+        local PlayerData = DataService.GetProfileTable(Player)
         if not PlayerData then return end
         if not PlayerData.Badges then return end
         local Info = PlayerData.Badges[BadgeName]

@@ -4,15 +4,36 @@
 
 local RagdollService = {}
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
 --local PhysicsService = game:GetService("PhysicsService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local PushService = require(script.Parent.PushService)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Remotes
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 local ModelConstraints = {
     Ankle = New.Instance("BallSocketConstraint", {LimitsEnabled = true, TwistLimitsEnabled = true, UpperAngle = 30, TwistLowerAngle = -45, TwistUpperAngle = 30}),
@@ -40,13 +61,9 @@ local ModelCollisions = {
 	{"RightUpperLeg",   "LowerTorso", "LeftUpperLeg", "UpperTorso"}
 }
 
---local Sides = {-1, 1}
---local RNG = Random.new()
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
--- Private API --
------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function GetAccessoryAttachment0(Character: Instance, Name: string): Attachment?
     for _, Part in pairs(Character:GetChildren()) do
@@ -116,16 +133,37 @@ local function ToggleMotors(Motors: {}, Toggle: boolean)
         end
     end
 end
+
+-- When a body part of an NPC or player hits something, give points to players
+local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit: BasePart)
+    if not Model or not Root or not BodyPart or not Hit then return end
+    if not Model:GetAttribute("Ragdoll") then return end
+
+    local Velocity = math.ceil(math.abs(Root.AssemblyLinearVelocity.X) + math.abs(Root.AssemblyLinearVelocity.Y) + math.abs(Root.AssemblyLinearVelocity.Z) / 2)
+
+    -- Get which players should get points
+    local Pushers = PushService.GetPushers(Model)
+    if Pushers then
+        Remotes.PushService.ScoreUp:Fire(Pushers, Velocity)
+    end
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function RagdollService.PushModel(Player: Player, Model: Model)
+
+end
 
 -- Set up ragdoll stuff for a model.
 function RagdollService.SetRagdoll(Model: Model)
     if not Model then return end
-    local Human = Model:FindFirstChild("Humanoid")
-    if not Human then return end
+    local Human, Root = Model:FindFirstChild("Humanoid") :: Humanoid, Model:FindFirstChild("HumanoidRootPart")
+    if not Human or not Root then return end
+
+    local TouchAdded = false
+    local TouchConnections: {RBXScriptConnection} = {}
 
     Human.BreakJointsOnDeath = false
 
@@ -220,6 +258,13 @@ function RagdollService.SetRagdoll(Model: Model)
             Human.PlatformStand = Toggle
 
             task.wait()
+
+            -- If the touch connection was not already created
+            local AddTouch = false
+            if not TouchAdded then
+                TouchAdded = true
+                AddTouch = true
+            end
             
             -- Make all the parts in the NPC collidable
             for _, Part in Model:GetChildren() do
@@ -228,7 +273,19 @@ function RagdollService.SetRagdoll(Model: Model)
                 if Part.Name == "Head" or Part.Name == "LowerWaist" or Part.Name == "HumanoidRootPart" then continue end
                 
                 Part.CanCollide = Toggle
-                warn(Part, Part.CanCollide)
+
+                if not AddTouch then continue end
+
+                local Debounce = false
+                Part.Touched:Connect(function(Hit: BasePart)
+                    if Debounce then return end
+
+                    Debounce = true
+                    BodyPartHit(Model, Root, Part, Hit)
+
+                    task.wait(0.25)
+                    Debounce = false
+                end)
             end
         end)
             

@@ -8,6 +8,7 @@ local MainController = {}
 
 local UserGameSettings = UserSettings().GameSettings
 
+local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
 local UserInputService = game:GetService("UserInputService")
@@ -19,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local AnimationController = require(script.Parent.AnimationController)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local CameraController = require(StarterPlayer.StarterPlayerScripts.Source.General.CameraController)
@@ -51,16 +53,19 @@ local Camera = Workspace.CurrentCamera
 
 local CharacterSetup = false
 
-local AnimationsList : {[string]: {ID: number, Priority: Enum.AnimationPriority}} = {
-	["_"] = {ID = 0, Priority = Enum.AnimationPriority.Action},
+local CurrentPoints = 0
+local CurrentlyPushing = false
+
+local PushAnimationsList : {[string]: {ID: number, Priority: Enum.AnimationPriority, Looped: boolean?}} = {
+	["StartPush"] = {ID = 128311229502892, Priority = Enum.AnimationPriority.Action2},
+    ["ChargePush"] = {ID = 136393663879299, Priority = Enum.AnimationPriority.Action2, Looped = true},
+    ["FinishPush"] = {ID = 102907787145425, Priority = Enum.AnimationPriority.Action2}
 }
 
 local GroundParams = RaycastParams.new()
 GroundParams.FilterType = Enum.RaycastFilterType.Include
 GroundParams.FilterDescendantsInstances = {Workspace}
 GroundParams.IgnoreWater = true
-
-local PickupDebounce = false
 
 local Assets = ReplicatedStorage.Assets
 local RNG = Random.new()
@@ -127,15 +132,45 @@ local function UpdateWalkSpeed()
     PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
 end
 
-local function AttemptPush()
+local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
+    local Params = {...}
 
+    if Keyframe == "End" then
+        if AnimName == "StartPush" then
+            AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "ChargePush", false, 1)
+        
+        elseif AnimName == "FinishPush" then
+            CurrentlyPushing = false
+        end
+
+    elseif Keyframe == "Push" then
+       PushService:AttemptPush() 
+    end
+end
+
+local function AttemptPush(_, State: Enum.UserInputState, Object: InputObject)
+    if State == Enum.UserInputState.Begin then
+        PushService:StartPushCharge()
+        AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "StartPush", false, 1, PushAnimFunc)
+    elseif State == Enum.UserInputState.End then
+        AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "FinishPush", false, 1, PushAnimFunc)
+    end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainController:SetCharacter()
+function MainController.TogglePushControls(SetTo: boolean)
+    if SetTo then
+        ContextActionService:BindAction("PushControls", AttemptPush, false, Enum.UserInputType.MouseButton1)
+
+    else
+        ContextActionService:UnbindAction("PushControls")
+    end
+end
+
+function MainController.SetCharacter()
     print("Main - Setting character started.")
     if CharacterSetup then
         return
@@ -193,6 +228,7 @@ function MainController:SetCharacter()
 
     CameraController.SetCharacter()
     MainUIController.SetCharacter()
+    AnimationController.LoadAnimations(LocalPlayer.Character, "PushAnimations", PushAnimationsList)
 
     PlayerInfo.UnitValues = LocalPlayer.Character:WaitForChild("UnitValues")
 
@@ -203,34 +239,21 @@ function MainController:SetCharacter()
     print("Main - Setting character complete.")
 end
 
---[[function MainController:RunControls(DeltaTime: number)
-end]]
-
 function MainController:RunHeartbeat()
     CheckGrounded()
     UpdateWalkSpeed()
 end
 
 function MainController:Init()
-    print("Main Controller Init...")
-
     UserGameSettings.RotationType = Enum.RotationType.MovementRelative
-
-    UserInputService.InputBegan:Connect(function(Input)
-    end)
+    MainController.TogglePushControls(true)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
         MainController:RunHeartbeat()
     end)
-
-   Mouse.Button1Down:Connect(function()
-       PushService:AttemptPush(200) 
-   end) 
 end
 
 function MainController:Deferred()
-    print("Main Controller Deferred...")
-
     local GotControlModule = LocalPlayer:FindFirstChild("PlayerScripts"):FindFirstChild("PlayerModule"):FindFirstChild("ControlModule") :: ModuleScript
     if GotControlModule then
         ControlModule = require(GotControlModule)
@@ -239,6 +262,15 @@ function MainController:Deferred()
     DataService.DataUpdate:Connect(function(Data: {Coins: number})
         PlayerInfo.Data = Data
         print("Recieved Data: ", PlayerInfo.Data)
+    end)
+
+    PushService.ScoreChanged:Connect(function(To: number)
+        PushService.ScoreChanged(To)
+    end)
+
+    PushService.ScoreUp:Connect(function(Add: number)
+        CurrentPoints += Add
+        MainUIController.SetCounter(CurrentPoints)
     end)
 end
 
