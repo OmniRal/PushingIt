@@ -31,7 +31,7 @@ local WorldUIService = Remotes.WorldUIService
 -- Types
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-export type TextDisplayType = "Normal" | "Other"
+export type TextDisplayType = "SmallPointInjury" | "NPCStreakAdd" | "Other"
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -58,15 +58,21 @@ local Assets = ReplicatedStorage.Assets
     end
 end]]
 
-local function NormalTextAnimation(Display: any, OtherDetails: {[string]: any})
-    Display.Gui.Container.Normal.Text = OtherDetails.Amount
-    Display.Gui.Container.Normal.Visible = true
+local function SmallPointInjuryAnimation(Display: any, OtherDetails: {[string]: any})
+    local Gui = Display.Gui
+    local Container = Gui.Container
+    local Label = Container.SmallPointInjury
 
-    local FadeIn = TweenService:Create(Display.Gui.Container, TweenInfo.new(0.1), {GroupTransparency = 0.5})
-    local FadeOut = TweenService:Create(Display.Gui.Container, TweenInfo.new(0.2), {GroupTransparency = 1})
+    Gui.Size = UDim2.fromOffset(1, 1)
+    Label.Text = OtherDetails.Amount
+    Label.Stroke.Transparency = 0.75
+    Label.Visible = true
+
+    local FadeIn = TweenService:Create(Container, TweenInfo.new(0.1), {GroupTransparency = 0})
+    local FadeOut = TweenService:Create(Container, TweenInfo.new(0.2), {GroupTransparency = 1})
 
     FadeIn.Completed:Connect(function() 
-        TweenService:Create(Display.Gui.Container.Normal.Stroke, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {Thickness = 2}):Play()
+        TweenService:Create(Label.Stroke, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {Thickness = 2}):Play()
 
         task.wait(0.5)
         FadeOut:Play()
@@ -76,8 +82,47 @@ local function NormalTextAnimation(Display: any, OtherDetails: {[string]: any})
         Display:Destroy()
     end)
 
-    TweenService:Create(Display.Gui, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ExtentsOffset = Vector3.new(0, 1, 0)}):Play()
+    TweenService:Create(Gui, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {ExtentsOffset = Vector3.new(0, 1, 0)}):Play()
     FadeIn:Play()
+end
+
+local function NPCStreakAddAnimation(Display: any, OtherDetails: {[string]: any})
+    local Gui = Display.Gui
+    local Container = Gui.Container
+    local Label = Container.NPCStreakAdd
+    local HangTime = 0.6
+
+    Gui.Size = UDim2.fromScale(3, 3)
+    Label.Text = OtherDetails.Amount
+    Label.Visible = true
+
+    local FadeIn = TweenService:Create(Container, TweenInfo.new(0.2), {GroupTransparency = 0})
+    local FadeOut = TweenService:Create(Container, TweenInfo.new(0.2), {GroupTransparency = 1})
+
+    FadeIn.Completed:Connect(function() 
+        TweenService:Create(Label.Stroke, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 0, true), {Thickness = 6}):Play()
+
+        task.wait(HangTime)
+        FadeOut:Play()
+    end)
+
+    FadeOut.Completed:Connect(function()
+        Display:Destroy()
+    end)
+
+    local RiseTween_1 = TweenService:Create(Gui, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {ExtentsOffset = Vector3.new(0, 2, 0)})
+    local RiseTween_2 = TweenService:Create(Gui, TweenInfo.new(HangTime, Enum.EasingStyle.Linear, Enum.EasingDirection.Out), {ExtentsOffset = Vector3.new(0, 2.25, 0)})
+    local RiseTween_3 = TweenService:Create(Gui, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {ExtentsOffset = Vector3.new(0, 4.25, 0)})
+
+    RiseTween_1.Completed:Connect(function() 
+        RiseTween_2:Play()
+    end)
+    RiseTween_2.Completed:Connect(function()
+        RiseTween_3:Play()
+    end)
+
+    FadeIn:Play()
+    RiseTween_1:Play()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -92,8 +137,11 @@ function WorldUIController.SpawnTextDisplay(DisplayType: TextDisplayType, Positi
     Display.CFrame = CFrame.new(Position)
     Display.Parent = ClientVisuals
 
-    if DisplayType == "Normal" and OtherDetails then
-        NormalTextAnimation(Display, OtherDetails)
+    if DisplayType == "SmallPointInjury" and OtherDetails and 1 == 0 then
+        SmallPointInjuryAnimation(Display, OtherDetails)
+
+    elseif DisplayType == "NPCStreakAdd" and OtherDetails then
+        NPCStreakAddAnimation(Display, OtherDetails)
     end
 
 end

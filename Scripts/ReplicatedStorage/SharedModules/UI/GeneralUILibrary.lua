@@ -218,7 +218,6 @@ function GeneralUILibrary.AddBaseButtonInteractions(
 			if not DragDelay then
 				Button:SetAttribute("Dragging", true)
 				Events.UI.StartDraggingUI:Fire(Input.Position, Button, if DraggingElement == Button then Button else DraggingElement, StartDrag)
-			
 			else
 				if DragDelayThread then
 					task.cancel(DragDelayThread)

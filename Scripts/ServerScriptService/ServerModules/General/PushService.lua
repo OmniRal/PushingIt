@@ -73,17 +73,17 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
-    if not Model then return end
-    if not Model.PrimaryPart then return end
-    if Model:GetAttribute("Locked") then return end
+function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?): boolean
+    if not Model then return false end
+    if not Model.PrimaryPart then return false end
+    if Model:GetAttribute("Locked") or Model:GetAttribute("Ragdoll") then return false end
 
     if not Player and RootModel and ModelRagdolls[RootModel] and #ModelRagdolls[RootModel].Pushers > 0 then
         Player = ModelRagdolls[RootModel].Pushers[1]
     end
 
-    if not Player then return end
-    if Player.Name == Model.Name then return end
+    if not Player then return false end
+    if Player.Name == Model.Name then return false end
 
     if not ModelRagdolls[Model] then
         ModelRagdolls[Model] = {
@@ -129,6 +129,8 @@ function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
         Model.PrimaryPart.Anchored = false
         Model:SetAttribute("Locked", false)
     end)
+
+    return  true
 end
 
 function PushService.GetPushers(Model: Model): {Player}?

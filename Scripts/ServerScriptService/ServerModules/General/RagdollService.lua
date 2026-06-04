@@ -155,7 +155,10 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     if not OtherRagdoll or OtherRagdoll == Model then return end
     if OtherRagdoll:GetAttribute("Ragdoll") == nil then return end
 
-    PushService.PushModel(nil, OtherRagdoll, Model)
+    local Success = PushService.PushModel(nil, OtherRagdoll, Model)
+    if not Success then return end
+
+    Remotes.WorldUIService.SpawnTextDisplay:Fire(Pushers, "NPCStreakAdd", BodyPart.Position, {Amount = 500})
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -582,30 +582,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Option",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
-											]
-										},
-										{
-											"name": "Signal",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
-											]
-										},
-										{
 											"name": "comm",
 											"className": "ModuleScript",
 											"children": [
@@ -703,6 +679,30 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_comm@0.3.0/comm/init.lua"
 											]
+										},
+										{
+											"name": "Option",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
+											]
+										},
+										{
+											"name": "Signal",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -713,6 +713,31 @@
 									"name": "sleitnick_component@2.4.5",
 									"className": "Folder",
 									"children": [
+										{
+											"name": "component",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "init.spec",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
+													]
+												},
+												{
+													"name": "wally",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
+													]
+												}
+											],
+											"filePaths": [
+												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
+											]
+										},
 										{
 											"name": "Promise",
 											"className": "ModuleScript",
@@ -744,31 +769,6 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_component@2.4.5/Trove.lua"
 											]
-										},
-										{
-											"name": "component",
-											"className": "ModuleScript",
-											"children": [
-												{
-													"name": "init.spec",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
-													]
-												},
-												{
-													"name": "wally",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
-													]
-												}
-											],
-											"filePaths": [
-												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
-											]
 										}
 									],
 									"filePaths": [
@@ -785,14 +785,6 @@
 											"children": [],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/Comm.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										},
 										{
@@ -834,6 +826,14 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/knit/init.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										}
 									],
@@ -880,14 +880,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "Trove",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
-											]
-										},
-										{
 											"name": "shake",
 											"className": "ModuleScript",
 											"children": [
@@ -910,6 +902,14 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_shake@0.1.7/shake/init.lua"
+											]
+										},
+										{
+											"name": "Trove",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
 											]
 										}
 									],
@@ -1171,19 +1171,6 @@
 											"filePaths": [],
 											"children": [
 												{
-													"name": "Normal",
-													"className": "TextLabel",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
 													"name": "Container",
 													"className": "CanvasGroup",
 													"filePaths": [],
@@ -1196,6 +1183,38 @@
 																{
 																	"name": "Stroke",
 																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "SmallPointInjury",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "NPCStreakAdd",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																},
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
 																	"filePaths": [],
 																	"children": []
 																}
@@ -2251,6 +2270,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Classes/Quest.lua"
+											]
+										},
+										{
+											"name": "QuestBoard",
+											"className": "Folder",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Classes/QuestBoard"
 											]
 										}
 									],
@@ -3635,6 +3662,14 @@
 									],
 									"filePaths": [
 										"Scripts/StarterPlayerScripts/Other"
+									]
+								},
+								{
+									"name": "UIModules",
+									"className": "Folder",
+									"children": [],
+									"filePaths": [
+										"Scripts/StarterPlayerScripts/UIModules"
 									]
 								}
 							],

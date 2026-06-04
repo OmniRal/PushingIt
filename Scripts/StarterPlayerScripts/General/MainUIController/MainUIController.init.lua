@@ -110,6 +110,31 @@ local function SetCounter()
             Num.Parent = Index.Container
         end
 
+        local SpinThread: thread?
+
+        Index:SetAttribute("Goal", -1)
+        Index:GetAttributeChangedSignal("Goal"):Connect(function()
+            local Goal = Index:GetAttribute("Goal")
+            if Goal < 0 then
+                return 
+            end
+
+            Index:SetAttribute("Goal", -1)
+
+            if SpinThread then
+                task.cancel(SpinThread)
+            end
+
+            SpinThread = task.spawn(function()
+                for _ = 1, 10 do
+                    TweenService:Create(Index.Container, TweenInfo.new(0.03, Enum.EasingStyle.Linear), {Position = UDim2.fromScale(0, -9)}):Play()
+                    task.wait(0.03)
+                    Index.Container.Position = UDim2.fromScale(0, 0)
+                end
+                TweenService:Create(Index.Container, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, -Goal)}):Play()
+            end)
+        end)
+
         table.insert(Indexes, Index)
     end
 
@@ -117,10 +142,14 @@ local function SetCounter()
         local Score = Counter:GetAttribute("Score")
         local Len = string.len(Score)
         local Text = ""
+
+        local LastLen = string.len(LastScore)
+        local LastText = ""
+
         local Hop = false
 
         if Score > LastScore then
-            Hop = true
+            --Hop = true
         end
 
         if Len < 10 then
@@ -129,7 +158,14 @@ local function SetCounter()
             end
         end
 
+        if LastLen < 10 then
+            for _ = 1, 10 - LastLen do
+                LastText = LastText .. "0"
+            end
+        end
+
         Text = Text .. tostring(Score)
+        LastText = LastText .. tostring(LastScore)
 
         if Hop then
             if UpTween then UpTween:Pause() UpTween:Destroy() UpTween = nil end
@@ -152,11 +188,25 @@ local function SetCounter()
         end
 
         for n, Index in ipairs(Indexes) do
-            local Pos = string.sub(Text, n, n)
+            
+            local ThisNumFromLast = string.sub(Text, n - 1, n - 1)
+            local NextNumFromLast = string.sub(LastText, n - 1, n - 1)
+            local ThisNum = string.sub(Text, n, n)
+            local Pos = tonumber(ThisNum)
 
-            TweenService:Create(Index.Container, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
-                Position = UDim2.fromScale(0, -Pos)
-            }):Play()
+            local Spin = false
+            if ThisNumFromLast and NextNumFromLast and ThisNumFromLast ~= NextNumFromLast then
+                Spin = true
+            end
+
+            if Spin then
+                Index:SetAttribute("Goal", Pos)
+            else
+                Index:SetAttribute("Goal", -1)
+                TweenService:Create(Index.Container, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+                    Position = UDim2.fromScale(0, -Pos)
+                }):Play()
+            end
         end
     end)
 end
