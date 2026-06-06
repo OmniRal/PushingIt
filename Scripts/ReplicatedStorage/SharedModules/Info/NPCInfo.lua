@@ -1,6 +1,7 @@
 -- OmniRal
 
 export type NPCRariry = "Common" | "Rare"
+export type NPCMovement = "Roam" | "Stationary"
 
 local SkinTones = {
     
@@ -26,7 +27,7 @@ local NPCInfo: {
             Shirt: number?,
             Pants: number?,
 
-            Movement: "Roam" | "Stationary",
+            Movement: NPCMovement,
         }
     }
 } = {}

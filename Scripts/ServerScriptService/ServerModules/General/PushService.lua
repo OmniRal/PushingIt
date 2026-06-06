@@ -26,7 +26,7 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local PUSH_RANGE = 7
-local RESET_NPC = true -- Puts the NPC back to its original position after pushed; good for testing
+local RESET_NPC = false -- Puts the NPC back to its original position after pushed; good for testing
 local BASE_POWER = 75
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -112,13 +112,13 @@ function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
             Model:SetAttribute("StartOriginCF", OriginCF)
         end
 
-        if not RESET_NPC then return end
         
         task.wait(5)
-
-        Model:SetAttribute("Locked", true)
+        
         Model:SetAttribute("Ragdoll", false)
-
+        
+        if not RESET_NPC then return end
+        Model:SetAttribute("Locked", true)
         task.wait()
 
         Model.PrimaryPart.Anchored = true

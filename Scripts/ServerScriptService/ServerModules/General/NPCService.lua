@@ -9,6 +9,7 @@ local NPCService = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
+local RemoteCursorService = game:GetService("RemoteCursorService")
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -39,9 +40,24 @@ local SpawnNames: {[string]: {CFrame}} = {}
 
 local NPCs: {
     [Model]: {
-        Dead: boolean
+        Name: string,
+        Movement: NPCInfo.NPCMovement,
+
+        Human: Humanoid,
+
+        GoalNode: string,
+        GoalPoint: CFrame, -- Which point the NPC should walk to
+        ReachedPoint: false, -- If they've reached that point
+        GoToNextPointAt: number,  -- After reaching the point, pick when to walk to a new point
+        
+        Dead: boolean,
     }
 } = {}
+
+local Nodes: {
+    [string]: {Pos: Vector3, Connections: {string}}
+} = {}
+
 local NPCFolder: Folder
 
 local RunThread: thread?
@@ -53,11 +69,16 @@ local RNG = Random.new()
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Get all the NPC spawns in the world
 local function GetSpawnPoints()
+    table.clear(SpawnPoints)
+    table.clear(SpawnNames)
+
     for _, Spawn: BasePart in CollectionService:GetTagged("NPCSpawn") do
         if not Spawn then continue end
-        table.insert(SpawnPoints, Spawn.CFrame)
+        table.insert(SpawnPoints, Spawn.CFrame) -- Add the raw cframe
 
+        -- Group spawn points with the same name
         local BaseName = string.sub(Spawn.Name, 10, string.len(Spawn.Name))
         if not SpawnNames[BaseName] then
             SpawnNames[BaseName] = {Spawn.CFrame}
@@ -69,10 +90,74 @@ local function GetSpawnPoints()
     end
 end
 
+-- Get all the path nodes in the world
+local function GetPathNodes()
+    table.clear(Nodes)
+
+    local List: {BasePart} = {}
+
+    -- Name all the nodes first
+    for n, Node in Workspace.PathNodes:GetChildren() do
+        Node.Name = "N_" .. n
+        table.insert(List, Node)
+    end
+
+    -- Set up connections
+    for _, Node in List do
+        Nodes[Node.Name] = {
+            Pos = Node.Position,
+            Connections = {},
+        }
+
+        -- Get the other nodes this node is connected to
+        for _, Connection in Node:GetChildren() do
+            if not Connection:IsA("Beam") then continue end
+            table.insert(Nodes[Node.Name].Connections, Connection.Attachment1.Parent.Name)
+        end
+    end
+
+    -- Destroy all the nodes in workspace
+    for _, Node in List do
+        --Node:Destroy()
+    end
+
+    warn(Nodes)
+end
+
+-- Find the closest node to a position
+local function FindClosestNode(FromHere: Vector3): (string?, number?)
+    local ChosenNode = nil
+    local LastDistance = 1000
+    
+    for Node, Data in Nodes do
+        if not Node or not Data then continue end
+        if not Data.Pos then continue end
+        local Distance = (Data.Pos - FromHere).Magnitude
+        if Distance > LastDistance then continue end
+
+        ChosenNode = Node
+        LastDistance = Distance
+    end
+
+    if not ChosenNode then return end
+
+    return ChosenNode, LastDistance
+end
+
+local function PickNodeFromConnections(Node: string): string
+    local Data = Nodes[Node]
+
+    return Data.Connections[RNG:NextInteger(1, #Data.Connections)]
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Spawn in an NPC
+-- @ThisPoint = Where to spawn; can be a CFrame or a spawn points name
+-- @Rarity = Which rarity of NPC it should pick from
+-- @Name = Optionally spawn in a very specific NPC
 function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry?, Name: string?)
     if not ThisPoint then
         ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
@@ -85,9 +170,12 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
         end
     end
 
-    local Info = NPCInfo.Common.John
+    local NPCName = Name or "John"
+
+    local Info = NPCInfo.Common[NPCName]
 
     local NewNPC = Assets.Misc.BaseNPC:Clone()
+    NewNPC.Name = NPCName
     
     local Description = Instance.new("HumanoidDescription")
     Description.Face = Info.FaceID
@@ -119,8 +207,24 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 
     NewNPC:PivotTo(ThisPoint)
 
+    local GoalNode = ""
+    local GoalPoint = Vector3.new(0, 0, 0)
+    if Info.Movement == "Roam" then
+        GoalNode, GoalPoint = FindClosestNode(NewNPC:GetPivot().Position)
+    end
+
     NPCs[NewNPC] = {
-        Dead = false
+        Name = NPCName or "John",
+        Movement = Info.Movement,
+
+        Human = NewNPC.Humanoid,
+
+        GoalNode = GoalNode,
+        GoalPoint = GoalPoint,
+        ReachedPoint = true,
+        GoToNextPointAt = 0,
+        
+        Dead = false,
     }
 
     RagdollService.SetRagdoll(NewNPC)
@@ -137,6 +241,30 @@ function NPCService.Run()
     RunThread = task.spawn(function()
         while true do
             task.wait(1)
+
+            for Model, Data in NPCs do
+                if not Model or not Data then continue end
+                
+                if Data.Movement == "Stationary" then continue end
+
+                if Data.ReachedPoint then
+                    if os.clock() < Data.GoToNextPointAt then continue end
+                    
+                    local NextNode = PickNodeFromConnections(Data.GoalNode)
+                    Data.GoalNode = NextNode
+                    Data.GoalPoint = Nodes[NextNode].Pos
+                    Data.ReachedPoint = false
+                    Data.Human:MoveTo(Data.GoalPoint)
+                else
+                    Data.Human:MoveTo(Data.GoalPoint)
+
+                    local Distance = (Model:GetPivot().Position - Data.GoalPoint).Magnitude
+                    if Distance > 5 then continue end
+
+                    Data.ReachedPoint = true
+                    Data.GoToNextPointAt = os.clock() + RNG:NextInteger(1, 3)
+                end
+            end
         end
     end)
 end
@@ -147,9 +275,12 @@ end
 
 function NPCService:Deferred()
     GetSpawnPoints()
+    GetPathNodes()
 
     NPCService.Spawn("A")
     NPCService.Spawn("B")
+
+    NPCService.Run()
 end
 
 return NPCService
