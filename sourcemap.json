@@ -1176,19 +1176,6 @@
 													"filePaths": [],
 													"children": [
 														{
-															"name": "Normal",
-															"className": "TextLabel",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Stroke",
-																	"className": "UIStroke",
-																	"filePaths": [],
-																	"children": []
-																}
-															]
-														},
-														{
 															"name": "SmallPointInjury",
 															"className": "TextLabel",
 															"filePaths": [],

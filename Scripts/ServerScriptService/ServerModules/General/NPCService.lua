@@ -44,6 +44,8 @@ local NPCs: {
 } = {}
 local NPCFolder: Folder
 
+local RunThread: thread?
+
 local Assets = ServerStorage.Assets
 local RNG = Random.new()
 
@@ -122,6 +124,21 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
     }
 
     RagdollService.SetRagdoll(NewNPC)
+end
+
+function NPCService.Stop()
+    if not RunThread then return end
+    task.cancel(RunThread)
+end
+
+function NPCService.Run()
+    NPCService.Stop()
+
+    RunThread = task.spawn(function()
+        while true do
+            task.wait(1)
+        end
+    end)
 end
 
 function NPCService:Init()

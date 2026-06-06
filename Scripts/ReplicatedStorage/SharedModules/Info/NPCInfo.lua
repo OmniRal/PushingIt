@@ -25,6 +25,8 @@ local NPCInfo: {
             Hair: number?,
             Shirt: number?,
             Pants: number?,
+
+            Movement: "Roam" | "Stationary",
         }
     }
 } = {}
@@ -38,6 +40,8 @@ NPCInfo["Common"] = {
         Hair = 133599348957886,
         Shirt = 109896445568652,
         Pants = 91543195374013,
+
+        Movement = "Roam",
     }
 }
 
