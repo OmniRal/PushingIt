@@ -18,16 +18,15 @@ local Workspace = game:GetService("Workspace")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
-
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
-
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
+local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local USE_DEFAULT = true -- Set this to true when you want all NPCs to spawn as the one below
+local USE_DEFAULT = false -- Set this to true when you want all NPCs to spawn as the one below
 local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -40,6 +39,18 @@ local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a 
 
 local SpawnPoints: {CFrame} = {}
 local SpawnNames: {[string]: {CFrame}} = {}
+
+local RarityChances: {{Choice: string, Chance: number}} = {
+    {Choice = "Common", Chance = 10},
+    {Choice = "Rare", Chance = 5},
+    {Choice = "Epic", Chance = 2},
+    {Choice = "Legendary", Chance = 1},
+    {Choice = "Mythical", Chance = 0.1},
+}
+
+local NPCList: {
+    [string]: {string}
+} = {}
 
 local NPCs: {
     [Model]: {
@@ -173,10 +184,29 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
         end
     end
 
-    local Rarity = Rarity or DEFAULT_NPC.Rarity
-    local NPCName = Name or DEFAULT_NPC.Name
+    local NPCRarity: string
+    local NPCName: string
 
-    local Info = NPCInfo[Rarity][NPCName]
+    if not USE_DEFAULT then
+        if Rarity and Name then
+            -- Pick specific NPC chosen ONLY IF rarity and name fields BOTH exist
+            NPCRarity = Rarity
+            NPCName = Name
+
+        else
+            -- Pick random rarity ane name
+            NPCRarity = Roll.Pick(RarityChances) :: string
+            NPCName = NPCList[NPCRarity][RNG:NextInteger(1, #NPCList[NPCRarity])]
+        end
+    else
+        -- Go with default NPC
+        NPCRarity = DEFAULT_NPC.Rarity
+        NPCName = DEFAULT_NPC.Name
+    end
+
+    if not NPCRarity or not NPCName then return end
+
+    local Info = NPCInfo[NPCRarity][NPCName]
 
     local NewNPC = Assets.Misc.BaseNPC:Clone()
     NewNPC.Name = NPCName
@@ -286,6 +316,17 @@ function NPCService:Init()
 end
 
 function NPCService:Deferred()
+    -- Fill NPC list
+    for Rarity, List in NPCInfo do
+        if not NPCList[Rarity] then
+            NPCList[Rarity] = {}
+        end
+
+        for Name, _ in List do
+            table.insert(NPCList[Rarity], Name)
+        end
+    end
+
     GetSpawnPoints()
     GetPathNodes()
 
