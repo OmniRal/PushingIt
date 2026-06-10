@@ -27,6 +27,9 @@ local RagdollService = require(ServerScriptService.Source.ServerModules.General.
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local USE_DEFAULT = true -- Set this to true when you want all NPCs to spawn as the one below
+local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -170,15 +173,15 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
         end
     end
 
-    local NPCName = Name or "John"
+    local Rarity = Rarity or DEFAULT_NPC.Rarity
+    local NPCName = Name or DEFAULT_NPC.Name
 
-    local Info = NPCInfo.Common[NPCName]
+    local Info = NPCInfo[Rarity][NPCName]
 
     local NewNPC = Assets.Misc.BaseNPC:Clone()
     NewNPC.Name = NPCName
     
     local Description = Instance.new("HumanoidDescription")
-    Description.Face = Info.FaceID
     
     Description.HeadColor = Info.HeadColor or Info.SkinColor
     Description.TorsoColor = Info.TorsoColor or Info.SkinColor
@@ -186,9 +189,18 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
     Description.RightArmColor = Info.RightArmColor or Info.SkinColor
     Description.LeftLegColor = Info.LeftLegColor or Info.SkinColor
     Description.RightLegColor = Info.RightLegColor or Info.SkinColor
+    
+    Description.Face = Info.FaceID
 
     Description.HatAccessory = Info.Hat or 0
     Description.HairAccessory = Info.Hair or 0
+    Description.FaceAccessory = Info.Face or 0
+    Description.NeckAccessory = Info.Neck or 0
+    Description.ShouldersAccessory = Info.Shoulder or 0
+    Description.FrontAccessory = Info.Front or 0
+    Description.BackAccessory = Info.Back or 0
+    Description.WaistAccessory = Info.Waist or 0
+    
     Description.Shirt = Info.Shirt or 0
     Description.Pants = Info.Pants or 0
 
