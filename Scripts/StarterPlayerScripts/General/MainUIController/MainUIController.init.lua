@@ -219,7 +219,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainUIController.SetCounter(To: number)
+function MainUIController.UpdateCounter(To: number)
     Counter:SetAttribute("Score", To)
 end
 
