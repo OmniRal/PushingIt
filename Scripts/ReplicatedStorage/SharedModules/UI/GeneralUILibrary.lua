@@ -15,12 +15,12 @@ local Workspace = game:GetService("Workspace")
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-local UIBasics = require(ReplicatedStorage.Source.SharedModules.UI.UIBasics)
+local UI_Info = require(ReplicatedStorage.Source.SharedModules.UI.UI_Info)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local BASE_TWEEN_TIME = UIBasics.BaseTweenTime
+local ANIM_TIME = UI_Info.BaseAnimTime
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ function GeneralUILibrary:UpdateUIBlur(PlayerGui: PlayerGui)
 	end
 
 	if Lighting.UIBlur.Size == NewSize then return end
-	TweenService:Create(Lighting.UIBlur, TweenInfo.new(BASE_TWEEN_TIME, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = NewSize}):Play()
+	TweenService:Create(Lighting.UIBlur, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = NewSize}):Play()
 end
 
 function GeneralUILibrary:SpawnSparkle(Parent: any, StartSize: NumberRange, FinishSize: NumberRange?, RaiseAmount: NumberRange?, Lifetime: NumberRange)
@@ -332,16 +332,16 @@ function GeneralUILibrary:UpdateBar(Current: number, Max: number, Bar: Frame, Wh
 
     local LastMax = Bar:GetAttribute("LastMax") or Max
     local LastCurrent = Bar:GetAttribute("LastCurrent") or Max
-    WhiteBarDelay = WhiteBarDelay or UIBasics.WhiteBarDelay
+    WhiteBarDelay = WhiteBarDelay or UI_Info.WhiteBarDelay
 
 	if not Instant then
-		TweenService:Create(Bar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+		TweenService:Create(Bar, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
 
 		if LastMax == Max and WhiteBar then
 			if Current < LastCurrent then
-				TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+				TweenService:Create(WhiteBar, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
 			else
-				TweenService:Create(WhiteBar, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
+				TweenService:Create(WhiteBar, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(math.clamp(Current / Max, 0, 1), 1)}):Play()
 			end
 		end
 	
@@ -387,16 +387,16 @@ function GeneralUILibrary:UpdateBarPercent(Current: number, Max: number, BarPerc
 
     local LastMax = BarPercent:GetAttribute("LastMax") or Max
     local LastCurrent = BarPercent:GetAttribute("LastCurrent") or Max
-    WhiteBarDelay = WhiteBarDelay or UIBasics.WhiteBarDelay
+    WhiteBarDelay = WhiteBarDelay or UI_Info.WhiteBarDelay
 
-    TweenService:Create(BarPercent, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), 
+    TweenService:Create(BarPercent, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear), 
 	{Value = Current / Max}):Play()
 
     if LastMax == Max then
         if Current < LastCurrent then
-            TweenService:Create(WhitePercent, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Value = Current / Max}):Play()
+            TweenService:Create(WhitePercent, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, WhiteBarDelay), {Value = Current / Max}):Play()
         else
-            TweenService:Create(WhitePercent, TweenInfo.new(BASE_TWEEN_TIME / 2, Enum.EasingStyle.Linear), {Value = Current / Max}):Play()
+            TweenService:Create(WhitePercent, TweenInfo.new(ANIM_TIME / 2, Enum.EasingStyle.Linear), {Value = Current / Max}):Play()
         end
     end
 

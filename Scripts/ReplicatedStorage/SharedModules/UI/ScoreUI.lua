@@ -1,20 +1,31 @@
 -- OmniRal
 
-local PointCounter = {}
+local ScoreUI = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local UI_Info = require(ReplicatedStorage.Source.SharedModules.UI.UI_Info)
+local PropertyVals = require(ReplicatedStorage.Source.SharedModules.UI.Components.PropertyVals)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local ANIM_TIME = UI_Info.BaseAnimTime
+local TWEEN_STYLE = UI_Info.BaseTweenStyle
+local TWEEN_DIR = UI_Info.BaseTweenDir
+
+local ON_POSITION = UDim2.fromScale(0.05, 0.8)
+local OFF_POSITION = UDim2.fromScale(0.05, 1.1)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -25,70 +36,100 @@ local TweenService = game:GetService("TweenService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local LastScore = 0
+local Indexes: {Frame} = {}
 
-local Indexes = {}
+local Display: any
 
-local Counter: CanvasGroup
-local UpTween: Tween?
-local DownTween: Tween?
+local BounceThread: thread?
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function UpdateCounter()
-	local Score = Counter:GetAttribute("Score")
-	local Len = string.len(Score)
-	local Text = ""
+local function ToggleEnabled()
+	local GoalPosition, GoalTransparency = ON_POSITION, 0
+	local EasingStyle, EasingDirection = Enum.EasingStyle.Back, Enum.EasingDirection.Out
+	
+	if Display:GetAttribute("Enabled") then
+		Display.Visible = true
+	else
+		GoalPosition = OFF_POSITION
+		GoalTransparency = 1
 
-	local LastLen = string.len(LastScore)
-	local LastText = ""
-
-	local Hop = false
-
-	if Score > LastScore then
-		Hop = true
+		EasingStyle = TWEEN_STYLE
+		EasingDirection = TWEEN_DIR
 	end
 
+	TweenService:Create(Display, TweenInfo.new(ANIM_TIME, EasingStyle, EasingDirection), {Position = GoalPosition}):Play()
+	TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 2, TWEEN_STYLE, TWEEN_DIR), {GroupTransparency = GoalTransparency}):Play()
+	
+end
+
+-- Whenever the spinning attribute for this index changes
+local function CheckShouldBounce()
+	
+	local TotalSpinning = 0
+	for _, OtherIndex in Indexes do
+		if not OtherIndex then continue end
+		if not OtherIndex:GetAttribute("Spinning") then continue end
+		-- check if other indexes are spinning
+		TotalSpinning += 1
+	end
+	
+	-- If 0 are spinning then no bouncing; otherwise bounce
+	Display:SetAttribute("Bouncing", if TotalSpinning > 0 then true else false)
+end
+
+local function UpdateBouncing()
+	if BounceThread  then
+		task.cancel(BounceThread)
+		BounceThread = nil
+	end
+	
+	if Display:GetAttribute("Bouncing") then
+		BounceThread = task.spawn(function()
+			while true do
+				TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 8, TWEEN_STYLE, Enum.EasingDirection.In), {Position = UDim2.fromScale(0.5, 0.45)}):Play()
+				task.wait(ANIM_TIME / 8)
+				TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
+				task.wait(ANIM_TIME / 4)
+				
+				CheckShouldBounce()
+			end
+		end)
+	else
+		TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 2, TWEEN_STYLE, TWEEN_DIR), {Position = UDim2.fromScale(0.5, 0.5)}):Play()
+	end
+end
+
+local function UpdateScore()
+	local Score = Display:GetAttribute("Score")
+	local Len, LastLen = string.len(Score), string.len(LastScore)
+	local Text, LastText = "", ""
+	
 	if Len < 10 then
 		for _ = 1, 10 - Len do Text = Text .. "0" end
 	end
-
+	
 	if LastLen < 10 then
 		for _ = 1, 10 - LastLen do LastText = LastText .. "0" end
 	end
-
+	
 	Text = Text .. tostring(Score)
 	LastText = LastText .. tostring(LastScore)
-
-	if Hop then
-		if UpTween then UpTween:Pause(); UpTween:Destroy(); UpTween = nil end
-		if DownTween then DownTween:Pause(); DownTween:Destroy(); DownTween = nil end
-
-		Counter.Position = UDim2.fromScale(0.05, 0.85)
-
-		UpTween = TweenService:Create(Counter, TweenInfo.new(0.05, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.05, 0.825)})
-		DownTween = TweenService:Create(Counter, TweenInfo.new(0.3, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0.05, 0.85)})
-
-		if not UpTween or not DownTween then return end -- Stupid LLP
-
-		UpTween.Completed:Connect(function() DownTween:Play() end)
-		DownTween.Completed:Connect(function() UpTween = nil; DownTween = nil end)
-
-		UpTween:Play()
-	end
-
+	
+	-- Start changing the numbers in each column
 	for n, Index in ipairs(Indexes) do
 		local ThisNumFromLast = string.sub(Text, n - 1, n - 1)
 		local NextNumFromLast = string.sub(LastText, n - 1, n - 1)
 		local ThisNum = string.sub(Text, n, n)
 		local Pos = tonumber(ThisNum)
-
+		
 		local Spin = false
 		if ThisNumFromLast and NextNumFromLast and ThisNumFromLast ~= NextNumFromLast then
 			Spin = true
 		end
-
+		
 		if Spin then
 			Index:SetAttribute("Goal", Pos)
 		else
@@ -102,47 +143,49 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function PointCounter.SetCounter(Gui: ScreenGui)
+-- Init
+function ScoreUI.Setup(Gui: ScreenGui)
 	if not Gui then return end
-
-	Counter = Gui:FindFirstChild("Counter") :: CanvasGroup
-	if not Counter then return end
-
-	local Inner = Counter:FindFirstChild("Index")
-	if not Inner then return end
-
-	Counter:SetAttribute("Score", 0)
-	Counter.Visible = true
+	
+	Display = Gui:FindFirstChild("ScoreDisplay") :: Frame
+	if not Display then return end
+	
+	Display:SetAttribute("Enabled", false)
+	Display:SetAttribute("Bouncing", false)
+	Display:SetAttribute("Score", 0)
+	
+	Display.Position = OFF_POSITION
+	Display.Visible = true
 
 	for x = 1, 10 do
-		local Index = Inner.OG_Index:Clone()
+		-- Add individual number columns
+		local Index = Display.Counter.Inner.OG_Index:Clone()
 		Index.Name = "Index_" .. x
 		Index.Position = UDim2.fromScale((x / 10) - 0.1, 0)
 		Index.Visible = true
-		Index.Parent = Inner
-
+		Index.Parent = Display.Counter.Inner
+		
+		-- Make sure each column has 0 - 9
 		for y = 1, 9 do
 			local Num = Index.Container.Num:Clone()
 			Num.Text = y
 			Num.Position = UDim2.fromScale(0, y)
 			Num.Parent = Index.Container
 		end
-
-		local SpinThread: thread?
-
+		
+		local SpinThread: thread? -- Gives the appearence of the column Bouncing like a slot machine
+		
 		Index:SetAttribute("Goal", -1)
+		Index:SetAttribute("Spinning", false)
+		
 		Index:GetAttributeChangedSignal("Goal"):Connect(function()
 			local Goal = Index:GetAttribute("Goal")
-			if Goal < 0 then
-				return
-			end
-
+			if Goal < 0 then return end
+			
 			Index:SetAttribute("Goal", -1)
-
-			if SpinThread then
-				task.cancel(SpinThread)
-			end
-
+			Index:SetAttribute("Spinning", true)
+			
+			if SpinThread then task.cancel(SpinThread) end
 			SpinThread = task.spawn(function()
 				for _ = 1, 10 do
 					TweenService:Create(Index.Container, TweenInfo.new(0.03, Enum.EasingStyle.Linear), {Position = UDim2.fromScale(0, -9)}):Play()
@@ -151,15 +194,39 @@ function PointCounter.SetCounter(Gui: ScreenGui)
 				end
 				
 				TweenService:Create(Index.Container, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.fromScale(0, -Goal)}):Play()
+				Index:SetAttribute("Spinning", false)
 			end)
 		end)
-
+		
+		
+		Index:GetAttributeChangedSignal("Spinning"):Connect(function()
+			CheckShouldBounce()
+		end)
+		
 		table.insert(Indexes, Index)
 	end
+	
+	Display:GetAttributeChangedSignal("Enabled"):Connect(function()
+		ToggleEnabled()
+	end)
+	
+	-- Whole display bounces up a little really quick
+	Display:GetAttributeChangedSignal("Bouncing"):Connect(function()
+		UpdateBouncing()
+	end)
+	
+	Display:GetAttributeChangedSignal("Score"):Connect(function()
+		UpdateScore()
+	end)
 
-	Counter:GetAttributeChangedSignal("Score"):Connect(function()
-		UpdateCounter()
+	Display.Counter:GetPropertyChangedSignal("GroupTransparency"):Connect(function()
+		Display.Counter.Stroke.Transparency = Display.Counter.GroupTransparency
 	end)
 end
 
-return PointCounter
+-- Change the number
+function ScoreUI.UpdatePoints(To: number)
+	Display:SetAttribute("Score", To)
+end
+
+return ScoreUI

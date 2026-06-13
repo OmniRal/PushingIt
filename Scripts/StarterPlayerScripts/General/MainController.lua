@@ -270,7 +270,7 @@ function MainController:Deferred()
 
     PushService.ScoreUp:Connect(function(Add: number)
         CurrentPoints += Add
-        MainUIController.SetCounter(CurrentPoints)
+        MainUIController.UpdateCounter(CurrentPoints)
     end)
 end
 

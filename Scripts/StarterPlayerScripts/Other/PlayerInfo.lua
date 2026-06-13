@@ -26,4 +26,7 @@ PlayerInfo.Grounded = {
 
 PlayerInfo.UnitValues = nil
 
+PlayerInfo.CurrentPoints = 0
+PlayerInfo.CurrentStreak = 0 
+
 return PlayerInfo

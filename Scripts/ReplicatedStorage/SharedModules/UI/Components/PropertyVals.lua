@@ -1,31 +1,14 @@
 -- OmniRal
 
-local MainUIController = {}
+local PropertyVals = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local StarterPlayer = game:GetService("StarterPlayer")
-local UserInputService = game:GetService("UserInputService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
-
-
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
-
-local ScoreUI = require(ReplicatedStorage.Source.SharedModules.UI.ScoreUI)
-
---local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -35,74 +18,64 @@ local ScoreUI = require(ReplicatedStorage.Source.SharedModules.UI.ScoreUI)
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local VisualService = Remotes.VisualService
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-MainUIController.Menu = "None"
-
-local LocalPlayer = Players.LocalPlayer
-
-local Gui: ScreenGui
-
-local Assets = ReplicatedStorage.Assets
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function CreateNewGui()
-    Gui = Assets.UIs.MainGui:Clone()
-    Gui.Parent = LocalPlayer.PlayerGui
-
-    task.spawn(function()
-        for x = 1, 20 do
-            task.wait(0.2)
-            for _, OldGui in LocalPlayer.PlayerGui:GetChildren() do
-                if not OldGui then continue end
-                if OldGui.Name == "MainGui" and OldGui ~= Gui then
-                    OldGui:Destroy()
-                end
-            end
-        end
-    end)
-end
-
-local function SetupGui()
-    ScoreUI.Setup(Gui)
-end
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainUIController.UpdateCounter(To: number)
-    ScoreUI.UpdatePoints(To)
+-- Creates a separate number value to tween the transparency of UI
+-- @This = Typically would be a canvas group or a frame, but tehcnically can be anything with transparency
+-- @Property = Optional to pick a specific property
+-- @StartingValue = Optional starting value
+-- @Name = Optional alternative name for the value
+function PropertyVals.AddTransparencyVal(This: any, Property: string?, StartingValue: number?, Name: string?)
+	if not This then warn(This, "does not exist!"); return end
+	
+	local ThisProperty = Property
+	
+	-- If no property provided, use a default one
+	if not Property then
+		if This:IsA("CanvasGroup") then
+			ThisProperty = "GroupTransparency"
+		elseif This:IsA("Frame") then
+			ThisProperty = "BackgroundTransparency"
+		end
+	end
+	
+	if not This[ThisProperty] then warn(Property, "does not exist on ", This); return end
+	
+	local Val = Instance.new("NumberValue")
+	Val.Name = Name or "TransparencyVal"
+	Val.Value = StartingValue or This[Property]
+	Val.Parent = This
+
+	Val.Changed:Connect(function()
+		if not This or not ThisProperty then return end
+		if not This[ThisProperty] then return end
+		This[ThisProperty] = Val.Value
+	end)
 end
 
-function MainUIController.SetCharacter()
-    if not LocalPlayer.Character then return end
+-- Creates a separate color3 value to control a canvas groups groupcolor3
+function PropertyVals.AddGroupColorVal(Canvas: CanvasGroup, StartingValue: Color3?, Name: string?)
+	if not Canvas then warn(Canvas, "does not exist!"); return end
+	
+	local Val = Instance.new("Color3Value")
+	Val.Name = Name or "GroupColorVal"
+	Val.Value = StartingValue or Canvas.GroupColor3
+	Val.Parent = Canvas
+	
+	Val.Changed:Connect(function()
+		if not Canvas then return end
+		Canvas.GroupColor3 = Val.Value
+	end)
 end
 
-function MainUIController.RunHeartbeat(DeltaTime: number)
-end
-
-function MainUIController:Init()
-    CreateNewGui()
-end
-
-function MainUIController:Deferred()
-    SetupGui()
-
-    DeviceController.CurrentDevice:Connect(function()
-        print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
-    end)
-
-    RunService.Heartbeat:Connect(function(DeltaTime: number)
-        MainUIController.RunHeartbeat(DeltaTime)
-    end)
-end
-
-return MainUIController
+return PropertyVals
