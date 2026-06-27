@@ -2,9 +2,6 @@
 
 local ServerGlobalValues = {}
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-
 ServerGlobalValues["AdminList"] = {
     {Name = "OmniRal", ID = 267421},
     {Name = "Blotnik", ID = 266280},
@@ -24,25 +21,6 @@ local List_4 = ServerGlobalValues.PlayerTestList
 --------------------------------------------------------------------------------------------
 
 ServerGlobalValues["CleanupAssetDump"] = true
-
-ServerGlobalValues["DefaultHistoryEntryCleanTime"] = 30
-ServerGlobalValues["RootWalkSpeed"] = 0.01
-ServerGlobalValues["SimpleDamage"] = true -- If enabled, there will not be multiple damage types.
-
---------------------------------------------------------------------------------------------
-
-ServerGlobalValues["StartLevelInfo"] = {
-    ID = 1,
-    ExpectedPlayers = List_1,
-    
-    TestingMode = false, -- Test a level in studip; does not load lobby. ID should be set to the desired level
-    TestWithoutPlayers = false, -- Test in studio without players; pressing RUN instead of PLAY SOLO,
-}
-ServerGlobalValues["InLevel"] = false
-ServerGlobalValues["LevelPlayers"] = {} :: {}
-ServerGlobalValues["PartyLeader"] = nil :: Player?
-ServerGlobalValues["CurrentLevel"] = nil :: LevelEnum.Level?
-ServerGlobalValues["AllowLevelRespawning"] = true -- If true, players can automatically respawn without needing to be revived (Only when in a level, not the lobby
 
 --------------------------------------------------------------------------------------------
 

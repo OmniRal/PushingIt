@@ -13,8 +13,8 @@ local TweenService = game:GetService("TweenService")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Global = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local UI_Info = require(ReplicatedStorage.Source.SharedModules.UI.UI_Info)
-local PropertyVals = require(ReplicatedStorage.Source.SharedModules.UI.Components.PropertyVals)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -40,6 +40,7 @@ local Indexes: {Frame} = {}
 
 local Display: any
 
+local FinalizeScoreThread: thread?
 local BounceThread: thread?
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -226,6 +227,16 @@ end
 
 -- Change the number
 function ScoreUI.UpdatePoints(To: number)
+	if FinalizeScoreThread then
+		task.cancel(FinalizeScoreThread)
+	end
+
+	FinalizeScoreThread = task.delay(Global.ScoreFinalizeTime, function()
+		Display:SetAttribute("Enabled", false)
+		Display:SetAttribute("Score", 0)
+	end)
+
+	Display:SetAttribute("Enabled", To)
 	Display:SetAttribute("Score", To)
 end
 
