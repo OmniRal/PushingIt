@@ -20,6 +20,7 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -39,8 +40,10 @@ local BASE_POWER = 75
 
 local PlayerVals: {
     [Player]: {
+		Started: number, -- Time score run was started
         Points: number,
-        Streak: number,
+        Streak: number, -- Amount of NPCs / players that have been pushed in a row
+		Multiplier: number,
         PushChargeStarted: number,
     }
 } = {}
@@ -67,6 +70,20 @@ local function CheckAliveAndClose(Root: BasePart, Model: Model): (boolean, BaseP
     if (FrontPos - OtherRoot.Position).Magnitude > PUSH_RANGE then return false end
 
     return true, OtherRoot
+end
+
+local function UpdatePlayerVals()
+	for _, ThisPlayer in Players:GetPlayers() do
+		if not ThisPlayer then continue end
+		local Vals = PlayerVals[ThisPlayer]
+		if not Vals then continue end
+
+		if Vals.Started <= 0 then continue end
+
+		if os.clock() < Vals.Started + SharedGlobalValues.ScoreFinalizeTime then continue end
+
+		PushService.ResetScore(ThisPlayer)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -111,7 +128,6 @@ function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
         if not Model:GetAttribute("StartOriginCF") then
             Model:SetAttribute("StartOriginCF", OriginCF)
         end
-
         
         task.wait(5)
         
@@ -150,7 +166,7 @@ function PushService.AttemptPush(Player: Player)
     if not Alive or not Root then return end
 
     local TimePassed = os.clock() - PVals.PushChargeStarted
-    local SecondPerGain = 1.4 - (PData.Speed * 0.2)
+    local SecondPerGain = 1.4 - (PData.ChargeSpeed * 0.2)
     local Level = math.clamp(math.floor(TimePassed / SecondPerGain), 1, 5)
     local Power = BASE_POWER * math.clamp(Level, 1, 6)
 
@@ -170,12 +186,51 @@ function PushService.AttemptPush(Player: Player)
     -- Then look for other players to push
 end
 
-function PushService.ScoreUp(ThesePlayers: {Player}, Add: number)
-    for _, Player in ThesePlayers do
-        if not PlayerVals then continue end
-        if not PlayerVals[Player] then continue end
-        PlayerVals[Player].Points += Add
+-- Add points for specific players
+-- @ThesePlayers = Which players should be affected
+-- @Add = How many points
+-- @MultiplierGain = How much the multiplier should go up by
+-- @PointPositions = Worldspace positions where the point originated from
+-- @KeepStartedTimeSame = If true, the Started time will NOT get set to os.clock(); which would reset the timer
+-- @IgnoreMultiplier = Does not add the multiplier to the final score to give
+function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, MultiplierGain: number?, PointPositions: {Vector3}?, KeepStartedTimeSame: boolean?, IgnoreMultiplier: boolean?)	
+	for n, ThisPlayer in ipairs(ThesePlayers) do
+		local Vals = PlayerVals[ThisPlayer]
+        if not Vals then continue end
+
+		if KeepStartedTimeSame ~= true then
+			Vals.Started = os.clock()
+			Vals.Streak += 1
+			Vals.Multiplier += MultiplierGain or 0
+
+			if MultiplierGain == SharedGlobalValues.MultiplierGainPerConsecutiveHit and PointPositions and PointPositions[n] then
+    			Remotes.WorldUIService.SpawnTextDisplay:Fire(ThisPlayer, "NPCStreakAdd", PointPositions[n], {Amount = SharedGlobalValues.BonusPointsPerConsecutiveHit})
+			end
+		end
+
+		local Final = PointGain
+		if IgnoreMultiplier ~= true then
+			Final = PointGain + (math.floor(PointGain * Vals.Multiplier))
+		end
+        Vals.Points += Final
+
+		Remotes.PushService.ScoreUp:Fire(ThisPlayer, Final)
     end
+end
+
+function PushService.ResetScore(ThisPlayer: Player)
+	if not ThisPlayer then return end
+
+	local Vals = PlayerVals[ThisPlayer]
+	if not Vals then return end
+
+	-- Add current points to grand total points
+	DataService.IncrementIndex(ThisPlayer, "Points", Vals.Points)
+
+	Vals.Started = 0 -- Means no score run
+	Vals.Points = 0
+	Vals.Streak = 0
+	Vals.Multiplier = 0
 end
 
 function PushService:Init()
@@ -195,13 +250,21 @@ function PushService:Init()
 end
 
 function PushService:Deferred()
+	task.spawn(function()
+		while true do
+			task.wait(1)
+			UpdatePlayerVals()
+		end
+	end)
 end
 
 function PushService.PlayerAdded(Player: Player)
     if PlayerVals[Player] then return end
     PlayerVals[Player] = {
+		Started = 0,
         Points = 0,
         Streak = 0,
+		Multiplier = 0,
         PushChargeStarted = 0
     }
 end

@@ -265,7 +265,7 @@ function MainController:Deferred()
     end)
 
     PushService.ScoreChanged:Connect(function(To: number)
-        PushService.ScoreChanged(To)
+
     end)
 
     PushService.ScoreUp:Connect(function(Add: number)

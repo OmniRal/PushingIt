@@ -17,9 +17,12 @@ local ServerScriptService = game:GetService("ServerScriptService")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local PushService = require(script.Parent.PushService)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
+
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+
+local PushService = require(ServerScriptService.Source.ServerModules.General.PushService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -147,8 +150,8 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     -- Get which players should get points
     local Pushers = PushService.GetPushers(Model)
     if Pushers then
-        Remotes.PushService.ScoreUp:Fire(Pushers, Velocity)
-        Remotes.WorldUIService.SpawnTextDisplay:Fire(Pushers, "Normal", BodyPart.Position, {Amount = Velocity})
+		PushService.ScoreUp(Pushers, Velocity, SharedGlobalValues.MultiplierGainPerHit)
+        --Remotes.WorldUIService.SpawnTextDisplay:Fire(Pushers, "Normal", BodyPart.Position, {Amount = Velocity})
     end
 
     local OtherRagdoll = Hit:FindFirstAncestorOfClass("Model")
@@ -158,7 +161,8 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     local Success = PushService.PushModel(nil, OtherRagdoll, Model)
     if not Success then return end
 
-    Remotes.WorldUIService.SpawnTextDisplay:Fire(Pushers, "NPCStreakAdd", BodyPart.Position, {Amount = 500})
+	-- If NPC knocked over another, give bonus points and increase streak
+	PushService.ScoreUp(Pushers, SharedGlobalValues.BonusPointsPerConsecutiveHit, SharedGlobalValues.MultiplierGainPerConsecutiveHit)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -274,6 +278,8 @@ function RagdollService.SetRagdoll(Model: Model)
                 TouchAdded = true
                 AddTouch = true
             end
+
+			local HitDebounce = false
             
             -- Make all the parts in the NPC collidable
             for _, Part in Model:GetChildren() do
@@ -285,15 +291,14 @@ function RagdollService.SetRagdoll(Model: Model)
 
                 if not AddTouch then continue end
 
-                local Debounce = false
                 Part.Touched:Connect(function(Hit: BasePart)
-                    if Debounce then return end
+                    if HitDebounce then return end
 
-                    Debounce = true
+                    HitDebounce = true
                     BodyPartHit(Model, Root, Part, Hit)
 
                     task.wait(0.25)
-                    Debounce = false
+                    HitDebounce = false
                 end)
             end
         end)

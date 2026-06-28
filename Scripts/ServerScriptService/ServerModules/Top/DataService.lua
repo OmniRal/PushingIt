@@ -29,20 +29,25 @@ local ProfileTemplate = {
 
     PlayStats = {
         TimePlayed = {Seconds = 0, Minutes = 0, Hours = 0, Days = 0},
-        Loot = 0,
     },
 
-    Level = 1,
     XP = 0,
+    Level = 1,
+	Points = 0,
 
     Skills = {
-        Power = 1,
-        Speed = 1,
+        ChargePower = 1,
+        ChargeSpeed = 1,
+		ChargeCooldown = 1,
+
+		DodgeRange = 1,
+		DodgeCooldown = 1,
+
         Luck = 1,
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_2', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_3', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
