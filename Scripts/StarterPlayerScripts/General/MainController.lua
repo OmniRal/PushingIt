@@ -11,7 +11,7 @@ local UserGameSettings = UserSettings().GameSettings
 local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
-local UserInputService = game:GetService("UserInputService")
+--local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -48,13 +48,12 @@ local RagdollService = Remotes.RagdollService
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
+--local Mouse = LocalPlayer:GetMouse()
 local Camera = Workspace.CurrentCamera
 
 local CharacterSetup = false
 
-local CurrentPoints = 0
-local CurrentlyPushing = false
+--local CurrentlyPushing = false
 
 local PushAnimationsList : {[string]: {ID: number, Priority: Enum.AnimationPriority, Looped: boolean?}} = {
 	["StartPush"] = {ID = 128311229502892, Priority = Enum.AnimationPriority.Action2},
@@ -67,8 +66,8 @@ GroundParams.FilterType = Enum.RaycastFilterType.Include
 GroundParams.FilterDescendantsInstances = {Workspace}
 GroundParams.IgnoreWater = true
 
-local Assets = ReplicatedStorage.Assets
-local RNG = Random.new()
+--local Assets = ReplicatedStorage.Assets
+--local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -135,23 +134,31 @@ end
 local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
     local Params = {...}
 
+	if Params then
+		print("")
+	end
+
     if Keyframe == "End" then
         if AnimName == "StartPush" then
             AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "ChargePush", false, 1)
         
         elseif AnimName == "FinishPush" then
-            CurrentlyPushing = false
+            --CurrentlyPushing = false
+			print("")
         end
 
     elseif Keyframe == "Push" then
-       PushService:AttemptPush() 
+       PushService:AttemptPush()
+	   MainUIController.ControlPushBar("StopAndHide")
     end
 end
 
-local function AttemptPush(_, State: Enum.UserInputState, Object: InputObject)
+local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
     if State == Enum.UserInputState.Begin then
         PushService:StartPushCharge()
+		MainUIController.ControlPushBar("Start")
         AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "StartPush", false, 1, PushAnimFunc)
+
     elseif State == Enum.UserInputState.End then
         AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "FinishPush", false, 1, PushAnimFunc)
     end
@@ -208,7 +215,7 @@ function MainController.SetCharacter()
         end
     end)
 
-    PlayerInfo.Human.StateChanged:Connect(function(Old: Enum.HumanoidStateType, New: Enum.HumanoidStateType)
+    PlayerInfo.Human.StateChanged:Connect(function(_: Enum.HumanoidStateType, New: Enum.HumanoidStateType)
         if New == Enum.HumanoidStateType.Jumping or New == Enum.HumanoidStateType.Freefall then
             return
         end
@@ -249,6 +256,7 @@ function MainController:Init()
     MainController.TogglePushControls(true)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
+		if not DeltaTime then return end
         MainController:RunHeartbeat()
     end)
 end
@@ -265,12 +273,11 @@ function MainController:Deferred()
     end)
 
     PushService.ScoreChanged:Connect(function(To: number)
-
+		print(To)
     end)
 
     PushService.ScoreUp:Connect(function(Add: number)
-        CurrentPoints += Add
-        MainUIController.UpdateCounter(CurrentPoints)
+        PlayerInfo.CurrentPoints += Add
     end)
 end
 

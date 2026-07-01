@@ -1,126 +1,127 @@
 -- OmniRal
 
-local MainUIController = {}
+local PushChargeBarUI = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local StarterPlayer = game:GetService("StarterPlayer")
---local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
---local TweenService = game:GetService("TweenService")
+local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
-
---local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
-local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
-local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-
-local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
-local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
-
---local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
+--local Global = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local ANIM_TIME = UI_Info.BaseAnimTime
+local TWEEN_STYLE = UI_Info.BaseTweenStyle
+local TWEEN_DIR = UI_Info.BaseTweenDir
+
+local ON_POSITION = UDim2.fromScale(0.5, 0.7)
+local OFF_POSITION = UDim2.fromScale(0.5, 0.75)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
---local VisualService = Remotes.VisualService
-local PushService = Remotes.PushService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-MainUIController.Menu = "None"
+local DelayToggleThread: thread?
 
-local LocalPlayer = Players.LocalPlayer
+local ToggleTween: any
+local ChargeTween: any
 
-local Gui: ScreenGui
-
-local Assets = ReplicatedStorage.Assets
+local Bar: any
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function CreateNewGui()
-    Gui = Assets.UIs.MainGui:Clone()
-    Gui.Parent = LocalPlayer.PlayerGui
+local function ToggleEnabled()
+	local GoalPosition, GoalTransparency = ON_POSITION, 0
+	local EasingStyle, EasingDirection = Enum.EasingStyle.Back, Enum.EasingDirection.Out
+	
+	if Bar:GetAttribute("Enabled") then
+		Bar.Visible = true
+	else
+		GoalPosition = OFF_POSITION
+		GoalTransparency = 1
 
-    task.spawn(function()
-        for _ = 1, 20 do
-            task.wait(0.2)
-            for _, OldGui in LocalPlayer.PlayerGui:GetChildren() do
-                if not OldGui then continue end
-                if OldGui.Name == "MainGui" and OldGui ~= Gui then
-                    OldGui:Destroy()
-                end
-            end
-        end
-    end)
-end
+		EasingStyle = TWEEN_STYLE
+		EasingDirection = TWEEN_DIR
+	end
 
-local function SetupGui()
-    ScoreDisplayUI.Setup(Gui)
-	PushChargeBarUI.Setup(Gui)
+	if ToggleTween then ToggleTween:Pause(); ToggleTween:Destroy(); ToggleTween = nil end
+
+	ToggleTween = TweenService:Create(Bar, TweenInfo.new(ANIM_TIME, EasingStyle, EasingDirection), {Position = GoalPosition, GroupTransparency = GoalTransparency}) :: Tween
+	ToggleTween.Completed:Connect(function() 
+		if not ToggleTween then return end
+		if Bar:GetAttribute("Enabled") then return end
+		Bar.Visible = false
+	end)
+
+	ToggleTween:Play()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainUIController.ControlPushBar(Action: "Start" | "Stop" | "StopAndHide")
-	if Action == "Start" then
-		PushChargeBarUI.StartCharge(PlayerInfo.Data.Skills.ChargeSpeed, PlayerInfo.Data.Skills.ChargePower)
-	elseif Action == "Stop" then
-		PushChargeBarUI.StopCharge()
+function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
+	PushChargeBarUI.StopCharge()
 
-	elseif Action == "StopAndHide" then
-		PushChargeBarUI.StopCharge()
-		PushChargeBarUI.Toggle(false, 1)
+	Bar.Fill.Size = UDim2.fromScale(0, 1)
+	Bar:SetAttribute("Enabled", true)
+
+	local Time = SharedGlobalValues.ChargeGain_Base - (ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
+	Time *= ChargePower
+
+	ChargeTween = TweenService:Create(Bar.Fill, TweenInfo.new(Time, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromScale(1, 1)})
+	ChargeTween:Play()
+end
+
+function PushChargeBarUI.StopCharge()
+	if ChargeTween then ChargeTween:Pause(); ChargeTween:Destroy(); ChargeTween = nil end
+end
+
+function PushChargeBarUI.Toggle(SetTo: boolean, Delay: number?)
+	if not Delay then
+		Bar:SetAttribute("Enabled", SetTo)
+	else
+		if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
+		task.delay(Delay, function()
+			Bar:SetAttribute("Enabled", SetTo)
+		end)
 	end
 end
 
-function MainUIController.SetCharacter()
-    if not LocalPlayer.Character then return end
-end
+function PushChargeBarUI.Setup(Gui: ScreenGui)
+	Bar = Gui:FindFirstChild("PushChargeBar") :: CanvasGroup
+	if not Bar then return end
 
-function MainUIController.RunHeartbeat(DeltaTime: number)
-	if DeltaTime then return end
-end
+	Bar:SetAttribute("Enabled", false)
 
-function MainUIController:Init()
-    CreateNewGui()
-end
-
-function MainUIController:Deferred()
-    SetupGui()
-
-    DeviceController.CurrentDevice:Connect(function()
-        print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
-    end)
-
-    RunService.Heartbeat:Connect(function(DeltaTime: number)
-        MainUIController.RunHeartbeat(DeltaTime)
-    end)
-
-	PushService.ScoreUp:Connect(function()
-		task.defer(function()
-			ScoreDisplayUI.UpdatePoints(PlayerInfo.CurrentPoints)
-		end)
+	Bar:GetAttributeChangedSignal("Enabled"):Connect(function()
+		ToggleEnabled()
 	end)
+
+	Bar:GetPropertyChangedSignal("GroupTransparency"):Connect(function() 
+		Bar.Stroke.Transparency = Bar.GroupTransparency
+	end)
+
+	Bar.Position = OFF_POSITION
+	Bar.GroupTransparency = 1
+	Bar.Visible = false
 end
 
-return MainUIController
+return PushChargeBarUI

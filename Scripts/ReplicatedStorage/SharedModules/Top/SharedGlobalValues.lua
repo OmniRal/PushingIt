@@ -2,6 +2,9 @@
 
 local SharedGlobalValues = {}
 
+SharedGlobalValues.ChargeGain_Base = 1.4
+SharedGlobalValues.ChargeGain_Subtract = 0.2
+
 SharedGlobalValues.ScoreFinalizeTime = 10 -- How long it takes before the players current score run resets to zero
 SharedGlobalValues.BonusPointsPerConsecutiveHit = 200 -- How many points you get when one NPC ragdolls into another
 

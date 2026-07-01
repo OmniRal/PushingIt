@@ -8,7 +8,7 @@ local RagdollService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Players = game:GetService("Players")
+--local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 --local PhysicsService = game:GetService("PhysicsService")
@@ -176,7 +176,6 @@ function RagdollService.SetRagdoll(Model: Model)
     if not Human or not Root then return end
 
     local TouchAdded = false
-    local TouchConnections: {RBXScriptConnection} = {}
 
     Human.BreakJointsOnDeath = false
 

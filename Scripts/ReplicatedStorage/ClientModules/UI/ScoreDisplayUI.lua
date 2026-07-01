@@ -1,6 +1,6 @@
 -- OmniRal
 
-local ScoreUI = {}
+local ScoreDisplayUI = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -14,7 +14,7 @@ local TweenService = game:GetService("TweenService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Global = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
-local UI_Info = require(ReplicatedStorage.Source.SharedModules.UI.UI_Info)
+local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -38,10 +38,10 @@ local OFF_POSITION = UDim2.fromScale(0.05, 1.1)
 local LastScore = 0
 local Indexes: {Frame} = {}
 
-local Display: any
-
 local FinalizeScoreThread: thread?
 local BounceThread: thread?
+
+local Display: any
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -51,9 +51,7 @@ local function ToggleEnabled()
 	local GoalPosition, GoalTransparency = ON_POSITION, 0
 	local EasingStyle, EasingDirection = Enum.EasingStyle.Back, Enum.EasingDirection.Out
 	
-	if Display:GetAttribute("Enabled") then
-		Display.Visible = true
-	else
+	if not Display:GetAttribute("Enabled") then
 		GoalPosition = OFF_POSITION
 		GoalTransparency = 1
 
@@ -62,8 +60,7 @@ local function ToggleEnabled()
 	end
 
 	TweenService:Create(Display, TweenInfo.new(ANIM_TIME, EasingStyle, EasingDirection), {Position = GoalPosition}):Play()
-	TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 2, TWEEN_STYLE, TWEEN_DIR), {GroupTransparency = GoalTransparency}):Play()
-	
+	TweenService:Create(Display.Counter, TweenInfo.new(ANIM_TIME / 2, TWEEN_STYLE, TWEEN_DIR), {BackgroundTransparency = GoalTransparency}):Play()
 end
 
 -- Whenever the spinning attribute for this index changes
@@ -145,8 +142,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Init
-function ScoreUI.Setup(Gui: ScreenGui)
-	if not Gui then return end
+function ScoreDisplayUI.Setup(Gui: ScreenGui)
 	
 	Display = Gui:FindFirstChild("ScoreDisplay") :: Frame
 	if not Display then return end
@@ -220,13 +216,14 @@ function ScoreUI.Setup(Gui: ScreenGui)
 		UpdateScore()
 	end)
 
-	Display.Counter:GetPropertyChangedSignal("GroupTransparency"):Connect(function()
-		Display.Counter.Stroke.Transparency = Display.Counter.GroupTransparency
+	Display.Counter:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+		Display.Counter.Inner.GroupTransparency = Display.Counter.BackgroundTransparency
+		Display.Counter.Stroke.Transparency = Display.Counter.BackgroundTransparency
 	end)
 end
 
 -- Change the number
-function ScoreUI.UpdatePoints(To: number)
+function ScoreDisplayUI.UpdatePoints(To: number)
 	if FinalizeScoreThread then
 		task.cancel(FinalizeScoreThread)
 	end
@@ -240,4 +237,4 @@ function ScoreUI.UpdatePoints(To: number)
 	Display:SetAttribute("Score", To)
 end
 
-return ScoreUI
+return ScoreDisplayUI

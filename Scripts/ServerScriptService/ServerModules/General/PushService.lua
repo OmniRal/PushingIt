@@ -166,8 +166,8 @@ function PushService.AttemptPush(Player: Player)
     if not Alive or not Root then return end
 
     local TimePassed = os.clock() - PVals.PushChargeStarted
-    local SecondPerGain = 1.4 - (PData.ChargeSpeed * 0.2)
-    local Level = math.clamp(math.floor(TimePassed / SecondPerGain), 1, 5)
+    local SecondPerGain = SharedGlobalValues.ChargeGain_Base - (PData.ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
+    local Level = math.clamp(math.floor(TimePassed / SecondPerGain), 1, PData.ChargePower)
     local Power = BASE_POWER * math.clamp(Level, 1, 6)
 
     -- First look for NPCs to push

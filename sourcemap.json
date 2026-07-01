@@ -114,7 +114,66 @@
 						{
 							"name": "ClientModules",
 							"className": "Folder",
-							"children": [],
+							"children": [
+								{
+									"name": "UI",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Components",
+											"className": "Folder",
+											"children": [
+												{
+													"name": "PropertyVals",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/ClientModules/UI/Components/PropertyVals.lua"
+													]
+												}
+											],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/Components"
+											]
+										},
+										{
+											"name": "GeneralUILibrary",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/GeneralUILibrary.lua"
+											]
+										},
+										{
+											"name": "PushChargeBarUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/PushChargeBarUI.lua"
+											]
+										},
+										{
+											"name": "ScoreDisplayUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/ScoreDisplayUI.lua"
+											]
+										},
+										{
+											"name": "UI_Info",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ReplicatedStorage/ClientModules/UI"
+									]
+								}
+							],
 							"filePaths": [
 								"Scripts/ReplicatedStorage/ClientModules"
 							]
@@ -336,56 +395,6 @@
 									],
 									"filePaths": [
 										"Scripts/ReplicatedStorage/SharedModules/Top"
-									]
-								},
-								{
-									"name": "UI",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "Components",
-											"className": "Folder",
-											"children": [
-												{
-													"name": "PropertyVals",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/UI/Components/PropertyVals.lua"
-													]
-												}
-											],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/UI/Components"
-											]
-										},
-										{
-											"name": "GeneralUILibrary",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/UI/GeneralUILibrary.lua"
-											]
-										},
-										{
-											"name": "ScoreUI",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/UI/ScoreUI.lua"
-											]
-										},
-										{
-											"name": "UI_Info",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/UI/UI_Info.lua"
-											]
-										}
-									],
-									"filePaths": [
-										"Scripts/ReplicatedStorage/SharedModules/UI"
 									]
 								}
 							],
@@ -2175,6 +2184,19 @@
 															"children": []
 														}
 													]
+												},
+												{
+													"name": "Fill",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Corner",
+															"className": "UICorner",
+															"filePaths": [],
+															"children": []
+														}
+													]
 												}
 											]
 										},
@@ -2184,8 +2206,8 @@
 											"filePaths": [],
 											"children": [
 												{
-													"name": "Counter",
-													"className": "Frame",
+													"name": "Counter_OLD",
+													"className": "CanvasGroup",
 													"filePaths": [],
 													"children": [
 														{
@@ -2261,13 +2283,13 @@
 													]
 												},
 												{
-													"name": "Counter_OLD",
-													"className": "CanvasGroup",
+													"name": "Counter",
+													"className": "Frame",
 													"filePaths": [],
 													"children": [
 														{
-															"name": "Corner",
-															"className": "UICorner",
+															"name": "Stroke",
+															"className": "UIStroke",
 															"filePaths": [],
 															"children": []
 														},
@@ -2278,8 +2300,8 @@
 															"children": []
 														},
 														{
-															"name": "Stroke",
-															"className": "UIStroke",
+															"name": "Corner",
+															"className": "UICorner",
 															"filePaths": [],
 															"children": []
 														},
