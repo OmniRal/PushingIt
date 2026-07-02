@@ -9,7 +9,6 @@ local PushService = {}
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
-local ModerationService = game:GetService("ModerationService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

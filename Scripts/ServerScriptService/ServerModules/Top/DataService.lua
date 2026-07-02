@@ -5,15 +5,15 @@ local DataService = {}
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 local Players = game:GetService('Players')
 local ServerScriptService = game:GetService('ServerScriptService')
-local MarketplaceService = game:GetService("MarketplaceService")
+--local MarketplaceService = game:GetService("MarketplaceService")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local ProfileService = require(ServerScriptService.Source.ProfileService)
 
-local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
-local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
-local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
+--local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
+--local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
+--local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
