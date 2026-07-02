@@ -135,16 +135,15 @@ local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
     local Params = {...}
 
 	if Params then
-		print("")
+		Params[1] = 1
 	end
 
     if Keyframe == "End" then
         if AnimName == "StartPush" then
             AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "ChargePush", false, 1)
         
-        elseif AnimName == "FinishPush" then
+        --elseif AnimName == "FinishPush" then
             --CurrentlyPushing = false
-			print("")
         end
 
     elseif Keyframe == "Push" then

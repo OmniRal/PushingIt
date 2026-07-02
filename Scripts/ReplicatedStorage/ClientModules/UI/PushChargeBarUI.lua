@@ -7,6 +7,7 @@ local PushChargeBarUI = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local StarterPlayer = game:GetService("StarterPlayer")
 local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -14,6 +15,7 @@ local TweenService = game:GetService("TweenService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --local Global = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
@@ -77,6 +79,26 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+function PushChargeBarUI.UpdateDivBars()
+	for _, OldDiv in Bar:GetChildren() do
+		if OldDiv.Name ~= "Div" then continue end
+		OldDiv:Destroy()
+	end
+
+	local ChargePower = PlayerInfo.Data.Skills.ChargePower
+	if ChargePower <= 1 then return end
+
+	local Spacing = 1 / ChargePower
+
+	for x = 1, ChargePower - 1 do
+		local NewDiv = Bar.OGDiv:Clone()
+		NewDiv.Name = "Div"
+		NewDiv.Position = UDim2.fromScale(Spacing * x, 0)
+		NewDiv.Visible = true
+		NewDiv.Parent = Bar
+	end
+end
+
 function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
 	PushChargeBarUI.StopCharge()
 
@@ -86,7 +108,7 @@ function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
 	local Time = SharedGlobalValues.ChargeGain_Base - (ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
 	Time *= ChargePower
 
-	ChargeTween = TweenService:Create(Bar.Fill, TweenInfo.new(Time, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = UDim2.fromScale(1, 1)})
+	ChargeTween = TweenService:Create(Bar.Fill, TweenInfo.new(Time, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(1, 1)})
 	ChargeTween:Play()
 end
 

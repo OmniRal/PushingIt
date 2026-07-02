@@ -2173,19 +2173,6 @@
 													"children": []
 												},
 												{
-													"name": "Frame",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Corner",
-															"className": "UICorner",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
 													"name": "Fill",
 													"className": "Frame",
 													"filePaths": [],
@@ -2197,6 +2184,18 @@
 															"children": []
 														}
 													]
+												},
+												{
+													"name": "Back",
+													"className": "Frame",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "OGDiv",
+													"className": "Frame",
+													"filePaths": [],
+													"children": []
 												}
 											]
 										},
@@ -2205,83 +2204,6 @@
 											"className": "Frame",
 											"filePaths": [],
 											"children": [
-												{
-													"name": "Counter_OLD",
-													"className": "CanvasGroup",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Corner",
-															"className": "UICorner",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Padding",
-															"className": "UIPadding",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Stroke",
-															"className": "UIStroke",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Inner",
-															"className": "CanvasGroup",
-															"filePaths": [],
-															"children": [
-																{
-																	"name": "Corner",
-																	"className": "UICorner",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
-																	"name": "OG_Index",
-																	"className": "Frame",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "Stroke",
-																			"className": "UIStroke",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Container",
-																			"className": "Frame",
-																			"filePaths": [],
-																			"children": [
-																				{
-																					"name": "Num",
-																					"className": "TextLabel",
-																					"filePaths": [],
-																					"children": []
-																				}
-																			]
-																		}
-																	]
-																},
-																{
-																	"name": "Shade",
-																	"className": "CanvasGroup",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "Gradient",
-																			"className": "UIGradient",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																}
-															]
-														}
-													]
-												},
 												{
 													"name": "Counter",
 													"className": "Frame",

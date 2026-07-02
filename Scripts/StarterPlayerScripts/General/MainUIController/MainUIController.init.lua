@@ -37,6 +37,7 @@ local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushCh
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --local VisualService = Remotes.VisualService
+local DataService = Remotes.DataService
 local PushService = Remotes.PushService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,6 +111,12 @@ function MainUIController:Deferred()
 
     DeviceController.CurrentDevice:Connect(function()
         print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
+    end)
+
+	DataService.DataUpdate:Connect(function()
+        task.defer(function()
+			PushChargeBarUI.UpdateDivBars()
+		end)
     end)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)

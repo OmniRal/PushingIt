@@ -32,11 +32,11 @@ local ProfileTemplate = {
     },
 
     XP = 0,
-    Level = 1,
+    Level = 2,
 	Points = 0,
 
     Skills = {
-        ChargePower = 1,
+        ChargePower = 2,
         ChargeSpeed = 1,
 		ChargeCooldown = 1,
 
@@ -47,7 +47,7 @@ local ProfileTemplate = {
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_3', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_5', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

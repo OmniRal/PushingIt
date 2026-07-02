@@ -167,8 +167,12 @@ function PushService.AttemptPush(Player: Player)
 
     local TimePassed = os.clock() - PVals.PushChargeStarted
     local SecondPerGain = SharedGlobalValues.ChargeGain_Base - (PData.ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
-    local Level = math.clamp(math.floor(TimePassed / SecondPerGain), 1, PData.ChargePower)
-    local Power = BASE_POWER * math.clamp(Level, 1, 6)
+    local Level = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
+    local Power = BASE_POWER * math.clamp(Level, 0.1, 6)
+
+	warn("___")
+	print("Level: ", Level)
+	print("Power: ", Power)
 
     -- First look for NPCs to push
     for _, NPC: Model in CollectionService:GetTagged("NPC") do
