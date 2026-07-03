@@ -36,10 +36,16 @@ local OFF_POSITION = UDim2.fromScale(0.05, 1.1)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local LastScore = 0
+local LastStreak = 0
+local LastMultiplier = 0
+
 local Indexes: {Frame} = {}
 
 local FinalizeScoreThread: thread?
 local BounceThread: thread?
+
+local StreakTween: any
+local MultiplierTween: any
 
 local Display: any
 
@@ -100,7 +106,7 @@ local function UpdateBouncing()
 	end
 end
 
-local function UpdateScore()
+local function UpdatePoints()
 	local Score = Display:GetAttribute("Score")
 	local Len, LastLen = string.len(Score), string.len(LastScore)
 	local Text, LastText = "", ""
@@ -150,6 +156,8 @@ function ScoreDisplayUI.Setup(Gui: ScreenGui)
 	Display:SetAttribute("Enabled", false)
 	Display:SetAttribute("Bouncing", false)
 	Display:SetAttribute("Score", 0)
+	Display:SetAttribute("Streak", 0)
+	Display:SetAttribute("Multiplier", 0)
 	
 	Display.Position = OFF_POSITION
 	Display.Visible = true
@@ -195,7 +203,6 @@ function ScoreDisplayUI.Setup(Gui: ScreenGui)
 			end)
 		end)
 		
-		
 		Index:GetAttributeChangedSignal("Spinning"):Connect(function()
 			CheckShouldBounce()
 		end)
@@ -213,7 +220,37 @@ function ScoreDisplayUI.Setup(Gui: ScreenGui)
 	end)
 	
 	Display:GetAttributeChangedSignal("Score"):Connect(function()
-		UpdateScore()
+		UpdatePoints()
+	end)
+
+	Display:GetAttributeChangedSignal("Streak"):Connect(function()
+		local Streak = Display:GetAttribute("Streak")
+		
+		if Streak > LastStreak then
+			if StreakTween then StreakTween:Pause(); StreakTween:Destroy(); StreakTween = nil end
+			
+			Display.Streak.Num.Position = UDim2.fromScale(0, -0.3)
+			StreakTween = TweenService:Create(Display.Streak.Num, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, Enum.EasingDirection.Out), 
+			{Position = UDim2.fromScale(0, 0)}):Play()
+		end
+		
+		Display.Streak.Num.Text = Streak
+		LastStreak = Streak
+	end)
+
+	Display:GetAttributeChangedSignal("Multiplier"):Connect(function()
+		local Multiplier = Display:GetAttribute("Multiplier")
+		
+		if Multiplier > LastMultiplier then
+			if MultiplierTween then MultiplierTween:Pause(); MultiplierTween:Destroy(); MultiplierTween = nil end
+			
+			Display.Multiplier.Num.Position = UDim2.fromScale(0, -0.3)
+			MultiplierTween = TweenService:Create(Display.Multiplier.Num, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, Enum.EasingDirection.Out), 
+			{Position = UDim2.fromScale(0, 0)}):Play()
+		end
+		
+		Display.Multiplier.Num.Text = Multiplier .. "x"
+		LastMultiplier = Multiplier
 	end)
 
 	Display.Counter:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
@@ -223,7 +260,9 @@ function ScoreDisplayUI.Setup(Gui: ScreenGui)
 end
 
 -- Change the number
-function ScoreDisplayUI.UpdatePoints(To: number)
+function ScoreDisplayUI.UpdateScore(Points: number, Streak: number, Multiplier: number)
+	if Points <= 0 then return end
+
 	if FinalizeScoreThread then
 		task.cancel(FinalizeScoreThread)
 	end
@@ -231,10 +270,14 @@ function ScoreDisplayUI.UpdatePoints(To: number)
 	FinalizeScoreThread = task.delay(Global.ScoreFinalizeTime, function()
 		Display:SetAttribute("Enabled", false)
 		Display:SetAttribute("Score", 0)
+		Display:SetAttribute("Streak", 0)
+		Display:SetAttribute("Multiplier", 0)
 	end)
-
-	Display:SetAttribute("Enabled", To)
-	Display:SetAttribute("Score", To)
+	
+	Display:SetAttribute("Enabled", true)
+	Display:SetAttribute("Score", Points)
+	Display:SetAttribute("Streak", Streak)
+	Display:SetAttribute("Multiplier", Multiplier)
 end
 
 return ScoreDisplayUI

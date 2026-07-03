@@ -123,9 +123,9 @@ function MainUIController:Deferred()
         MainUIController.RunHeartbeat(DeltaTime)
     end)
 
-	PushService.ScoreUp:Connect(function()
+	PushService.ScoreChanged:Connect(function()
 		task.defer(function()
-			ScoreDisplayUI.UpdatePoints(PlayerInfo.CurrentPoints)
+			ScoreDisplayUI.UpdateScore(PlayerInfo.CurrentPoints, PlayerInfo.CurrentStreak, PlayerInfo.CurrentMultiplier)
 		end)
 	end)
 end

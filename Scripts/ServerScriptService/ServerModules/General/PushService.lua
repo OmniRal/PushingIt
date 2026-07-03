@@ -217,7 +217,7 @@ function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, Multipli
 		end
         Vals.Points += Final
 
-		Remotes.PushService.ScoreUp:Fire(ThisPlayer, Final)
+		Remotes.PushService.ScoreChanged:Fire(ThisPlayer, Vals.Points, Vals.Streak, Vals.Multiplier)
     end
 end
 
@@ -234,11 +234,12 @@ function PushService.ResetScore(ThisPlayer: Player)
 	Vals.Points = 0
 	Vals.Streak = 0
 	Vals.Multiplier = 0
+
+	Remotes.PushService.ScoreChanged:Fire(ThisPlayer, 0, 0, 0)
 end
 
 function PushService:Init()
-    Remotes:CreateToClient("ScoreChanged", {"number"})
-    Remotes:CreateToClient("ScoreUp", {"number"})
+    Remotes:CreateToClient("ScoreChanged", {"number", "number", "number"})
 
     -- Sets the start push charge time for the player
     Remotes:CreateToServer("StartPushCharge", {}, "Reliable", function(Player: Player)

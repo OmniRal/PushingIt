@@ -100,6 +100,7 @@ function PushChargeBarUI.UpdateDivBars()
 end
 
 function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
+	if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
 	PushChargeBarUI.StopCharge()
 
 	Bar.Fill.Size = UDim2.fromScale(0, 1)
@@ -117,11 +118,12 @@ function PushChargeBarUI.StopCharge()
 end
 
 function PushChargeBarUI.Toggle(SetTo: boolean, Delay: number?)
+	if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
 	if not Delay then
 		Bar:SetAttribute("Enabled", SetTo)
+	
 	else
-		if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
-		task.delay(Delay, function()
+		DelayToggleThread = task.delay(Delay, function()
 			Bar:SetAttribute("Enabled", SetTo)
 		end)
 	end

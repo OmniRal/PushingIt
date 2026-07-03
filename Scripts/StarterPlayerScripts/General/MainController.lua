@@ -271,12 +271,10 @@ function MainController:Deferred()
         print("Recieved Data: ", PlayerInfo.Data)
     end)
 
-    PushService.ScoreChanged:Connect(function(To: number)
-		print(To)
-    end)
-
-    PushService.ScoreUp:Connect(function(Add: number)
-        PlayerInfo.CurrentPoints += Add
+    PushService.ScoreChanged:Connect(function(Points: number, Streak: number, Multipler: number)
+		PlayerInfo.CurrentPoints = Points
+		PlayerInfo.CurrentStreak = Streak
+		PlayerInfo.CurrentMultiplier = Multipler
     end)
 end
 

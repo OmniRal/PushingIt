@@ -28,5 +28,6 @@ PlayerInfo.UnitValues = nil
 
 PlayerInfo.CurrentPoints = 0
 PlayerInfo.CurrentStreak = 0 
+PlayerInfo.CurrentMultiplier = 0
 
 return PlayerInfo
