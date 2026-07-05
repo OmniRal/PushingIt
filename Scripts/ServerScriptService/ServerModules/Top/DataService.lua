@@ -48,7 +48,7 @@ local ProfileTemplate = {
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_7', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_8', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
