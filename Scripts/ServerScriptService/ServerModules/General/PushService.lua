@@ -229,6 +229,7 @@ function PushService.ResetScore(ThisPlayer: Player)
 
 	-- Add current points to grand total points
 	DataService.IncrementIndex(ThisPlayer, "Points", Vals.Points)
+    DataService.IncrementIndex(ThisPlayer, "XP", Vals.Points)
 
 	Vals.Started = 0 -- Means no score run
 	Vals.Points = 0

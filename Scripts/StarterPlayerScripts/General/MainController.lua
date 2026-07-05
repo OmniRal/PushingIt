@@ -20,11 +20,13 @@ local Workspace = game:GetService("Workspace")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local AnimationController = require(script.Parent.AnimationController)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+
+local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
 
 local CameraController = require(StarterPlayer.StarterPlayerScripts.Source.General.CameraController)
 local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.General.MainUIController)
+local AnimationController = require(script.Parent.AnimationController)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
@@ -266,9 +268,35 @@ function MainController:Deferred()
         ControlModule = require(GotControlModule)
     end
 
-    DataService.DataUpdate:Connect(function(Data: {Coins: number})
+    DataService.FullDataUpdate:Connect(function(Data: any)
         PlayerInfo.Data = Data
+        
+        if PlayerInfo.CurrentLevel <= -1 then
+            PlayerInfo.CurrentLevel = Data.Level
+            PlayerInfo.CurrentMaxXP = LevelXPCurve.CalculateXPNeeded(Data.Level)
+            PlayerInfo.CurrentXP = Data.XP
+
+            MainUIController.UpdateLevelInfoUI()
+        end
+
         print("Recieved Data: ", PlayerInfo.Data)
+    end)
+
+    DataService.SingleDataUpdate:Connect(function(Index: string | {}, Value: any)
+        if not PlayerInfo.Data then return end
+        if typeof(Index) == "string" then
+            if not PlayerInfo.Data[Index] then return end
+            PlayerInfo.Data[Index] = Value
+
+        else
+            local ThisData = PlayerInfo.Data
+            for n = 1, #Index - 1 do
+                if not ThisData[Index[n]] then return end
+                ThisData = ThisData[Index[n]]
+            end
+
+            ThisData[Index[#Index]] = Value
+        end
     end)
 
     PushService.ScoreChanged:Connect(function(Points: number, Streak: number, Multipler: number)

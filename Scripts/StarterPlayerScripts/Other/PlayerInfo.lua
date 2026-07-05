@@ -26,6 +26,11 @@ PlayerInfo.Grounded = {
 
 PlayerInfo.UnitValues = nil
 
+PlayerInfo.CurrentLevel = -1
+PlayerInfo.CurrentMaxXP = 0
+PlayerInfo.CurrentXP = 0
+PlayerInfo.AddXP = 0
+
 PlayerInfo.CurrentPoints = 0
 PlayerInfo.CurrentStreak = 0 
 PlayerInfo.CurrentMultiplier = 0

@@ -249,6 +249,14 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "LevelXPCurva",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/General/Utility/LevelXPCurva.lua"
+													]
+												},
+												{
 													"name": "Players",
 													"className": "ModuleScript",
 													"children": [],

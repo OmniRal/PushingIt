@@ -11,6 +11,9 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local ProfileService = require(ServerScriptService.Source.ProfileService)
 
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
+
 --local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
 --local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
 --local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
@@ -32,7 +35,7 @@ local ProfileTemplate = {
     },
 
     XP = 0,
-    Level = 2,
+    Level = 1,
 	Points = 0,
 
     Skills = {
@@ -42,12 +45,10 @@ local ProfileTemplate = {
 
 		DodgeRange = 1,
 		DodgeCooldown = 1,
-
-        Luck = 1,
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_5', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_7', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ function PlayerAdded(Player)
 			profile.Data.LastLoggedIn = os.time()
 
 			Player:SetAttribute("DataLoaded", true)
-            Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+            Remotes.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
         else
             -- Player left before the profile loaded:
             profile:Release()
@@ -127,42 +128,77 @@ function DataService.GetIndex(Player, Index)
 end
 
 -- Returns a players current skill levels
-function DataService.GetSkills(Player: Player): {Power: number, Speed: number, Luck: number}
-    if not Player then return end
+function DataService.GetSkills(Player: Player): {[string]: number}
     DataService.WaitForPlayerDataLoaded(Player)
 
     return Profiles[Player].Data.Skills
 end
 
 -- Returns one specific skill level of a player
-function DataService.GetOneSkill(Player: Player, ThisSkill:  "Power" | "Speed" | "Luck"?): number?
-    if not Player then return end
+function DataService.GetOneSkill(Player: Player, ThisSkill:  string): number?
     DataService.WaitForPlayerDataLoaded(Player)
+    local PData = Profiles[Player].Data
 
-    if not Profiles[Player].Data.Skills[ThisSkill] then return end
-    return Profiles[Player].Data.Skills[ThisSkill]
+    if not PData.Skills[ThisSkill] then return end
+    return PData.Skills[ThisSkill]
 end
 
 function DataService.SetIndex(Player: Player, Index: string | {}, Value: string? | number? | boolean? | {}?)
 	DataService.WaitForPlayerDataLoaded(Player)
+    local PData = Profiles[Player].Data
 
     if typeof(Index) == "string" then
-        Profiles[Player].Data[Index] = Value
+        PData[Index] = Value
     else
-        local ThisData = Profiles[Player].Data
-        for _, Key in ipairs(Index) do
-            ThisData = ThisData[Key]
+        local ThisData = PData
+        for n = 1, #Index - 1 do
+            ThisData = ThisData[Index[n]]
         end
-        ThisData = Value
+        ThisData[Index[#Index]] = Value
     end
 
-    Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+    Remotes.DataService.SingleDataUpdate:Fire(Player, Index, Value)
+    --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
 
 function DataService.IncrementIndex(Player, Index, Increment)
 	DataService.WaitForPlayerDataLoaded(Player)
-	Profiles[Player].Data[Index] += Increment
-    Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+    local PData = Profiles[Player].Data
+
+    if Index == "XP" then
+        local NewLevel = PData.Level
+        local CurrentXP = PData.XP + Increment
+
+        -- Check what the new level will be based on how much xp
+        for _ = PData.Level, SharedGlobalValues.MaxLevel do
+            local XPNeededToLevelUp = LevelXPCurve.CalculateXPNeeded(PData.Level)
+            if CurrentXP >= XPNeededToLevelUp then
+                CurrentXP -= XPNeededToLevelUp
+                NewLevel += 1
+            else
+                break
+            end
+        end
+
+        if NewLevel >= SharedGlobalValues.MaxLevel then
+            CurrentXP = 0
+        end
+
+        if PData.Level < NewLevel then
+            PData.Level = NewLevel
+            Remotes.DataService.SingleDataUpdate:Fire(Player, "Level", NewLevel)
+        end
+
+        PData.XP = CurrentXP
+        Remotes.DataService.SingleDataUpdate:Fire(Player, "XP", CurrentXP)
+        Remotes.DataService.GiveAddXP:Fire(Player, Increment)
+        return
+    end
+
+	PData[Index] += Increment
+    Remotes.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
+
+    --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
 
 function DataService.WaitForPlayerDataLoaded(Player)
@@ -171,7 +207,9 @@ function DataService.WaitForPlayerDataLoaded(Player)
 end
 
 function DataService:Init()
-    Remotes:CreateToClient("DataUpdate", {"table"}, "Reliable")
+    Remotes:CreateToClient("FullDataUpdate", {"table"}, "Reliable")
+    Remotes:CreateToClient("SingleDataUpdate", {"string | table", "any"}, "Reliable")
+    Remotes:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 
     --[[for WeaponName, W_Info in pairs(WeaponInfo) do
         local WeaponUnlocked = false

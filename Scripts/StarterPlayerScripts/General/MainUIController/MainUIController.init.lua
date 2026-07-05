@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 --local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 --local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -18,6 +19,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+
+local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
 
 --local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
@@ -31,6 +34,8 @@ local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushCh
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local ADD_XP_PAUSE = 1 -- How many seconds to pause adding more XP to the bar after leveling up
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -48,7 +53,9 @@ MainUIController.Menu = "None"
 
 local LocalPlayer = Players.LocalPlayer
 
-local Gui: ScreenGui
+local Gui: any
+
+local AddXPPauseUntil = 0
 
 local Assets = ReplicatedStorage.Assets
 
@@ -78,9 +85,40 @@ local function SetupGui()
 	PushChargeBarUI.Setup(Gui)
 end
 
+local function HandleAddXP()
+    if PlayerInfo.AddXP <= 0 then return end
+
+    if AddXPPauseUntil <= 0 then
+        PlayerInfo.AddXP -= 1
+        PlayerInfo.CurrentXP += 1
+        if PlayerInfo.CurrentXP >= PlayerInfo.CurrentMaxXP then
+            AddXPPauseUntil = os.clock() + ADD_XP_PAUSE
+
+            PlayerInfo.CurrentLevel += 1
+            PlayerInfo.CurrentMaxXP = LevelXPCurve.CalculateXPNeeded(PlayerInfo.CurrentLevel)
+            PlayerInfo.CurrentXP = 0
+
+            MainUIController.UpdateLevelInfoUI()
+
+            return
+        end
+
+        MainUIController.UpdateLevelInfoUI()
+    else
+        if os.clock() < AddXPPauseUntil then return end
+        AddXPPauseUntil = 0
+    end
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function MainUIController.UpdateLevelInfoUI()
+    Gui.LevelInfo.Level.Text = "Lv. " .. PlayerInfo.CurrentLevel
+    Gui.LevelInfo.XP.Text = PlayerInfo.CurrentXP .. " / " .. PlayerInfo.CurrentMaxXP .. " XP"
+    Gui.LevelInfo.Progress.Fill.Size = UDim2.fromScale(PlayerInfo.CurrentXP / PlayerInfo.CurrentMaxXP, 1)
+end
 
 function MainUIController.ControlPushBar(Action: "Start" | "Stop" | "StopAndHide")
 	if Action == "Start" then
@@ -99,7 +137,9 @@ function MainUIController.SetCharacter()
 end
 
 function MainUIController.RunHeartbeat(DeltaTime: number)
-	if DeltaTime then return end
+	if not DeltaTime then return end
+
+    HandleAddXP()
 end
 
 function MainUIController:Init()
@@ -113,14 +153,23 @@ function MainUIController:Deferred()
         print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
     end)
 
-	DataService.DataUpdate:Connect(function()
+	DataService.SingleDataUpdate:Connect(function(Index: string, Value: any)
         task.defer(function()
-			PushChargeBarUI.UpdateDivBars()
-		end)
+            --local PData = PlayerInfo.Data
+
+            if typeof(Index) == "string" then
+                return
+
+            elseif typeof(Index) == "table" then
+                if Index[#Index] == "ChargePower" then
+                    PushChargeBarUI.UpdateDivBars()
+                end
+            end
+        end)
     end)
 
-    RunService.Heartbeat:Connect(function(DeltaTime: number)
-        MainUIController.RunHeartbeat(DeltaTime)
+    DataService.GiveAddXP:Connect(function(ThisMuch: number)
+        PlayerInfo.AddXP += ThisMuch
     end)
 
 	PushService.ScoreChanged:Connect(function()
@@ -128,6 +177,10 @@ function MainUIController:Deferred()
 			ScoreDisplayUI.UpdateScore(PlayerInfo.CurrentPoints, PlayerInfo.CurrentStreak, PlayerInfo.CurrentMultiplier)
 		end)
 	end)
+
+    RunService.Heartbeat:Connect(function(DeltaTime: number)
+        MainUIController.RunHeartbeat(DeltaTime)
+    end)
 end
 
 return MainUIController
