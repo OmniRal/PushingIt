@@ -239,6 +239,32 @@ function PushService.ResetScore(ThisPlayer: Player)
 	Remotes.PushService.ScoreChanged:Fire(ThisPlayer, 0, 0, 0)
 end
 
+function PushService.StartTimer(ThisPlayer: Player)
+	-- Make sure the player is in PVP mode first
+	local PVPMode = DataService.GetIndex(ThisPlayer, "PVPMode")
+	if not PVPMode then return end
+
+	ThisPlayer:SetAttribute("TimerActive", true)
+	ThisPlayer:SetAttribute("SavedTime", 0)
+
+	-- Make sure timer isn't already running; really should only be relevant when the player first joins
+	local IsActive = DataService.GetIndex(ThisPlayer, "TimerActive")
+	if IsActive then
+		local SavedTime = DataService.GetIndex(ThisPlayer, "SavedTime")
+		ThisPlayer:SetAttribute("SavedTime", SavedTime)
+	end
+
+	DataService.SetIndex(ThisPlayer, "TimerActive", true, true)
+	DataService.SetIndex(ThisPlayer, "TimerStartedAt", os.clock(), true)
+
+	ThisPlayer:SetAttribute("TimerStartedAt", os.clock())
+end
+
+function PushService.StopTimer(ThisPlayer: Player)
+	DataService.SetIndex(ThisPlayer, "TimerActive", false, true)
+	ThisPlayer:SetAttribute("TimerActive", false)
+end
+
 function PushService:Init()
     Remotes:CreateToClient("ScoreChanged", {"number", "number", "number"})
 
@@ -272,6 +298,21 @@ function PushService.PlayerAdded(Player: Player)
 		Multiplier = 0,
         PushChargeStarted = 0
     }
+
+	local PVPMode = DataService.GetIndex(Player, "PVPMode")
+	Player:SetAttribute("PVPMode", PVPMode)
+
+	local CheckedStartTimer = false
+	Player.CharacterAdded:Connect(function(Char: Model)
+		local Human, Root = Char:WaitForChild("Humanoid"), Char:WaitForChild("HumanoidRootPart")
+		if not Human or not Root then return end
+
+		CheckedStartTimer = true
+		PushService.StartTimer(Player)
+	end)
+
+	if CheckedStartTimer then return end
+	PushService.StartTimer(Player)
 end
 
 function PushService.PlayerRemoving(Player: Player)

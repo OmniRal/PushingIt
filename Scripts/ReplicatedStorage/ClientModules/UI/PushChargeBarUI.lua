@@ -15,9 +15,9 @@ local TweenService = game:GetService("TweenService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --local Global = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
-local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -79,6 +79,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Updates how many little white dividing lines there are along the bar
 function PushChargeBarUI.UpdateDivBars()
 	for _, OldDiv in Bar:GetChildren() do
 		if OldDiv.Name ~= "Div" then continue end
@@ -99,6 +100,7 @@ function PushChargeBarUI.UpdateDivBars()
 	end
 end
 
+-- Tweens the fill on the bar to go full
 function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
 	if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
 	PushChargeBarUI.StopCharge()
@@ -106,6 +108,7 @@ function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
 	Bar.Fill.Size = UDim2.fromScale(0, 1)
 	Bar:SetAttribute("Enabled", true)
 
+	-- Calculate how long it takes based on the players skills
 	local Time = SharedGlobalValues.ChargeGain_Base - (ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
 	Time *= ChargePower
 

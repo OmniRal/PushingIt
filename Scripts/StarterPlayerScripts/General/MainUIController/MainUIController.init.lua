@@ -11,7 +11,7 @@ local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 --local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
+--local TweenService = game:GetService("TweenService")
 --local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -28,6 +28,7 @@ local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.Playe
 
 local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
+local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
 
 --local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
@@ -83,6 +84,7 @@ end
 local function SetupGui()
     ScoreDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
+	TimerUI.Setup(Gui)
 end
 
 local function HandleAddXP()
@@ -140,6 +142,7 @@ function MainUIController.RunHeartbeat(DeltaTime: number)
 	if not DeltaTime then return end
 
     HandleAddXP()
+	TimerUI.RunHeartbeat()
 end
 
 function MainUIController:Init()
@@ -158,7 +161,7 @@ function MainUIController:Deferred()
             --local PData = PlayerInfo.Data
 
             if typeof(Index) == "string" then
-                return
+				if Value then return end
 
             elseif typeof(Index) == "table" then
                 if Index[#Index] == "ChargePower" then

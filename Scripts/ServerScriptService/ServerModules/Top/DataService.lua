@@ -31,12 +31,18 @@ local ProfileTemplate = {
 	LastLoggedIn = 0,
 
     PlayStats = {
-        TimePlayed = {Seconds = 0, Minutes = 0, Hours = 0, Days = 0},
+		TimerRecord = 0,
+        PlayTime = 0
     },
 
     XP = 0,
     Level = 1,
 	Points = 0,
+
+	PVPMode = true,
+
+	TimerActive = false,
+	SavedTime = 0,
 
     Skills = {
         ChargePower = 2,
@@ -48,7 +54,7 @@ local ProfileTemplate = {
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_8', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_13', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -94,13 +100,16 @@ function PlayerAdded(Player)
     end
 end
 
-function PlayerRemoving(Player)
-    task.wait(0.25)
-	local profile = Profiles[Player]
-    if profile ~= nil then
-		profile.Data.LoggedInDuration += os.time() - Player:GetAttribute("Joined")
-        profile:Release()
-    end
+function PlayerRemoving(Player: Player)
+	local Profile = Profiles[Player]
+    if not Profile then return end
+	
+	Profile.Data.LoggedInDuration += os.time() - Player:GetAttribute("Joined")
+	Profile.Data.SavedTime += os.time() - Player:GetAttribute("Joined")
+    
+	warn("SAVED TIME: ", os.clock() - Player:GetAttribute("Joined"))
+	
+	Profile:Release()
 end
 
 --[[function DataService.Client:GetIndex(...)
@@ -122,7 +131,7 @@ function DataService.GetProfileTable(Player: Player)
     return Profiles[Player].Data
 end
 
-function DataService.GetIndex(Player, Index)
+function DataService.GetIndex(Player: Player, Index: string): boolean | number | string | {}
 	DataService.WaitForPlayerDataLoaded(Player)
 	return Profiles[Player].Data[Index]
 end
@@ -143,7 +152,7 @@ function DataService.GetOneSkill(Player: Player, ThisSkill:  string): number?
     return PData.Skills[ThisSkill]
 end
 
-function DataService.SetIndex(Player: Player, Index: string | {}, Value: string? | number? | boolean? | {}?)
+function DataService.SetIndex(Player: Player, Index: string | {}, Value: string? | number? | boolean? | {}?, DoNotSendUpdate: boolean?)
 	DataService.WaitForPlayerDataLoaded(Player)
     local PData = Profiles[Player].Data
 
@@ -157,11 +166,12 @@ function DataService.SetIndex(Player: Player, Index: string | {}, Value: string?
         ThisData[Index[#Index]] = Value
     end
 
+	if DoNotSendUpdate then return end
     Remotes.DataService.SingleDataUpdate:Fire(Player, Index, Value)
     --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
 end
 
-function DataService.IncrementIndex(Player, Index, Increment)
+function DataService.IncrementIndex(Player: Player, Index: string, Increment: number, DoNotSendUpdate: boolean?)
 	DataService.WaitForPlayerDataLoaded(Player)
     local PData = Profiles[Player].Data
 
@@ -196,6 +206,8 @@ function DataService.IncrementIndex(Player, Index, Increment)
     end
 
 	PData[Index] += Increment
+
+	if DoNotSendUpdate then return end
     Remotes.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
 
     --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
