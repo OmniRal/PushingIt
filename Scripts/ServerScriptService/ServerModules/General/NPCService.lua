@@ -9,7 +9,6 @@ local NPCService = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
-local RemoteCursorService = game:GetService("RemoteCursorService")
 local ServerStorage = game:GetService("ServerStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -28,6 +27,8 @@ local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll
 
 local USE_DEFAULT = false -- Set this to true when you want all NPCs to spawn as the one below
 local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
+
+local KEEP_NODES = true -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -131,8 +132,10 @@ local function GetPathNodes()
     end
 
     -- Destroy all the nodes in workspace
+	if KEEP_NODES then return end
+
     for _, Node in List do
-        --Node:Destroy()
+        Node:Destroy()
     end
 
     warn(Nodes)
@@ -174,12 +177,15 @@ end
 -- @Name = Optionally spawn in a very specific NPC
 function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry?, Name: string?)
     if not ThisPoint then
+		-- Pick a random spawn from the cached list
         ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
 
     elseif ThisPoint and type(ThisPoint) == "string" then
+		-- Attempt to look for the spawn point by name
         if SpawnNames[ThisPoint] then
             ThisPoint = SpawnNames[ThisPoint][RNG:NextInteger(1, #SpawnNames[ThisPoint])]
         else
+			-- Fall back to picking a random one
             ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
         end
     end
@@ -193,7 +199,11 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
             NPCRarity = Rarity
             NPCName = Name
 
-        else
+		elseif Rarity and not Name then
+			NPCRarity = Rarity
+			NPCName = NPCList[NPCRarity][RNG:NextInteger(1, #NPCList[NPCRarity])]
+
+        elseif not Rarity and not Name then
             -- Pick random rarity ane name
             NPCRarity = Roll.Pick(RarityChances) :: string
             NPCName = NPCList[NPCRarity][RNG:NextInteger(1, #NPCList[NPCRarity])]
@@ -289,6 +299,7 @@ function NPCService.Run()
                 
                 if Data.Movement == "Stationary" then continue end
 
+				-- Handle their movement
                 if Data.ReachedPoint then
                     if os.clock() < Data.GoToNextPointAt then continue end
                     
@@ -297,6 +308,7 @@ function NPCService.Run()
                     Data.GoalPoint = Nodes[NextNode].Pos
                     Data.ReachedPoint = false
                     Data.Human:MoveTo(Data.GoalPoint)
+
                 else
                     Data.Human:MoveTo(Data.GoalPoint)
 
@@ -330,8 +342,8 @@ function NPCService:Deferred()
     GetSpawnPoints()
     GetPathNodes()
 
-    NPCService.Spawn("A")
-    NPCService.Spawn("B")
+    NPCService.Spawn("A", "Common")
+    NPCService.Spawn("B", "Common")
 
     NPCService.Run()
 end

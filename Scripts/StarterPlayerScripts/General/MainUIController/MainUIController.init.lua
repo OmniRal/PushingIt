@@ -124,7 +124,9 @@ end
 
 function MainUIController.ControlPushBar(Action: "Start" | "Stop" | "StopAndHide")
 	if Action == "Start" then
+		warn(PlayerInfo.Data.Skills)
 		PushChargeBarUI.StartCharge(PlayerInfo.Data.Skills.ChargeSpeed, PlayerInfo.Data.Skills.ChargePower)
+
 	elseif Action == "Stop" then
 		PushChargeBarUI.StopCharge()
 

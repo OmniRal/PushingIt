@@ -157,6 +157,7 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     local OtherRagdoll = Hit:FindFirstAncestorOfClass("Model")
     if not OtherRagdoll or OtherRagdoll == Model then return end
     if OtherRagdoll:GetAttribute("Ragdoll") == nil then return end
+	if OtherRagdoll:GetAttribute("Ragdoll") then return end
 
     local Success = PushService.PushModel(nil, OtherRagdoll, Model)
     if not Success then return end
@@ -278,7 +279,7 @@ function RagdollService.SetRagdoll(Model: Model)
                 AddTouch = true
             end
 
-			local HitDebounce = false
+			local HitList = {}
             
             -- Make all the parts in the NPC collidable
             for _, Part in Model:GetChildren() do
@@ -291,13 +292,17 @@ function RagdollService.SetRagdoll(Model: Model)
                 if not AddTouch then continue end
 
                 Part.Touched:Connect(function(Hit: BasePart)
-                    if HitDebounce then return end
+					if not Model:GetAttribute("Ragdoll") then return end
+                    if #HitList > 1 then return end
 
-                    HitDebounce = true
+					table.insert(HitList, Part)
+
+					if HitList[1] ~= Part then return end
+
                     BodyPartHit(Model, Root, Part, Hit)
 
-                    task.wait(0.25)
-                    HitDebounce = false
+                    task.wait(0.5)
+					table.clear(HitList)
                 end)
             end
         end)
@@ -316,8 +321,6 @@ function RagdollService.PlayerAdded(Player: Player)
 end
 
 function RagdollService:Init()
-    print("Ragdoll Service Init...")
-
     Remotes:CreateToServer("ToggleRagdoll", {"boolean"}, "Reliable", function(Player: Player, Toggle: boolean?)
         if not Player then return end
         if not Player.Character then return end

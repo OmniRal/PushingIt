@@ -37,7 +37,6 @@ function CameraService:ApplyShakeToAllPlayers(Speed: number, Damper: number, Pow
 end
 
 function CameraService:Init()
-    print("Camera Service Init...")
     Remotes:CreateToClient("SetCameraType", {}, "Reliable")
     Remotes:CreateToClient("CameraShake", {}, "Unreliable")
 end
