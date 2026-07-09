@@ -23,6 +23,7 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 local PushService = require(ServerScriptService.Source.ServerModules.General.PushService)
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -66,6 +67,14 @@ local ModelCollisions = {
 	{"RightUpperLeg",   "LowerTorso", "LeftUpperLeg", "UpperTorso"}
 }
 
+local ModelCollisions_R6 = {
+	--{"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"},
+	--{"Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"},
+	--{"Left Arm", "Right Arm", "Left Leg", "Right Leg"},
+	--{"Left Leg", "Right Arm", "Right Leg"},
+	--{"Right Arm", "Right Leg"}
+}
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -102,7 +111,7 @@ local function MakeAccessoryJoints(Character: Instance, Folder: Instance)
 end
 
 -- Creates the ragdoll joints
-local function CreateJoint(Part0: Instance, Part1: Instance, AttachmentName: string, Folder: Instance)
+local function CreateJoint(Part0: BasePart, Part1: BasePart, AttachmentName: string, Folder: Instance)
     local ConstraintName
     for Key, _ in pairs(ModelConstraints) do
         if string.match(AttachmentName, Key) then
@@ -110,15 +119,19 @@ local function CreateJoint(Part0: Instance, Part1: Instance, AttachmentName: str
             break
         end
     end
+
     AttachmentName = AttachmentName .. "RigAttachment"
-    New.Clone(ModelConstraints[ConstraintName], Folder, "Ragdoll_" .. Part1.Name, {Attachment0 = Part0[AttachmentName], Attachment1 = Part1[AttachmentName]})
+
+	New.Clone(ModelConstraints[ConstraintName], Folder, "Ragdoll_" .. Part1.Name, {Attachment0 = Part0[AttachmentName], Attachment1 = Part1[AttachmentName]})
 end
 
 -- Creates no collision constraint for certain parts.
 local function SetCollisions(Model: Instance, Folder: Instance)
     if not Model or not Folder then return end
 
-    for _, Table in pairs(ModelCollisions) do
+	local ThisList = if ServerGlobalValues.NPC_Use_R6 then ModelCollisions else ModelCollisions_R6
+
+    for _, Table in ThisList do
         local Part0 = Model:FindFirstChild(Table[1])
         if Part0 then
             for n = 2, #Table do
@@ -132,15 +145,14 @@ local function SetCollisions(Model: Instance, Folder: Instance)
 end
 
 local function ToggleMotors(Motors: {}, Toggle: boolean)
-    for Part, Motor in pairs(Motors) do
-        if Part ~= "Root" then
-            Motor.Enabled = Toggle
-        end
+    for Part, Motor in Motors do
+        if Part == "Root" then continue end
+        Motor.Enabled = Toggle
     end
 end
 
 -- When a body part of an NPC or player hits something, give points to players
-local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit: BasePart)
+local function PartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit: BasePart)
     if not Model or not Root or not BodyPart or not Hit then return end
     if not Model:GetAttribute("Ragdoll") then return end
 
@@ -163,7 +175,7 @@ local function BodyPartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit
     if not Success then return end
 
 	-- If NPC knocked over another, give bonus points and increase streak
-	PushService.ScoreUp(Pushers, SharedGlobalValues.BonusPointsPerConsecutiveHit, SharedGlobalValues.MultiplierGainPerConsecutiveHit)
+	PushService.ScoreUp(Pushers, SharedGlobalValues.BonusPointsPerConsecutiveHit, SharedGlobalValues.MultiplierGainPerConsecutiveHit, OtherRagdoll.PrimaryPart.Position)
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -299,7 +311,122 @@ function RagdollService.SetRagdoll(Model: Model)
 
 					if HitList[1] ~= Part then return end
 
-                    BodyPartHit(Model, Root, Part, Hit)
+                    PartHit(Model, Root, Part, Hit)
+
+                    task.wait(0.5)
+					table.clear(HitList)
+                end)
+            end
+        end)
+            
+        --if Toggle then
+        --end
+    end)
+end
+
+function RagdollService.SetRagdoll_R6(Model: Model)
+    if not Model then return end
+    local Human, Root = Model:FindFirstChild("Humanoid") :: Humanoid, Model:FindFirstChild("HumanoidRootPart")
+    if not Human or not Root then return end
+
+    local TouchAdded = false
+
+    Human.BreakJointsOnDeath = false
+
+    local BodyParts = {
+        HumanoidRootPart = Model:WaitForChild("HumanoidRootPart"),
+        Torso = Model:WaitForChild("Torso"),
+        LeftLeg = Model:WaitForChild("Left Leg"),
+        RightLeg = Model:WaitForChild("Right Leg"),
+        LeftArm = Model:WaitForChild("Left Arm"),
+        RightArm = Model:WaitForChild("Right Arm"),
+        Head = Model:WaitForChild("Head")
+    }
+    local Motors = {
+        Root = BodyParts.HumanoidRootPart:WaitForChild("RootJoint"),
+		LeftHip = BodyParts.Torso:WaitForChild("Left Hip"),
+		LeftShoulder = BodyParts.Torso:WaitForChild("Left Shoulder"),
+		RightHip = BodyParts.Torso:WaitForChild("Right Hip"),
+		RightShoulder = BodyParts.Torso:WaitForChild("Right Shoulder"),
+        Neck = BodyParts.Torso:WaitForChild("Neck")
+    }
+    local OriginalMotor = Motors.Root
+    local OtherMotor = New.Instance("Motor6D", BodyParts.HumanoidRootPart, {Enabled = false, C0 = CFrame.new(0, 0, 0), Part0 = BodyParts.HumanoidRootPart, Part1 = BodyParts.Torso})
+
+    local RagdollConstraints = New.Instance("Folder", "RagdollConstraints", Model)
+    local RagdollCollisions = New.Instance("Folder", "RagdollCollisions", Model)
+
+	pcall(CreateJoint, BodyParts.Torso, BodyParts.Head, "Neck", RagdollConstraints)
+	pcall(CreateJoint, BodyParts.Torso, BodyParts.LeftArm, "LeftShoulder", RagdollConstraints)
+	pcall(CreateJoint, BodyParts.Torso, BodyParts.RightArm, "RightShoulder", RagdollConstraints)
+	pcall(CreateJoint, BodyParts.Torso, BodyParts.LeftLeg, "LeftHip", RagdollConstraints)
+	pcall(CreateJoint, BodyParts.Torso, BodyParts.RightLeg, "RightHip", RagdollConstraints)
+
+    MakeAccessoryJoints(Model, RagdollConstraints)
+
+    BodyParts.HumanoidRootPart.CanCollide = false
+    BodyParts.HumanoidRootPart.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0.01, 0.01, 0.01, 0.01)
+
+    local HeadSize = BodyParts.Head.Size
+    BodyParts.Head.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0.01, 0.01, 0.01, 0.01)
+    --BodyParts.Head.OriginalSize.Value = Vector3.new(1, 1, 1)
+    --BodyParts.Head.Size = Vector3.new(HeadSize.Z, HeadSize.Y, HeadSize.Z)
+
+    local HeadCollision = New.Instance("Part", BodyParts.Head, "HeadCollision", {Transparency = 1, Shape = Enum.PartType.Cylinder, Size = Vector3.new(HeadSize.Y, HeadSize.Z, HeadSize.Z), CanCollide = true, CollisionGroup = "NoClip"})
+    --[[local HeadCollisionWeld =]] New.Instance("Weld", HeadCollision, {Part0 = BodyParts.Head, Part1 = HeadCollision, C0 = CFrame.new(0, 0, 0) * CFrame.fromOrientation(0, 0, math.rad(-90))})
+    local HeadCollisionAttachment = New.Instance("Attachment", HeadCollision, {Orientation = Vector3.new(0, 0, -90)})
+    --[[local HeadCollisionConstraint =]] New.Instance("HingeConstraint", RagdollConstraints, "HeadCollision", {Attachment0 = BodyParts.Head.FaceCenterAttachment, Attachment1 = HeadCollisionAttachment, LimitsEnabled = true, UpperAngle = 0, LowerAngle = 0})
+
+
+    SetCollisions(Model, RagdollCollisions)
+
+    Model:SetAttribute("Ragdoll", false)
+    Model:GetAttributeChangedSignal("Ragdoll"):Connect(function()
+        local Toggle = Model:GetAttribute("Ragdoll")
+
+        OtherMotor.Enabled = Toggle
+        OriginalMotor.Enabled = not Toggle
+        ToggleMotors(Motors, not Toggle)
+        
+        if Human.Health <= 0 then
+            HeadCollision.CollisionGroup = "Default"
+        end
+
+        if not Model:HasTag("NPC") then return end
+
+        task.spawn(function()
+            Human.PlatformStand = Toggle
+
+            task.wait()
+
+            -- If the touch connection was not already created
+            local AddTouch = false
+            if not TouchAdded then
+                TouchAdded = true
+                AddTouch = true
+            end
+
+			local HitList = {}
+            
+            -- Make all the parts in the NPC collidable
+            for _, Part in Model:GetChildren() do
+                if not Part then continue end
+                if not Part:IsA("BasePart") then continue end
+                if Part.Name == "Head" or Part.Name == "LowerWaist" or Part.Name == "HumanoidRootPart" then continue end
+                
+                Part.CanCollide = Toggle
+
+                if not AddTouch then continue end
+
+                Part.Touched:Connect(function(Hit: BasePart)
+					if not Model:GetAttribute("Ragdoll") then return end
+                    if #HitList > 1 then return end
+
+					table.insert(HitList, Part)
+
+					if HitList[1] ~= Part then return end
+
+                    PartHit(Model, Root, Part, Hit)
 
                     task.wait(0.5)
 					table.clear(HitList)

@@ -93,7 +93,7 @@ NPCInfo["Common"] = {
         Shirt = 109896445568652,
         Pants = 91543195374013,
 
-        Movement = "Roam",
+        Movement = "Stationary",
 	},
 	
 	["Oog"] = {
@@ -129,7 +129,7 @@ NPCInfo["Common"] = {
 		Shirt = 105780963067603,
 		Pants = 82094953407006,
 
-		Movement = "Roam",
+		Movement = "Stationary",
 	},
 	["Felipe"] = {
 		FirstName = "Felipe",
@@ -164,7 +164,7 @@ NPCInfo["Common"] = {
 		Shirt = 135589353230600,
 		Pants = 87716520120018,
 
-		Movement = "Roam",
+		Movement = "Stationary",
 	},
 }
 

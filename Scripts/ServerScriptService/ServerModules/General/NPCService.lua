@@ -19,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -218,7 +219,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 
     local Info = NPCInfo[NPCRarity][NPCName]
 
-    local NewNPC = Assets.Misc.BaseNPC:Clone()
+    local NewNPC = if not ServerGlobalValues.NPC_Use_R6 then Assets.Misc.BaseNPC:Clone() else Assets.Misc.BaseNPC_R6:Clone()
     NewNPC.Name = NPCName
     
     local Description = Instance.new("HumanoidDescription")
@@ -279,7 +280,11 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
         Dead = false,
     }
 
-    RagdollService.SetRagdoll(NewNPC)
+	if not ServerGlobalValues.NPC_Use_R6 then
+    	RagdollService.SetRagdoll(NewNPC)
+	else
+		RagdollService.SetRagdoll_R6(NewNPC)
+	end
 end
 
 function NPCService.Stop()

@@ -27,7 +27,7 @@ local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.Sh
 
 local PUSH_RANGE = 7
 local RESET_NPC = false -- Puts the NPC back to its original position after pushed; good for testing
-local BASE_POWER = 75
+local BASE_POWER = 200
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -217,11 +217,11 @@ end
 -- @ThesePlayers = Which players should be affected
 -- @Add = How many points
 -- @MultiplierGain = How much the multiplier should go up by
--- @PointPositions = Worldspace positions where the point originated from
+-- @PointPosition = Worldspace position where the point originated from
 -- @KeepStartedTimeSame = If true, the Started time will NOT get set to os.clock(); which would reset the timer
 -- @IgnoreMultiplier = Does not add the multiplier to the final score to give
-function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, MultiplierGain: number?, PointPositions: {Vector3}?, KeepStartedTimeSame: boolean?, IgnoreMultiplier: boolean?)	
-	for n, ThisPlayer in ipairs(ThesePlayers) do
+function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, MultiplierGain: number?, PointPosition: Vector3?, KeepStartedTimeSame: boolean?, IgnoreMultiplier: boolean?)	
+	for _, ThisPlayer in ipairs(ThesePlayers) do
 		local Vals = PlayerVals[ThisPlayer]
 		if not Vals then continue end
 		
@@ -230,8 +230,8 @@ function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, Multipli
 			Vals.Streak += 1
 			Vals.Multiplier += MultiplierGain or 0
 			
-			if MultiplierGain == SharedGlobalValues.MultiplierGainPerConsecutiveHit and PointPositions and PointPositions[n] then
-				Remotes.WorldUIService.SpawnTextDisplay:Fire(ThisPlayer, "NPCStreakAdd", PointPositions[n], {Amount = SharedGlobalValues.BonusPointsPerConsecutiveHit})
+			if MultiplierGain == SharedGlobalValues.MultiplierGainPerConsecutiveHit and PointPosition then
+				Remotes.WorldUIService.SpawnTextDisplay:Fire(ThisPlayer, "NPCStreakAdd", PointPosition, {Amount = SharedGlobalValues.BonusPointsPerConsecutiveHit})
 			end
 		end
 		
