@@ -124,6 +124,14 @@
 											"className": "Folder",
 											"children": [
 												{
+													"name": "BasicInteractions",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/ClientModules/UI/Components/BasicInteractions.lua"
+													]
+												},
+												{
 													"name": "PropertyVals",
 													"className": "ModuleScript",
 													"children": [],
@@ -174,6 +182,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
+											]
+										},
+										{
+											"name": "MainMenu",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/MainMenu.lua"
 											]
 										}
 									],
@@ -2433,6 +2449,18 @@
 															"className": "UIGradient",
 															"filePaths": [],
 															"children": []
+														},
+														{
+															"name": "LeftBar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "RightBar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
 														}
 													]
 												},
@@ -2482,6 +2510,12 @@
 																			"children": []
 																		}
 																	]
+																},
+																{
+																	"name": "Cover",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														},
@@ -2514,6 +2548,12 @@
 																			"children": []
 																		}
 																	]
+																},
+																{
+																	"name": "Cover",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														},
@@ -2546,6 +2586,12 @@
 																			"children": []
 																		}
 																	]
+																},
+																{
+																	"name": "Cover",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														},
@@ -2578,6 +2624,12 @@
 																			"children": []
 																		}
 																	]
+																},
+																{
+																	"name": "Cover",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														}
@@ -2771,6 +2823,14 @@
 							],
 							"filePaths": [
 								"Assets/Replicated/UIs"
+							]
+						},
+						{
+							"name": "UISounds",
+							"className": "Folder",
+							"children": [],
+							"filePaths": [
+								"Assets/Replicated/UISounds.rbxm"
 							]
 						}
 					],

@@ -26,6 +26,7 @@ local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Util
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
+local MainMenu = require(ReplicatedStorage.Source.ClientModules.UI.MainMenu)
 local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
 local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
@@ -82,6 +83,7 @@ local function CreateNewGui()
 end
 
 local function SetupGui()
+	MainMenu.Setup(Gui)
     ScoreDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
 	TimerUI.Setup(Gui)
