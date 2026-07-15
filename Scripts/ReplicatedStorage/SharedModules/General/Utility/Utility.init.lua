@@ -33,6 +33,34 @@ local Debris = game:GetService("Debris")
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+function Utility.ConvertSecondsToHMS(TotalSeconds: number)
+	local Hours = math.floor(TotalSeconds / 3600)
+	local Minutes = math.floor((TotalSeconds % 3600) / 60)
+	local Seconds = math.floor(TotalSeconds % 60)
+
+	
+
+	if Hours > 0 then
+		if Hours < 10 then Hours = "0" .. tostring(Hours); else Hours = tostring(Hours); end
+	else
+		Hours = "00"
+	end
+
+	if Minutes > 0 then
+		if Minutes < 10 then Minutes = "0" .. tostring(Minutes); else Minutes = tostring(Minutes) end
+	else
+		Minutes = "00"
+	end
+
+	if Seconds > 0 then
+		if Seconds < 10 then Seconds = "0" .. tostring(Seconds); else Seconds = tostring(Seconds) end
+	else
+		Seconds = "00"
+	end
+		
+	return Hours .. ":" .. Minutes .. ":" .. Seconds
+end
+
 function Utility.ChangeModelTransparency(Model: Model, To: number, Ignore: {string}?, GetDescendants: boolean?)
     if not Model then return end
     

@@ -18,6 +18,7 @@ local TweenService = game:GetService("TweenService")
 --local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 --local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
+local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -43,17 +44,19 @@ local LocalPlayer = Players.LocalPlayer
 local Timer: any -- Personal timer; displayed at the top
 local OtherTimers: {} = {} -- Other players timers; billboard guis above their heads
 
+local DisplayOnlySeconds = true
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
-	local Passed = tostring(os.clock() - StartedAt + SavedTime)
+	local TotalSeconds = tostring(os.clock() - StartedAt + SavedTime)
 	local FinalVersion: string = ""
 
 	local LeftToCheck = 3
-	for n = 1, string.len(Passed) do
-		local Char = string.sub(Passed, n, n)
+	for n = 1, string.len(TotalSeconds) do
+		local Char = string.sub(TotalSeconds, n, n)
 		
 		FinalVersion = FinalVersion .. Char
 		
@@ -61,6 +64,10 @@ local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
 		
 		LeftToCheck -= 1
 		if LeftToCheck <= 0 then break end
+	end
+
+	if not DisplayOnlySeconds then
+		return Utility.ConvertSecondsToHMS(TotalSeconds) .. "." .. string.sub(FinalVersion, string.len(FinalVersion) - 1, string.len(FinalVersion))
 	end
 
 	return FinalVersion .. "s"

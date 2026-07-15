@@ -153,6 +153,14 @@
 											]
 										},
 										{
+											"name": "MainMenu",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/MainMenu.lua"
+											]
+										},
+										{
 											"name": "PushChargeBarUI",
 											"className": "ModuleScript",
 											"children": [],
@@ -182,14 +190,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
-											]
-										},
-										{
-											"name": "MainMenu",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/UI/MainMenu.lua"
 											]
 										}
 									],
@@ -2174,6 +2174,14 @@
 							]
 						},
 						{
+							"name": "UISounds",
+							"className": "Folder",
+							"children": [],
+							"filePaths": [
+								"Assets/Replicated/UISounds.rbxm"
+							]
+						},
+						{
 							"name": "UIs",
 							"className": "Folder",
 							"children": [
@@ -2461,6 +2469,225 @@
 															"className": "Frame",
 															"filePaths": [],
 															"children": []
+														},
+														{
+															"name": "Skills",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "LevelInfo",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "XP",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "Level",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "Progress",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Fill",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		}
+																	]
+																},
+																{
+																	"name": "List_OLD",
+																	"className": "CanvasGroup",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "ScrollFrame",
+																			"className": "ScrollingFrame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Frame",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "ListLayout",
+																					"className": "UIListLayout",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		},
+																		{
+																			"name": "Gradient",
+																			"className": "UIGradient",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "List",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "ChargePower",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Info",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Right",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Progress",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "ListLayout",
+																									"className": "UIListLayout",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Slot_1",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Highlight",
+																													"className": "Frame",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_2",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Slot_3",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Slot_4",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Slot_5",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						},
+																						{
+																							"name": "Description",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Plus",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				},
+																				{
+																					"name": "Left",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Label",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "IconFrame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "ListLayout",
+																			"className": "UIListLayout",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																}
+															]
 														}
 													]
 												},
@@ -2520,7 +2747,7 @@
 															]
 														},
 														{
-															"name": "Stats",
+															"name": "Stuff",
 															"className": "ImageButton",
 															"filePaths": [],
 															"children": [
@@ -2665,31 +2892,6 @@
 															"filePaths": [],
 															"children": [
 																{
-																	"name": "Frame",
-																	"className": "Frame",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "ListLayout",
-																			"className": "UIListLayout",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Icon",
-																			"className": "ImageLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																},
-																{
 																	"name": "Stroke",
 																	"className": "UIStroke",
 																	"filePaths": [],
@@ -2698,35 +2900,10 @@
 															]
 														},
 														{
-															"name": "Stats",
+															"name": "Stuff",
 															"className": "ImageButton",
 															"filePaths": [],
 															"children": [
-																{
-																	"name": "Frame",
-																	"className": "Frame",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "ListLayout",
-																			"className": "UIListLayout",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Icon",
-																			"className": "ImageLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																},
 																{
 																	"name": "Stroke",
 																	"className": "UIStroke",
@@ -2741,31 +2918,6 @@
 															"filePaths": [],
 															"children": [
 																{
-																	"name": "Frame",
-																	"className": "Frame",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "ListLayout",
-																			"className": "UIListLayout",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Icon",
-																			"className": "ImageLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																},
-																{
 																	"name": "Stroke",
 																	"className": "UIStroke",
 																	"filePaths": [],
@@ -2779,31 +2931,6 @@
 															"filePaths": [],
 															"children": [
 																{
-																	"name": "Frame",
-																	"className": "Frame",
-																	"filePaths": [],
-																	"children": [
-																		{
-																			"name": "ListLayout",
-																			"className": "UIListLayout",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Icon",
-																			"className": "ImageLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		}
-																	]
-																},
-																{
 																	"name": "Stroke",
 																	"className": "UIStroke",
 																	"filePaths": [],
@@ -2812,6 +2939,12 @@
 															]
 														}
 													]
+												},
+												{
+													"name": "AspectRatio",
+													"className": "UIAspectRatioConstraint",
+													"filePaths": [],
+													"children": []
 												}
 											]
 										}
@@ -2823,14 +2956,6 @@
 							],
 							"filePaths": [
 								"Assets/Replicated/UIs"
-							]
-						},
-						{
-							"name": "UISounds",
-							"className": "Folder",
-							"children": [],
-							"filePaths": [
-								"Assets/Replicated/UISounds.rbxm"
 							]
 						}
 					],
