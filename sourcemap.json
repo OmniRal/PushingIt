@@ -2606,6 +2606,12 @@
 																													"className": "Frame",
 																													"filePaths": [],
 																													"children": []
+																												},
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
 																												}
 																											]
 																										}
@@ -2615,25 +2621,81 @@
 																									"name": "Slot_2",
 																									"className": "Frame",
 																									"filePaths": [],
-																									"children": []
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
 																								},
 																								{
 																									"name": "Slot_3",
 																									"className": "Frame",
 																									"filePaths": [],
-																									"children": []
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
 																								},
 																								{
 																									"name": "Slot_4",
 																									"className": "Frame",
 																									"filePaths": [],
-																									"children": []
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
 																								},
 																								{
 																									"name": "Slot_5",
 																									"className": "Frame",
 																									"filePaths": [],
-																									"children": []
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
 																								}
 																							]
 																						},
@@ -2647,7 +2709,14 @@
 																							"name": "Plus",
 																							"className": "ImageButton",
 																							"filePaths": [],
-																							"children": []
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
 																						}
 																					]
 																				},
@@ -2684,8 +2753,753 @@
 																			"className": "UIListLayout",
 																			"filePaths": [],
 																			"children": []
+																		},
+																		{
+																			"name": "ChargeSpeed",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Info",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Right",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Progress",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Slot_1",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_2",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_3",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_4",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_5",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "ListLayout",
+																									"className": "UIListLayout",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						},
+																						{
+																							"name": "Description",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Plus",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				},
+																				{
+																					"name": "Left",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Label",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "IconFrame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "PushCooldown",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Info",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Right",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Progress",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Slot_1",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_2",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_3",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_4",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_5",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "ListLayout",
+																									"className": "UIListLayout",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						},
+																						{
+																							"name": "Description",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Plus",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				},
+																				{
+																					"name": "Left",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Label",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "IconFrame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "DodgeRange",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Info",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Right",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Progress",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Slot_1",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_2",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_3",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_4",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_5",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "ListLayout",
+																									"className": "UIListLayout",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						},
+																						{
+																							"name": "Description",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Plus",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				},
+																				{
+																					"name": "Left",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Label",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "IconFrame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "DodgeCooldown",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Info",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Right",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Progress",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Slot_1",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_2",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_3",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_4",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slot_5",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Fill",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Texture",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								},
+																								{
+																									"name": "ListLayout",
+																									"className": "UIListLayout",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						},
+																						{
+																							"name": "Description",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Plus",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				},
+																				{
+																					"name": "Left",
+																					"className": "Frame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Label",
+																							"className": "TextLabel",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "IconFrame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
 																		}
 																	]
+																},
+																{
+																	"name": "Info",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "PointsLeft",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				}
+																			]
+																		}
+																	]
+																}
+															]
+														},
+														{
+															"name": "Background",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Gradient",
+																	"className": "UIGradient",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														}
