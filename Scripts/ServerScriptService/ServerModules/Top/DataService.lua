@@ -44,17 +44,18 @@ local ProfileTemplate = {
 	TimerActive = false,
 	SavedTime = 0,
 
+	SkillPoints = 0,
     Skills = {
-        ChargePower = 2,
+        ChargePower = 4,
         ChargeSpeed = 1,
-		ChargeCooldown = 1,
+		PushCooldown = 2,
 
-		DodgeRange = 1,
+		DodgeRange = 0,
 		DodgeCooldown = 1,
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_13', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_16', ProfileTemplate)
 local Profiles = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -194,13 +195,22 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
             CurrentXP = 0
         end
 
+		local UpdateList = {}
+
         if PData.Level < NewLevel then
             PData.Level = NewLevel
-            Remotes.DataService.SingleDataUpdate:Fire(Player, "Level", NewLevel)
+			PData.SkillPoints += 1
+
+			UpdateList["Level"] = NewLevel
+			UpdateList["SkillPoints"] = PData.SkillPoints
+            --Remotes.DataService.SingleDataUpdate:Fire(Player, "Level", NewLevel)
+			--Remotes.DataService.SingleDataUpdate:Fire(Player, "SkillPoints", PData.SkillPoints)
         end
 
         PData.XP = CurrentXP
-        Remotes.DataService.SingleDataUpdate:Fire(Player, "XP", CurrentXP)
+        --Remotes.DataService.SingleDataUpdate:Fire(Player, "XP", CurrentXP)
+
+		Remotes.DataService.MultiDataUpdate:Fire(Player, UpdateList)
         Remotes.DataService.GiveAddXP:Fire(Player, Increment)
         return
     end
@@ -221,6 +231,7 @@ end
 function DataService:Init()
     Remotes:CreateToClient("FullDataUpdate", {"table"}, "Reliable")
     Remotes:CreateToClient("SingleDataUpdate", {"string | table", "any"}, "Reliable")
+	Remotes:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
     Remotes:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 
     --[[for WeaponName, W_Info in pairs(WeaponInfo) do

@@ -239,7 +239,7 @@ end
 -- @Button = Which button to connect it to
 -- @Fn = The function to use
 -- @Ingore(x) = Ignore a specific attribute
-function BasicInteractions.ConnectFXInteractionsFN(Button: GuiButton, Fn: (...any) -> (...any), IgnoreHover: boolean?, IgnorePressed: boolean?, IgnoreOn: boolean?, ...)
+function BasicInteractions.ConnectFXInteractionsFN(Button: GuiButton, Fn: (...any) -> (...any), IgnoreHover: boolean?, IgnorePressed: boolean?, IgnoreOn: boolean?, IgnoreLocked: boolean?, ...)
 	if not Button or not Fn then return end
 
 	local Other = {...}
@@ -258,6 +258,12 @@ function BasicInteractions.ConnectFXInteractionsFN(Button: GuiButton, Fn: (...an
 
 	if not IgnoreOn then
 		Button:GetAttributeChangedSignal("On"):Connect(function()
+			Fn(Button, if Other then unpack(Other) else nil)
+		end)
+	end
+
+	if not IgnoreLocked then
+		Button:GetAttributeChangedSignal("Locked"):Connect(function()
 			Fn(Button, if Other then unpack(Other) else nil)
 		end)
 	end

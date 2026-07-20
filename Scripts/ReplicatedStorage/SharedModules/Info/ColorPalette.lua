@@ -25,5 +25,6 @@ ColorPalette.StatsBlue = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromH
 ColorPalette.SkillsRed = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromHex("#EC652B")}
 ColorPalette.SettingsBlack = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromHex("#EC652B")}
 
+ColorPalette.DarkGrey = {RGB = Color3.fromRGB(100, 100, 100), HEX = Color3.fromHex("#646464")}
 
 return ColorPalette

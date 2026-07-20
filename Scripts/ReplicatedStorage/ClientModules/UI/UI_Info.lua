@@ -2,7 +2,7 @@
 
 local UI_Info = {}
 
-UI_Info.BaseAnimTime = 0.2
+UI_Info.BaseAnimTime = 0.1
 
 UI_Info.BaseTweenStyle = Enum.EasingStyle.Quad
 UI_Info.BaseTweenDir = Enum.EasingDirection.InOut
