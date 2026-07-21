@@ -16,6 +16,7 @@ local TweenService = game:GetService("TweenService")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
@@ -30,10 +31,12 @@ local MENU_ON_POSITION = UDim2.fromScale(0.5, 0.5)
 local MENU_OFF_POSITION = UDim2.fromScale(0.5, 0.7)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Types
+-- Types & Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 type TabType = "Shop" | "Stats" | "Skills" | "Settings"
+
+local DataService = Remotes.DataService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -286,6 +289,16 @@ function MainMenu.Setup(Gui: ScreenGui)
 		Frame.Right.Plus.AutoButtonColor = false
 		BasicInteractions.AddButton(Frame.Right.Plus)
 		BasicInteractions.ConnectFXInteractionsFN(Frame.Right.Plus, UpdatePlusSkillButtonVisuals, false, false, true, false)
+
+		Frame.Right.Plus.Activated:Connect(function()
+			if Frame.Right.Plus:GetAttribute("Locked") then return end
+			local Result = DataService:RequestUpgradeSkill(Frame.Name)
+			if Result == 1 then
+				print("Success!")
+			else
+				print(Result)
+			end
+		end)
 	end
 
 	task.delay(4, function()

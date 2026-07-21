@@ -174,6 +174,17 @@ function MainUIController:Deferred()
         end)
     end)
 
+	DataService.MultiDataUpdate:Connect(function(UpdateList: {[string]: any})
+		task.defer(function() 
+			for Entry, _ in UpdateList do
+				if Entry == "Skills" then
+					MainMenu.UpdateSkills()
+					PushChargeBarUI.UpdateDivBars()
+				end
+			end
+		end)
+	end)
+
     DataService.GiveAddXP:Connect(function(ThisMuch: number)
         PlayerInfo.AddXP += ThisMuch
     end)

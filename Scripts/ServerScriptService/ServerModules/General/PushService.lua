@@ -27,7 +27,7 @@ local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.Sh
 
 local PUSH_RANGE = 7
 local RESET_NPC = false -- Puts the NPC back to its original position after pushed; good for testing
-local BASE_POWER = 200
+local BASE_POWER = 75
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -190,12 +190,13 @@ function PushService.AttemptPush(Player: Player)
 	
 	local TimePassed = os.clock() - PVals.PushChargeStarted
 	local SecondPerGain = SharedGlobalValues.ChargeGain_Base - (PData.ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
-	local Level = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
-	local Power = BASE_POWER * math.clamp(Level, 0.1, 6)
+	local Power = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
+	
+	local FinalPower = BASE_POWER * math.clamp(Power, 0.1, 6)
 	
 	warn("___")
-	print("Level: ", Level)
-	print("Power: ", Power)
+	print("Level: ", Power)
+	print("Power: ", FinalPower)
 	
 	-- First look for NPCs to push
 	for _, NPC: Model in CollectionService:GetTagged("NPC") do
@@ -206,7 +207,7 @@ function PushService.AttemptPush(Player: Player)
 		task.spawn(function()
 			PushService.PushModel(Player, NPC)
 			task.wait()
-			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * Power + Vector3.new(0, Power * 0.2, 0)
+			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 		end)
 	end
 	

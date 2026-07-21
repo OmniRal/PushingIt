@@ -44,19 +44,21 @@ local ProfileTemplate = {
 	TimerActive = false,
 	SavedTime = 0,
 
-	SkillPoints = 0,
+	SkillPoints = 100,
     Skills = {
-        ChargePower = 4,
+        ChargePower = 1,
         ChargeSpeed = 1,
-		PushCooldown = 2,
+		PushCooldown = 1,
 
-		DodgeRange = 0,
+		DodgeRange = 1,
 		DodgeCooldown = 1,
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_16', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_21', ProfileTemplate)
 local Profiles = {}
+
+local UpgradeSkillRequests: {[Player]: boolean} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------
@@ -234,6 +236,30 @@ function DataService:Init()
 	Remotes:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
     Remotes:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 
+	Remotes:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string)
+		if not Player then return end
+
+		DataService.WaitForPlayerDataLoaded(Player)
+		local PData = Profiles[Player].Data
+		if not PData then print("Data not found while trying to upgrade skill for", Player.Name); return "DataMissing"; end
+		if not PData.Skills or not PData.SkillPoints then print("Skills or SkillPoints data not found while trying to upgrade skill for", Player.Name); return "DataMissing" end
+		if not PData.Skills[ThisSkill] then print(ThisSkill, " is not a valid skill"); return "SkillIncorrect" end
+		if PData.Skills[ThisSkill] >= 5 then return "SkillMaxed" end
+		if PData.SkillPoints <= 0 then return "NeedSkillPoints" end
+
+		if UpgradeSkillRequests[Player] then return "TooManyRequests" end
+		UpgradeSkillRequests[Player] = true
+
+		PData.SkillPoints -= 1
+		PData.Skills[ThisSkill] += 1
+
+		Remotes.DataService.MultiDataUpdate:Fire(Player, {SkillPoints = PData.SkillPoints, Skills = PData.Skills})
+
+		task.delay(0.5, function() UpgradeSkillRequests[Player] = false end)
+
+		return 1
+	end)
+
     --[[for WeaponName, W_Info in pairs(WeaponInfo) do
         local WeaponUnlocked = false
         if W_Info.UnlockedBy == "Default" then
@@ -266,7 +292,6 @@ function DataService:Init()
 end
 
 function DataService:Deferred()
-    print("Data Service Deferred...")
     self.ServiceReady = true
 end
 

@@ -279,11 +279,23 @@ function MainController:Deferred()
             MainUIController.UpdateLevelInfoUI()
         end
 
-        print("Recieved Data: ", PlayerInfo.Data)
+        print("Player Data: ", PlayerInfo.Data)
     end)
+
+	DataService.MultiDataUpdate:Connect(function(UpdateList: {[string]: any})
+		if not PlayerInfo.Data then return end
+		
+		-- Update the cached player data on the client
+		for Entry, Value in UpdateList do
+			if not PlayerInfo.Data[Entry] then continue end
+			PlayerInfo.Data[Entry] = Value
+		end
+	end)
 
     DataService.SingleDataUpdate:Connect(function(Index: string | {}, Value: any)
         if not PlayerInfo.Data then return end
+
+		-- Update the cached player data on the client
         if typeof(Index) == "string" then
             if not PlayerInfo.Data[Index] then return end
             PlayerInfo.Data[Index] = Value
