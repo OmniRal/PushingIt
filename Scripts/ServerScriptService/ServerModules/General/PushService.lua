@@ -43,7 +43,11 @@ local PlayerVals: {
 		Points: number,
 		Streak: number, -- Amount of NPCs / players that have been pushed in a row
 		Multiplier: number,
+		
 		PushChargeStarted: number,
+		PushDone: number, -- When the push was completed; used for the push cooldown
+
+		DodgeDone: number, -- When the dodge was completed; used for the dodge cooldown
 	}
 } = {}
 
@@ -180,6 +184,21 @@ function PushService.GetPushers(Model: Model): {Player}?
 	return ModelRagdolls[Model].Pushers
 end
 
+function PushService.StartPushCharge(Player: Player)
+	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
+	if not PVals or not PData then return end
+	
+	local Alive: boolean, _, Root: BasePart = Utility.Players.CheckAlive(Player)
+	if not Alive or not Root then return end
+	
+	local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PData.PushCooldown - 1))
+	if os.clock() < PVals.PushDone + CooldownTime then return -1 end
+
+	PVals.PushChargeStarted = os.clock()
+
+	return true
+end
+
 -- Player tries to push an NPC or another player
 function PushService.AttemptPush(Player: Player)
 	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
@@ -188,16 +207,22 @@ function PushService.AttemptPush(Player: Player)
 	local Alive: boolean, _, Root: BasePart = Utility.Players.CheckAlive(Player)
 	if not Alive or not Root then return end
 	
+	local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PData.PushCooldown - 1))
+	if os.clock() < PVals.PushDone + CooldownTime then return -1 end
+	
+	PVals.PushDone = os.clock()
+
 	local TimePassed = os.clock() - PVals.PushChargeStarted
 	local SecondPerGain = SharedGlobalValues.ChargeGain_Base - (PData.ChargeSpeed * SharedGlobalValues.ChargeGain_Subtract)
 	local Power = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
 	
 	local FinalPower = BASE_POWER * math.clamp(Power, 0.1, 6)
+
 	
 	warn("___")
 	print("Level: ", Power)
 	print("Power: ", FinalPower)
-	
+
 	-- First look for NPCs to push
 	for _, NPC: Model in CollectionService:GetTagged("NPC") do
 		if not NPC then continue end
@@ -212,6 +237,15 @@ function PushService.AttemptPush(Player: Player)
 	end
 	
 	-- Then look for other players to push
+	return true
+end
+
+function PushService.AttemptDodge(Player: Player)
+	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
+	if not PVals or not PData then return end
+	
+	local Alive: boolean, _, Root: BasePart = Utility.Players.CheckAlive(Player)
+	if not Alive or not Root then return end
 end
 
 -- Add points for specific players
@@ -232,7 +266,7 @@ function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, Multipli
 			Vals.Multiplier += MultiplierGain or 0
 			
 			if MultiplierGain == SharedGlobalValues.MultiplierGainPerConsecutiveHit and PointPosition then
-				Remotes.WorldUIService.SpawnTextDisplay:Fire(ThisPlayer, "NPCStreakAdd", PointPosition, {Amount = SharedGlobalValues.BonusPointsPerConsecutiveHit})
+				Remotes.Server.WorldUIService.SpawnTextDisplay:Fire(ThisPlayer, "NPCStreakAdd", PointPosition, {Amount = SharedGlobalValues.BonusPointsPerConsecutiveHit})
 			end
 		end
 		
@@ -242,7 +276,7 @@ function PushService.ScoreUp(ThesePlayers: {Player}, PointGain: number, Multipli
 		end
 		Vals.Points += Final
 		
-		Remotes.PushService.ScoreChanged:Fire(ThisPlayer, Vals.Points, Vals.Streak, Vals.Multiplier)
+		Remotes.Server.PushService.ScoreChanged:Fire(ThisPlayer, Vals.Points, Vals.Streak, Vals.Multiplier)
 	end
 end
 
@@ -261,7 +295,7 @@ function PushService.ResetScore(ThisPlayer: Player)
 	Vals.Streak = 0
 	Vals.Multiplier = 0
 	
-	Remotes.PushService.ScoreChanged:Fire(ThisPlayer, 0, 0, 0)
+	Remotes.Server.PushService.ScoreChanged:Fire(ThisPlayer, 0, 0, 0)
 end
 
 function PushService.StartTimer(ThisPlayer: Player)
@@ -297,7 +331,11 @@ function PushService.PlayerAdded(Player: Player)
 		Points = 0,
 		Streak = 0,
 		Multiplier = 0,
-		PushChargeStarted = 0
+
+		PushChargeStarted = 0,
+		PushDone = 0,
+
+		DodgeDone = 0,
 	}
 	
 	local PVPMode = DataService.GetIndex(Player, "PVPMode")
@@ -322,17 +360,20 @@ function PushService.PlayerRemoving(Player: Player)
 end
 
 function PushService:Init()
-	Remotes:CreateToClient("ScoreChanged", {"number", "number", "number"})
+	Remotes.Server:CreateToClient("ScoreChanged", {"number", "number", "number"})
 	
 	-- Sets the start push charge time for the player
-	Remotes:CreateToServer("StartPushCharge", {}, "Reliable", function(Player: Player)
-		if not PlayerVals[Player] then return end
-		PlayerVals[Player].PushChargeStarted = os.clock()
+	Remotes.Server:CreateToServer("StartPushCharge", {}, "Returns", function(Player: Player)
+		return PushService.StartPushCharge(Player)
 	end)
 	
 	-- Upon releasing the charge; push the player
-	Remotes:CreateToServer("AttemptPush", {}, "Reliable", function(Player: Player)
-		PushService.AttemptPush(Player)
+	Remotes.Server:CreateToServer("AttemptPush", {}, "Returns", function(Player: Player)
+		return PushService.AttemptPush(Player)
+	end)
+
+	Remotes.Server:CreateToServer("AttemptDodge", {}, "Returns", function(Player: Player)
+		
 	end)
 end
 

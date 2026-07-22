@@ -44,8 +44,8 @@ local ADD_XP_PAUSE = 1 -- How many seconds to pause adding more XP to the bar af
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 --local VisualService = Remotes.VisualService
-local DataService = Remotes.DataService
-local PushService = Remotes.PushService
+local DataService = Remotes.Client.DataService
+local PushService = Remotes.Client.PushService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -118,10 +118,22 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Update the players current level and xp
 function MainUIController.UpdateLevelInfoUI()
     Gui.LevelInfo.Level.Text = "Lv. " .. PlayerInfo.CurrentLevel
     Gui.LevelInfo.XP.Text = PlayerInfo.CurrentXP .. " / " .. PlayerInfo.CurrentMaxXP .. " XP"
     Gui.LevelInfo.Progress.Fill.Size = UDim2.fromScale(PlayerInfo.CurrentXP / PlayerInfo.CurrentMaxXP, 1)
+end
+
+function MainUIController.RunAbilityCooldown(ThisAbility: "Push" | "Dodge")
+
+end
+
+-- Update all data dependent elements of the UI
+function MainUIController.UpdateAllUI()
+	MainMenu.UpdateSkills()
+	PushChargeBarUI.UpdateDivBars()
+	MainUIController.UpdateLevelInfoUI()
 end
 
 function MainUIController.ControlPushBar(Action: "Start" | "Stop" | "StopAndHide")
@@ -159,6 +171,32 @@ function MainUIController:Deferred()
         print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
     end)
 
+	while true do
+		task.wait()
+		if not Remotes.Client.DataService or not Remotes.Client.PushService then continue end
+		DataService = Remotes.Client.DataService
+		PushService = Remotes.Client.PushService
+		break
+	end
+
+	DataService.FullDataUpdate:Connect(function()
+		task.defer(function()
+			MainMenu.UpdateSkills()
+			PushChargeBarUI.UpdateDivBars()
+		end)
+	end)
+
+	DataService.MultiDataUpdate:Connect(function(UpdateList: {[string]: any})
+		task.defer(function() 
+			for Entry, _ in UpdateList do
+				if Entry == "Skills" then
+					MainMenu.UpdateSkills()
+					PushChargeBarUI.UpdateDivBars()
+				end
+			end
+		end)
+	end)
+
 	DataService.SingleDataUpdate:Connect(function(Index: string, Value: any)
         task.defer(function()
             --local PData = PlayerInfo.Data
@@ -174,17 +212,6 @@ function MainUIController:Deferred()
         end)
     end)
 
-	DataService.MultiDataUpdate:Connect(function(UpdateList: {[string]: any})
-		task.defer(function() 
-			for Entry, _ in UpdateList do
-				if Entry == "Skills" then
-					MainMenu.UpdateSkills()
-					PushChargeBarUI.UpdateDivBars()
-				end
-			end
-		end)
-	end)
-
     DataService.GiveAddXP:Connect(function(ThisMuch: number)
         PlayerInfo.AddXP += ThisMuch
     end)
@@ -198,6 +225,8 @@ function MainUIController:Deferred()
     RunService.Heartbeat:Connect(function(DeltaTime: number)
         MainUIController.RunHeartbeat(DeltaTime)
     end)
+
+	warn("LOADED MAIN UIIIII")
 end
 
 return MainUIController

@@ -448,7 +448,7 @@ function RagdollService.PlayerAdded(Player: Player)
 end
 
 function RagdollService:Init()
-    Remotes:CreateToServer("ToggleRagdoll", {"boolean"}, "Reliable", function(Player: Player, Toggle: boolean?)
+    Remotes.Server:CreateToServer("ToggleRagdoll", {"boolean"}, "Reliable", function(Player: Player, Toggle: boolean?)
         if not Player then return end
         if not Player.Character then return end
         local NewToggle = Toggle

@@ -31,7 +31,7 @@ local SharedAssets = ReplicatedStorage.Assets
 ----------------
 
 function VisualService:Init()
-    Remotes:CreateToClient("SpawnTextDisplay", {"string", "string", "string", "Vector3", "table?"}, "Unreliable")
+    Remotes.Server:CreateToClient("SpawnTextDisplay", {"string", "string", "string", "Vector3", "table?"}, "Unreliable")
 end
 
 function VisualService:Deferred()

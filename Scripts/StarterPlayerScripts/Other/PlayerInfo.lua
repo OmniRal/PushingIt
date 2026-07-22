@@ -35,4 +35,9 @@ PlayerInfo.CurrentPoints = 0
 PlayerInfo.CurrentStreak = 0 
 PlayerInfo.CurrentMultiplier = 0
 
+PlayerInfo.PushStarted = false
+PlayerInfo.PushDone = 0
+
+PlayerInfo.DodgeDone = 0
+
 return PlayerInfo

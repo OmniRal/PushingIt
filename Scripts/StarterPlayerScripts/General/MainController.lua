@@ -29,6 +29,7 @@ local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.Gener
 local AnimationController = require(script.Parent.AnimationController)
 
 local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 local ControlModule
@@ -41,9 +42,9 @@ local ControlModule
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local DataService = Remotes.DataService
-local PushService = Remotes.PushService
-local RagdollService = Remotes.RagdollService
+local DataService = Remotes.Client.DataService
+local PushService = Remotes.Client.PushService
+local RagdollService = Remotes.Client.RagdollService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -60,7 +61,9 @@ local CharacterSetup = false
 local PushAnimationsList : {[string]: {ID: number, Priority: Enum.AnimationPriority, Looped: boolean?}} = {
 	["StartPush"] = {ID = 128311229502892, Priority = Enum.AnimationPriority.Action2},
     ["ChargePush"] = {ID = 136393663879299, Priority = Enum.AnimationPriority.Action2, Looped = true},
-    ["FinishPush"] = {ID = 102907787145425, Priority = Enum.AnimationPriority.Action2}
+    ["FinishPush"] = {ID = 102907787145425, Priority = Enum.AnimationPriority.Action2},
+
+	["Dodge"] = {ID = 90672690441150, Priority = Enum.AnimationPriority.Action2}
 }
 
 local GroundParams = RaycastParams.new()
@@ -155,14 +158,31 @@ local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
 end
 
 local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
-    if State == Enum.UserInputState.Begin then
-        PushService:StartPushCharge()
-		MainUIController.ControlPushBar("Start")
-        AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "StartPush", false, 1, PushAnimFunc)
+    if not PlayerInfo.Data then return end
+	if not PlayerInfo.Data.Skills then return end
+	if not PlayerInfo.Data.Skills.PushCooldown then return end
+	
+	if State == Enum.UserInputState.Begin then
+		local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PlayerInfo.Data.Skills.PushCooldown - 1))
+		if os.clock() < PlayerInfo.PushDone + CooldownTime then return end
+
+		local Result = PushService:StartPushCharge()
+		if Result == true then
+			PlayerInfo.PushStarted = true
+			MainUIController.ControlPushBar("Start")
+			AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "StartPush", false, 1, PushAnimFunc)
+		end
 
     elseif State == Enum.UserInputState.End then
+		if not PlayerInfo.PushStarted then return end
+
+		PlayerInfo.PushStarted = false
         AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "FinishPush", false, 1, PushAnimFunc)
     end
+end
+
+local function AttemptDodge(_, State: Enum.UserInputState, _: InputObject)
+
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -260,6 +280,8 @@ function MainController:Init()
 		if not DeltaTime then return end
         MainController:RunHeartbeat()
     end)
+
+	print("Main Controller Init...")
 end
 
 function MainController:Deferred()
@@ -268,6 +290,14 @@ function MainController:Deferred()
         ControlModule = require(GotControlModule)
     end
 
+	while true do
+		task.wait()
+		if not Remotes.Client.DataService or not Remotes.Client.PushService then continue end
+		DataService = Remotes.Client.DataService
+		PushService = Remotes.Client.PushService
+		break
+	end
+
     DataService.FullDataUpdate:Connect(function(Data: any)
         PlayerInfo.Data = Data
         
@@ -275,9 +305,9 @@ function MainController:Deferred()
             PlayerInfo.CurrentLevel = Data.Level
             PlayerInfo.CurrentMaxXP = LevelXPCurve.CalculateXPNeeded(Data.Level)
             PlayerInfo.CurrentXP = Data.XP
-
-            MainUIController.UpdateLevelInfoUI()
         end
+
+		MainUIController.UpdateAllUI()
 
         print("Player Data: ", PlayerInfo.Data)
     end)
@@ -316,6 +346,8 @@ function MainController:Deferred()
 		PlayerInfo.CurrentStreak = Streak
 		PlayerInfo.CurrentMultiplier = Multipler
     end)
+
+	print("Main Controller Deferred...")
 end
 
 return MainController

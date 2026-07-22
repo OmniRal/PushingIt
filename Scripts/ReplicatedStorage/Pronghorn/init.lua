@@ -29,7 +29,7 @@
 ║                           ██████▀██▓▌▀▌ ▄     ▄▓▌▐▓█▌                ║
 ║                                                                      ║
 ║                                                                      ║
-║                    Pronghorn Framework  Rev. B58                     ║
+║                     Pronghorn Framework  Rev. R1                     ║
 ║             https://github.com/Iron-Stag-Games/Pronghorn             ║
 ║                GNU Lesser General Public License v2.1                ║
 ║                                                                      ║
@@ -37,8 +37,6 @@
 ║                                                                      ║
 ║      Pronghorn is a Roblox framework with a direct approach to       ║
 ║         Module scripting that facilitates rapid development.         ║
-║                                                                      ║
-║        No Controllers or Services, just Modules and Remotes.         ║
 ║                                                                      ║
 ╠═══════════════════════════════ Usage ════════════════════════════════╣
 ║                                                                      ║
@@ -49,21 +47,25 @@
 ╚══════════════════════════════════════════════════════════════════════╝
 ]]
 
-local Pronghorn = {}
+if pcall(function(): () game:GetService("RunService"):IsEdit() end) then error("Cannot require Pronghorn in Edit mode", 0) end
+const a = if game:GetService("RunService"):IsServer() then "__s" else "__c"
+if not script:GetAttribute(a) then script:SetAttribute(a, true) else error("Cannot require Pronghorn from more than one Luau VM; please use BindableFunctions", 0) end
+
+const Pronghorn = {}
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Dependencies
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Services
-local Players = game:GetService("Players")
+const Players = game:GetService("Players")
 
 -- Core
-local Debug = require(script.Debug)
-local New = require(script.New)
+const Debug = require(script.Debug)
+const New = require(script.New)
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Helper Variables
+-- Private Variables
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Types
@@ -73,17 +75,22 @@ type Module = {
 }
 
 -- Defines
-local imported = false
 local startWaits = math.huge
 
--- Objects
-local deferredComplete = New.Event()
-
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Helper Functions
+-- Public Variables
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function addModules(allModules: {Module}, object: Instance)
+Pronghorn.Importing = New.TrackedVariable(false)
+Pronghorn.Imported = New.TrackedVariable(false)
+Pronghorn.DeferredComplete = New.TrackedVariable(false)
+Pronghorn.ModuleStatus = {} :: {[ModuleScript]: New.TrackedVariable<number>}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Private Functions
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const function addModules(allModules: {Module}, object: Instance): ()
 	if object ~= script then
 		if object:IsA("ModuleScript") then
 			local alreadyAdded = false
@@ -95,9 +102,14 @@ local function addModules(allModules: {Module}, object: Instance)
 			end
 			if not alreadyAdded then
 				table.insert(allModules, {Object = object, Return = require(object) :: any})
+				Pronghorn.ModuleStatus[object] = New.TrackedVariable(0)
 			end
 		else
-			for _, child in object:GetChildren() do
+			const children = object:GetChildren()
+			table.sort(children, function(a0: Instance, a1: Instance): boolean
+				return a0.Name < a1.Name
+			end)
+			for _, child in children do
 				addModules(allModules, child)
 			end
 		end
@@ -105,35 +117,40 @@ local function addModules(allModules: {Module}, object: Instance)
 end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Module Functions
+-- Public Functions
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
---- @todo
-function Pronghorn:SetEnabledChannels(newEnabledChannels: {[string]: boolean})
+--- Toggles which `ModuleScript` names will appear in `Debug` outputs.
+--- @error Parameter "newEnabledChannels" expected type "{[string]: boolean}", got {...} -- Incorrect usage.
+function Pronghorn:SetEnabledChannels(newEnabledChannels: {[string]: boolean}): ()
 	Debug:SetEnabledChannels(newEnabledChannels)
 end
 
---- @todo
+--- Starts Pronghorn.
+--- @param paths -- The list of `Instances` and their descendants to be imported. Descendants of `ModuleScripts` are ignored.
 --- @yields
-function Pronghorn:Import(paths: {Instance})
-	if imported then
+function Pronghorn:Import(paths: {Instance}): ()
+	if Pronghorn.Importing:Get() then
 		error("Pronghorn:Import() cannot be called more than once", 0)
 	end
 
-	local allModules: {Module} = {}
+	const allModules: {Module} = {}
 
 	for _, object in paths do
 		addModules(allModules, object)
 	end
 
+	Pronghorn.Importing:Set(true)
+
 	-- Init
 	for _, moduleTable in allModules do
 		if type(moduleTable.Return) == "table" and moduleTable.Return.Init then
-			local thread = task.spawn(moduleTable.Return.Init, moduleTable.Return)
+			const thread = task.spawn(moduleTable.Return.Init :: (self: typeof(moduleTable.Return)) -> (), moduleTable.Return)
 			if coroutine.status(thread) ~= "dead" then
 				error(`{moduleTable.Object:GetFullName()}: Yielded during Init function`, 0)
 			end
 		end
+		Pronghorn.ModuleStatus[moduleTable.Object]:Set(1)
 	end
 
 	-- Deferred
@@ -148,26 +165,32 @@ function Pronghorn:Import(paths: {Instance})
 						warn(`{moduleTable.Object:GetFullName()}: Infinite yield possible in Deferred function`)
 					end
 				end)
-				moduleTable.Return:Deferred()
+				;(moduleTable.Return.Deferred :: (self: typeof(moduleTable.Return)) -> ())(moduleTable.Return)
 				running = false
+				Pronghorn.ModuleStatus[moduleTable.Object]:Set(2)
 				startWaits -= 1
 				if startWaits == 0 then
-					deferredComplete:Fire()
+					Pronghorn.DeferredComplete:Set(true)
 				end
 			end)
+		else
+			Pronghorn.ModuleStatus[moduleTable.Object]:Set(2)
 		end
+	end
+	if startWaits == 0 then
+		Pronghorn.DeferredComplete:Set(true)
 	end
 
 	-- PlayerAdded
-	local function playerAdded(player: Player)
+	const function playerAdded(player: Player): ()
 		for _, moduleTable in allModules do
 			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerAdded then
-				task.spawn(moduleTable.Return.PlayerAdded, player)
+				task.spawn(moduleTable.Return.PlayerAdded :: (player: Player) -> (), player)
 			end
 		end
 		for _, moduleTable in allModules do
 			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerAddedDeferred then
-				task.spawn(moduleTable.Return.PlayerAddedDeferred, player)
+				task.spawn(moduleTable.Return.PlayerAddedDeferred :: (player: Player) -> (), player)
 			end
 		end
 	end
@@ -176,31 +199,37 @@ function Pronghorn:Import(paths: {Instance})
 		playerAdded(player)
 	end
 
-	-- PlayerRemoving
-	Players.PlayerRemoving:Connect(function(player: Player)
+	-- PlayerRemoving / PlayerRemoved
+	Players.PlayerRemoving:Connect(function(player: Player): ()
 		for _, moduleTable in allModules do
 			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerRemoving then
-				task.spawn(moduleTable.Return.PlayerRemoving, player)
+				task.spawn(moduleTable.Return.PlayerRemoving :: (player: Player) -> (), player)
 			end
 		end
 		for _, moduleTable in allModules do
 			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerRemovingDeferred then
-				task.spawn(moduleTable.Return.PlayerRemovingDeferred, player)
+				task.spawn(moduleTable.Return.PlayerRemovingDeferred :: (player: Player) -> (), player)
+			end
+		end
+		if player.Parent then player.AncestryChanged:Wait() end
+		pcall(player.Destroy, player)
+		for _, moduleTable in allModules do
+			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerRemoved then
+				task.spawn(moduleTable.Return.PlayerRemoved :: (player: Player) -> (), player)
+			end
+		end
+		for _, moduleTable in allModules do
+			if type(moduleTable.Return) == "table" and moduleTable.Return.PlayerRemovedDeferred then
+				task.spawn(moduleTable.Return.PlayerRemovedDeferred :: (player: Player) -> (), player)
 			end
 		end
 	end)
 
+	Pronghorn.Imported:Set(true)
+
 	-- Wait for Deferred Functions to complete
-	Pronghorn:Wait()
-
-	imported = true
-end
-
---- Yields until all imported module Deferred Functions have completed.
---- @yields
-function Pronghorn:Wait()
-	while startWaits > 0 do
-		deferredComplete:Wait()
+	if not Pronghorn.DeferredComplete:Get() then
+		Pronghorn.DeferredComplete:Wait()
 	end
 end
 
@@ -208,7 +237,7 @@ end
 
 -- Import Core Modules --
 
-local coreModules = {}
+const coreModules = {}
 
 for _, child in script:GetChildren() do
 	if child:IsA("ModuleScript") then
@@ -232,4 +261,4 @@ end
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-return Pronghorn
+return table.freeze(Pronghorn)

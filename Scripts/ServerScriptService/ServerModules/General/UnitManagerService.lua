@@ -213,7 +213,7 @@ function UnitManagerService:ApplyHealthGain(Source: Player | Model | string, Rec
     }
 
     UnitValuesService:AddHistoryEntry(Receiver, HistoryEntry)
-    Remotes.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
+    Remotes.Server.VisualService.SpawnTextDisplay:FireAll(From, Affects, DisplayType, Position, OtherDetails)
 end
 
 function UnitManagerService:ApplyManaGain(Source: Player | Model | string, Receiver: Player | Model, Amount: number, GainName: string?)
@@ -253,7 +253,7 @@ function UnitManagerService:AddUnit(Unit: Player | Model)
         Char:SetAttribute("Team", Unit:GetAttribute("Team"))
 
         SetupUnit(Unit.Character, Unit)
-        Remotes.UnitManagerService.PlayerUnitAdded:Fire(Unit)
+        Remotes.Server.UnitManagerService.PlayerUnitAdded:Fire(Unit)
 
     elseif Unit:IsA("Model") then
         if Units[Unit] then return end
@@ -285,7 +285,7 @@ function UnitManagerService:Stop()
 end
 
 function UnitManagerService:Init()
-    Remotes:CreateToClient("PlayerUnitAdded", {}, "Reliable")
+    Remotes.Server:CreateToClient("PlayerUnitAdded", {}, "Reliable")
 end
 
 function UnitManagerService:Deferred()

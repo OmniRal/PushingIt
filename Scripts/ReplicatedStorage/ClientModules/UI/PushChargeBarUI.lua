@@ -81,12 +81,15 @@ end
 
 -- Updates how many little white dividing lines there are along the bar
 function PushChargeBarUI.UpdateDivBars()
+	while not Bar do task.wait() end
+
 	for _, OldDiv in Bar:GetChildren() do
 		if OldDiv.Name ~= "Div" then continue end
 		OldDiv:Destroy()
 	end
 
 	local ChargePower = PlayerInfo.Data.Skills.ChargePower
+
 	if ChargePower <= 1 then return end
 
 	local Spacing = 1 / ChargePower

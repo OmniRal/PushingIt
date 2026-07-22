@@ -191,6 +191,14 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
 											]
+										},
+										{
+											"name": "AbilityUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/AbilityUI.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -3764,6 +3772,97 @@
 															"className": "Frame",
 															"filePaths": [],
 															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "AbilityInfo",
+											"className": "CanvasGroup",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "ListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Push",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Fill",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Hotkey",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Label",
+																	"className": "TextLabel",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Stroke",
+																			"className": "UIStroke",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																}
+															]
+														}
+													]
+												},
+												{
+													"name": "Dodge",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Fill",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Hotkey",
+															"className": "Frame",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Label",
+																	"className": "TextLabel",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Stroke",
+																			"className": "UIStroke",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																}
+															]
 														}
 													]
 												}

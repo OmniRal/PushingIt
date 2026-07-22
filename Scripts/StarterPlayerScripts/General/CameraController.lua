@@ -27,7 +27,7 @@ local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.Gener
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
 local Spring = require(ReplicatedStorage.Packages.Spring)
 
-local CameraService = Remotes.CameraService
+local CameraService = Remotes.Client.CameraService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -560,6 +560,13 @@ end
 
 -- Setup remote connections
 function CameraController:Deferred()
+	while true do
+		task.wait()
+		if not Remotes.Client.CameraService then continue end
+		CameraService = Remotes.Client.CameraService
+		break
+	end
+
 	CameraService.SetCameraType:Connect(function(CameraType: string?)
 		if PlayerInfo.Dead and CameraType ~= "None" then return end 
 		self:SetCameraType(CameraType)

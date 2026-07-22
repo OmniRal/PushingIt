@@ -663,7 +663,7 @@ end
 function UnitValuesService:Init()
     TestButtons()
 
-    Remotes:CreateToServer("SetHidden", {"boolean"}, "Reliable", function(Player: Player, Set: boolean)
+    Remotes.Server:CreateToServer("SetHidden", {"boolean"}, "Reliable", function(Player: Player, Set: boolean)
         if not Player then return end
         if not AllValues[Player] then return end
         if not AllValues[Player].Folder then return end

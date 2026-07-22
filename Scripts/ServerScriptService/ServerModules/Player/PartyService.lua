@@ -81,13 +81,13 @@ end
 ----------------
 
 function PartyService:Init()
-    Remotes:CreateToClient("ReceiveInvite", {"Player"}, "Reliable")
+    Remotes.Server:CreateToClient("ReceiveInvite", {"Player"}, "Reliable")
     
-    Remotes:CreateToServer("InvitePlayer", {"Player"}, "Reliable", function(Player: Player, OtherPlayer: Player)
+    Remotes.Server:CreateToServer("InvitePlayer", {"Player"}, "Reliable", function(Player: Player, OtherPlayer: Player)
         
     end)
 
-    Remotes:CreateToServer("AnswerInvite", {"boolean", "Player"}, "Reliable", function(Player: Player, Answer: boolean, FromPlayer: Player)
+    Remotes.Server:CreateToServer("AnswerInvite", {"boolean", "Player"}, "Reliable", function(Player: Player, Answer: boolean, FromPlayer: Player)
         
     end)
 end

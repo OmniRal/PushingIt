@@ -82,7 +82,7 @@ local function SetupRespawning(Player: Player, Character: any)
     -- CHeck for when the player dies in order to respawn them
     PValues.DeathConnection = Human.Died:Connect(function()
         task.spawn(function()
-            if ServerGlobalValues.InLevel and not ServerGlobalValues.AllowLevelRespawning then return end
+            --if ServerGlobalValues.InLevel and not ServerGlobalValues.AllowLevelRespawning then return end
 
             PValues.RespawnTime = Players.RespawnTime
 
@@ -160,13 +160,13 @@ function CoreGameService:Init()
 
     SetupCollisions()
     
-    Remotes:CreateToClient("DropObject", {})
+    Remotes.Server:CreateToClient("DropObject", {})
 
-    Remotes:CreateToServer("RequestSpawning", {}, "Returns", function(Player: Player, Delay: number)
+    Remotes.Server:CreateToServer("RequestSpawning", {}, "Returns", function(Player: Player, Delay: number)
         return CoreGameService:RequestSpawning(Player, Delay)
     end)
 
-    Remotes:CreateToServer("RequestResetCharacter", {}, "Unreliable", function(Player: Player)
+    Remotes.Server:CreateToServer("RequestResetCharacter", {}, "Unreliable", function(Player: Player)
         if not Player or not Player.Character then return end
         local Human = Player.Character:FindFirstChild("Humanoid")
         if not Human then return end
@@ -174,7 +174,7 @@ function CoreGameService:Init()
         Human.Health = 0
     end)
 
-    Remotes:CreateToServer("ToggleParticles", {"any", "any"}, "Unreliable", function(Player: Player, Parts: {BasePart}, Particles: {{Name: string, Set: boolean}})
+    Remotes.Server:CreateToServer("ToggleParticles", {"any", "any"}, "Unreliable", function(Player: Player, Parts: {BasePart}, Particles: {{Name: string, Set: boolean}})
         ToggleParticles(Player, Parts, Particles)
     end)
 end
@@ -213,7 +213,7 @@ function CoreGameService.PlayerAdded(Player: Player)
         SetupRespawning(Player, Character)
     end)
 
-    if ServerGlobalValues.InLevel then return end
+    --if ServerGlobalValues.InLevel then return end
 
     if not Players.CharacterAutoLoads then
         SpawnCharacter(Player)

@@ -36,7 +36,7 @@ local MENU_OFF_POSITION = UDim2.fromScale(0.5, 0.7)
 
 type TabType = "Shop" | "Stats" | "Skills" | "Settings"
 
-local DataService = Remotes.DataService
+local DataService = Remotes.Client.DataService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -300,10 +300,6 @@ function MainMenu.Setup(Gui: ScreenGui)
 			end
 		end)
 	end
-
-	task.delay(4, function()
-		MainMenu.UpdateSkills()
-	end)
 end
 
 return MainMenu

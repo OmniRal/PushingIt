@@ -55,7 +55,7 @@ local ProfileTemplate = {
     }
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_21', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_23', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -91,7 +91,7 @@ function PlayerAdded(Player)
 			profile.Data.LastLoggedIn = os.time()
 
 			Player:SetAttribute("DataLoaded", true)
-            Remotes.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
+            Remotes.Server.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
         else
             -- Player left before the profile loaded:
             profile:Release()
@@ -170,8 +170,7 @@ function DataService.SetIndex(Player: Player, Index: string | {}, Value: string?
     end
 
 	if DoNotSendUpdate then return end
-    Remotes.DataService.SingleDataUpdate:Fire(Player, Index, Value)
-    --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+    Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, Value)
 end
 
 function DataService.IncrementIndex(Player: Player, Index: string, Increment: number, DoNotSendUpdate: boolean?)
@@ -205,24 +204,19 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
 
 			UpdateList["Level"] = NewLevel
 			UpdateList["SkillPoints"] = PData.SkillPoints
-            --Remotes.DataService.SingleDataUpdate:Fire(Player, "Level", NewLevel)
-			--Remotes.DataService.SingleDataUpdate:Fire(Player, "SkillPoints", PData.SkillPoints)
         end
 
         PData.XP = CurrentXP
-        --Remotes.DataService.SingleDataUpdate:Fire(Player, "XP", CurrentXP)
 
-		Remotes.DataService.MultiDataUpdate:Fire(Player, UpdateList)
-        Remotes.DataService.GiveAddXP:Fire(Player, Increment)
+		Remotes.Server.DataService.MultiDataUpdate:Fire(Player, UpdateList)
+        Remotes.Server.DataService.GiveAddXP:Fire(Player, Increment)
         return
     end
 
 	PData[Index] += Increment
 
 	if DoNotSendUpdate then return end
-    Remotes.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
-
-    --Remotes.DataService.DataUpdate:Fire(Player, Profiles[Player].Data)
+    Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
 end
 
 function DataService.WaitForPlayerDataLoaded(Player)
@@ -231,12 +225,12 @@ function DataService.WaitForPlayerDataLoaded(Player)
 end
 
 function DataService:Init()
-    Remotes:CreateToClient("FullDataUpdate", {"table"}, "Reliable")
-    Remotes:CreateToClient("SingleDataUpdate", {"string | table", "any"}, "Reliable")
-	Remotes:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
-    Remotes:CreateToClient("GiveAddXP", {"number"}, "Reliable")
+    Remotes.Server:CreateToClient("FullDataUpdate", {"table"}, "Reliable")
+    Remotes.Server:CreateToClient("SingleDataUpdate", {"string | table", "any"}, "Reliable")
+	Remotes.Server:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
+    Remotes.Server:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 
-	Remotes:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string)
+	Remotes.Server:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string)
 		if not Player then return end
 
 		DataService.WaitForPlayerDataLoaded(Player)
@@ -253,7 +247,7 @@ function DataService:Init()
 		PData.SkillPoints -= 1
 		PData.Skills[ThisSkill] += 1
 
-		Remotes.DataService.MultiDataUpdate:Fire(Player, {SkillPoints = PData.SkillPoints, Skills = PData.Skills})
+		Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {SkillPoints = PData.SkillPoints, Skills = PData.Skills})
 
 		task.delay(0.5, function() UpgradeSkillRequests[Player] = false end)
 
@@ -288,11 +282,13 @@ function DataService:Init()
 
     ------------------------------------------------------------------------------------------------------------------
 
-    print("Template Ready : ", ProfileTemplate)
+    print("Data Service Init...")
 end
 
 function DataService:Deferred()
     self.ServiceReady = true
+	
+	print("Data Service Deferred...")
 end
 
 function DataService.PlayerAdded(Player: Player)

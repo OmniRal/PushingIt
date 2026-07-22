@@ -13,4 +13,10 @@ SharedGlobalValues.BonusPointsPerConsecutiveHit = 200 -- How many points you get
 SharedGlobalValues.MultiplierGainPerHit = 0.5 -- How much the multiplier goes up when the players pushes an NPC
 SharedGlobalValues.MultiplierGainPerConsecutiveHit = 0.25 -- How much the multiplier goes up when an NPC ragdolls into another
 
+SharedGlobalValues.PushCooldown_Base = 2
+SharedGlobalValues.PushCooldown_Subtract = 0.2
+
+SharedGlobalValues.DodgeCooldown_Base = 3
+SharedGlobalValues.DodgeCooldown_Subtract = 0.3
+
 return SharedGlobalValues
