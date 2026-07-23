@@ -11,6 +11,7 @@ local RunService = game:GetService("RunService")
 local StarterPlayer = game:GetService("StarterPlayer")
 --local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 --local TweenService = game:GetService("TweenService")
 --local TweenService = game:GetService("TweenService")
 
@@ -60,6 +61,8 @@ local Gui: any
 local AddXPPauseUntil = 0
 
 local Assets = ReplicatedStorage.Assets
+
+local CachedTweens: {[any]: Tween} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -125,8 +128,27 @@ function MainUIController.UpdateLevelInfoUI()
     Gui.LevelInfo.Progress.Fill.Size = UDim2.fromScale(PlayerInfo.CurrentXP / PlayerInfo.CurrentMaxXP, 1)
 end
 
-function MainUIController.RunAbilityCooldown(ThisAbility: "Push" | "Dodge")
+function MainUIController.RunAbilityCooldown(ThisAbility: "Push" | "Dodge", Time: number)
+	if not Gui then return end
+	if not Gui:FindFirstChild("AbilityInfo") then return end
+	
+	local Frame = Gui.AbilityInfo:FindFirstChild(ThisAbility)
+	if not Frame then return end
 
+	if CachedTweens[Frame] then
+		CachedTweens[Frame]:Pause()
+		CachedTweens[Frame]:Destroy()
+		CachedTweens[Frame] = nil
+	end
+
+	Frame.Fill.Size = UDim2.fromScale(1, 1)
+	CachedTweens[Frame] = TweenService:Create(Frame.Fill, TweenInfo.new(Time, Enum.EasingStyle.Linear), {Size = UDim2.fromScale(1, 0)})
+	CachedTweens[Frame].Completed:Connect(function() 
+		Frame.Icon.ImageTransparency = 0.25
+	end)
+
+	CachedTweens[Frame]:Play()
+	Frame.Icon.ImageTransparency = 0.75
 end
 
 -- Update all data dependent elements of the UI

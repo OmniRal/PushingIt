@@ -22,15 +22,17 @@ local Workspace = game:GetService("Workspace")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
 
 local CameraController = require(StarterPlayer.StarterPlayerScripts.Source.General.CameraController)
 local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.General.MainUIController)
-local AnimationController = require(script.Parent.AnimationController)
+local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.General.AnimationController)
 
-local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
+local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
+
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
+local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
 
 local ControlModule
 
@@ -154,6 +156,9 @@ local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
     elseif Keyframe == "Push" then
        PushService:AttemptPush()
 	   MainUIController.ControlPushBar("StopAndHide")
+
+	   local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * PlayerInfo.Data.Skills.PushCooldown)
+	   MainUIController.RunAbilityCooldown("Push", CooldownTime)
     end
 end
 
@@ -163,6 +168,8 @@ local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
 	if not PlayerInfo.Data.Skills.PushCooldown then return end
 	
 	if State == Enum.UserInputState.Begin then
+		if PlayerInfo.PushStarted then return end
+
 		local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PlayerInfo.Data.Skills.PushCooldown - 1))
 		if os.clock() < PlayerInfo.PushDone + CooldownTime then return end
 
@@ -177,24 +184,43 @@ local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
 		if not PlayerInfo.PushStarted then return end
 
 		PlayerInfo.PushStarted = false
+		PlayerInfo.PushDone = os.clock()
         AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "FinishPush", false, 1, PushAnimFunc)
+
     end
 end
 
 local function AttemptDodge(_, State: Enum.UserInputState, _: InputObject)
+	if not PlayerInfo.Data then return end
+	if not PlayerInfo.Data.Skills then return end
+	if not PlayerInfo.Data.Skills.DodgeCooldown then return end
 
+	if State ~= Enum.UserInputState.Begin then return end
+
+	local CooldownTime = SharedGlobalValues.DodgeCooldown_Base - (SharedGlobalValues.DodgeCooldown_Subtract * (PlayerInfo.Data.Skills.DodgeCooldown))
+	if os.clock() < PlayerInfo.DodgeDone + CooldownTime then return end
+
+	local Result = PushService:AttemptDodge()
+	if Result == true then
+		PlayerInfo.DodgeDone = os.clock()
+		AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "Dodge", false, 1)
+
+		MainUIController.RunAbilityCooldown("Dodge", CooldownTime)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainController.TogglePushControls(SetTo: boolean)
+function MainController.ToggleBasicControls(SetTo: boolean)
     if SetTo then
         ContextActionService:BindAction("PushControls", AttemptPush, false, Enum.UserInputType.MouseButton1)
+		ContextActionService:BindAction("DodgeControls", AttemptDodge, false, Enum.KeyCode.E)
 
     else
         ContextActionService:UnbindAction("PushControls")
+		ContextActionService:UnbindAction("DodgeControls")
     end
 end
 
@@ -274,7 +300,7 @@ end
 
 function MainController:Init()
     UserGameSettings.RotationType = Enum.RotationType.MovementRelative
-    MainController.TogglePushControls(true)
+    MainController.ToggleBasicControls(true)
 
     RunService.Heartbeat:Connect(function(DeltaTime: number)
 		if not DeltaTime then return end
@@ -290,13 +316,15 @@ function MainController:Deferred()
         ControlModule = require(GotControlModule)
     end
 
-	while true do
+	--[[while true do
 		task.wait()
 		if not Remotes.Client.DataService or not Remotes.Client.PushService then continue end
 		DataService = Remotes.Client.DataService
 		PushService = Remotes.Client.PushService
 		break
-	end
+	end]]
+
+	Utility.CheckRemotesLoaded({"DataService", "PushService"})
 
     DataService.FullDataUpdate:Connect(function(Data: any)
         PlayerInfo.Data = Data

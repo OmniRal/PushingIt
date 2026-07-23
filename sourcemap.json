@@ -191,14 +191,6 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
 											]
-										},
-										{
-											"name": "AbilityUI",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/UI/AbilityUI.lua"
-											]
 										}
 									],
 									"filePaths": [

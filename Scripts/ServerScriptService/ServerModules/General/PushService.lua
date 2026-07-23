@@ -244,8 +244,19 @@ function PushService.AttemptDodge(Player: Player)
 	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
 	if not PVals or not PData then return end
 	
-	local Alive: boolean, _, Root: BasePart = Utility.Players.CheckAlive(Player)
-	if not Alive or not Root then return end
+	local Alive: boolean, Char: Model, _, _ = Utility.Players.CheckAlive(Player)
+	if not Alive or not Char then return end
+
+	local CooldownTime = SharedGlobalValues.DodgeCooldown_Base - (SharedGlobalValues.DodgeCooldown_Subtract * (PData.DodgeCooldown - 1))
+	if os.clock() < PVals.DodgeDone + CooldownTime then return -1 end
+
+	task.spawn(function()
+		Char:SetAttribute("Dodging", true)
+		task.wait(SharedGlobalValues.DodgeDuration)
+		Char:SetAttribute("Dodging", false)
+	end)
+
+	return true
 end
 
 -- Add points for specific players
@@ -373,7 +384,7 @@ function PushService:Init()
 	end)
 
 	Remotes.Server:CreateToServer("AttemptDodge", {}, "Returns", function(Player: Player)
-		
+		return PushService.AttemptDodge(Player)
 	end)
 end
 

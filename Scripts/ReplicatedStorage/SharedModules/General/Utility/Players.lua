@@ -30,7 +30,7 @@ local Players = {}
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function Players.CheckAlive(Player: Player, GetParts: {string}?): (boolean, Humanoid?, BasePart?, {}?)
+function Players.CheckAlive(Player: Player, GetParts: {string}?): (boolean, Model?, Humanoid?, BasePart?, {}?)
     if not Player then return false end
     if not Player.Character then return false end
     local Human, Root = Player.Character:FindFirstChild("Humanoid"), Player.Character:FindFirstChild("HumanoidRootPart")
@@ -44,10 +44,10 @@ function Players.CheckAlive(Player: Player, GetParts: {string}?): (boolean, Huma
             table.insert(GotParts, Player.Character[Name])
         end
 
-        return true, Human, Root, unpack(GotParts)
+        return true, Player.Character, Human, Root, unpack(GotParts)
     end
 
-    return true, Human, Root
+    return true, Player.Character, Human, Root
 end
 
 function Players.CheckFriends(Player_A: Player, Player_B: Player): boolean
