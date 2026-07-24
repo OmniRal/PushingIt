@@ -203,7 +203,7 @@ local function AttemptDodge(_, State: Enum.UserInputState, _: InputObject)
 	local Result = PushService:AttemptDodge()
 	if Result == true then
 		PlayerInfo.DodgeDone = os.clock()
-		AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "Dodge", false, 1)
+		AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "Dodge", false, 4)
 
 		MainUIController.RunAbilityCooldown("Dodge", CooldownTime)
 	end

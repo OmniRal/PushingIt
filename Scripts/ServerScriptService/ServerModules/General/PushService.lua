@@ -16,6 +16,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
@@ -28,6 +29,10 @@ local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.Sh
 local PUSH_RANGE = 7
 local RESET_NPC = false -- Puts the NPC back to its original position after pushed; good for testing
 local BASE_POWER = 75
+
+local BASE_DODGE_FORCE = 50
+local INC_DODGE_FORCE = 15
+local DODGE_DURATION = 0.1
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -244,7 +249,7 @@ function PushService.AttemptDodge(Player: Player)
 	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
 	if not PVals or not PData then return end
 	
-	local Alive: boolean, Char: Model, _, _ = Utility.Players.CheckAlive(Player)
+	local Alive: boolean, Char: Model, _, Root: BasePart = Utility.Players.CheckAlive(Player)
 	if not Alive or not Char then return end
 
 	local CooldownTime = SharedGlobalValues.DodgeCooldown_Base - (SharedGlobalValues.DodgeCooldown_Subtract * (PData.DodgeCooldown - 1))
@@ -252,7 +257,20 @@ function PushService.AttemptDodge(Player: Player)
 
 	task.spawn(function()
 		Char:SetAttribute("Dodging", true)
-		task.wait(SharedGlobalValues.DodgeDuration)
+
+		local MaxPower = BASE_DODGE_FORCE + (INC_DODGE_FORCE * (PData.DodgeRange - 1))
+
+		-- Body movers life cycle
+		local LineVel = New.Instance("LinearVelocity", Char, "DodgeVelocity", {Attachment0 = Root:FindFirstChild("RootAttachment"), 
+			ForceLimitMode = Enum.ForceLimitMode.PerAxis, MaxAxesForce = Vector3.new(1000000, 0, 1000000), VectorVelocity = Root.CFrame.LookVector * MaxPower})
+		local AlignPos = New.Instance("AlignPosition", Char, "DodgeAlign", {Attachment0 = Root:FindFirstChild("RootAttachment"), Mode = Enum.PositionAlignmentMode.OneAttachment,
+			Position = Root.Position, ForceLimitMode = Enum.ForceLimitMode.PerAxis, MaxAxesForce = Vector3.new(0, 1000000, 0), Responsiveness = 100})
+		
+		task.wait(DODGE_DURATION)
+
+		LineVel:Destroy()
+		AlignPos:Destroy()
+
 		Char:SetAttribute("Dodging", false)
 	end)
 
