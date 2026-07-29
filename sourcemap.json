@@ -3864,6 +3864,34 @@
 									"filePaths": [
 										"Assets/Replicated/UIs/MainGui.rbxm"
 									]
+								},
+								{
+									"name": "SpeechBox",
+									"className": "BillboardGui",
+									"children": [
+										{
+											"name": "Bubble",
+											"className": "Frame",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Arrow",
+													"className": "Frame",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Line",
+													"className": "TextLabel",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/UIs/SpeechBox.rbxm"
+									]
 								}
 							],
 							"filePaths": [

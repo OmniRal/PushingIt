@@ -17,6 +17,7 @@ local Workspace = game:GetService("Workspace")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
 local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
@@ -30,6 +31,8 @@ local USE_DEFAULT = false -- Set this to true when you want all NPCs to spawn as
 local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
 
 local KEEP_NODES = true -- If TRUE, the NPC nodes will remain in game instead of being destroyed
+
+local VOICELINE_COOLDOWN = 10
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -248,7 +251,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
     Description.Parent = NewNPC
     NewNPC:AddTag("NPC")
     NewNPC.Parent = NPCFolder
-    
+
     local Success, Error = pcall(function() 
         NewNPC.Humanoid:ApplyDescriptionAsync(Description)
     end)
@@ -260,6 +263,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 
     NewNPC:PivotTo(ThisPoint)
 
+	-- Give the NPC a starting node to move to
     local GoalNode = ""
     local GoalPoint = Vector3.new(0, 0, 0)
     if Info.Movement == "Roam" then
@@ -280,11 +284,61 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
         Dead = false,
     }
 
+	-- Add voicelines billboard UI, sound, and attribute connection
+	local LastNormal = 0 -- Last time a normal voiceline was used
+
+	local SpeechBox = ReplicatedStorage.Assets.UIs:FindFirstChild("SpeechBox"):Clone()
+	SpeechBox.Parent = NewNPC.Head
+
+	local VoiceSound = Instance.new("Sound")
+	VoiceSound.Name = "VoiceSound"
+	VoiceSound.RollOffMaxDistance = 50
+	VoiceSound.Parent = NewNPC.Head
+
+	NewNPC:SetAttribute("Voiceline", 0)
+	NewNPC:GetAttributeChangedSignal("Voiceline"):Connect(function()
+		local Voiceline = NewNPC:GetAttribute("Voiceline")
+
+		if Voiceline <= 0 then return end
+
+		local Category = if Voiceline == 1 then "Normal" else "OnPushed"
+		if Category == "Normal" then 
+			if os.clock() < LastNormal + VOICELINE_COOLDOWN then
+				NewNPC:SetAttribute("Voiceline", 0)
+				return
+			else
+				LastNormal = os.clock()
+			end
+		end
+
+		local Chosen = Info.VoiceLines[Category][RNG:NextInteger(1, #Info.VoiceLines[Category])]
+
+		if VoiceSound.IsPlaying then
+			VoiceSound:Stop()
+		end
+
+		SpeechBox.Bubble.Line.Text = Chosen.Line
+		SpeechBox.Enabled = true
+		VoiceSound.SoundId = "rbxassetid://" .. Chosen.ID
+		VoiceSound:Play()
+
+		NewNPC:SetAttribute("Voiceline", 0)
+
+		task.delay(3, function() SpeechBox.Enabled = false end)
+	end)
+
 	if not ServerGlobalValues.NPC_Use_R6 then
     	RagdollService.SetRagdoll(NewNPC)
 	else
 		RagdollService.SetRagdoll_R6(NewNPC)
 	end
+
+	task.defer(function()
+		NewNPC:GetAttributeChangedSignal("Ragdoll"):Connect(function()
+			if not NewNPC:GetAttribute("Ragdoll") then return end
+			NewNPC:SetAttribute("Voiceline", 2)
+		end)
+	end)
 end
 
 function NPCService.Stop()
@@ -304,10 +358,11 @@ function NPCService.Run()
                 
                 if Data.Movement == "Stationary" then continue end
 
-				-- Handle their movement
+				-- Handle NPC movement
                 if Data.ReachedPoint then
                     if os.clock() < Data.GoToNextPointAt then continue end
                     
+					-- Pick node
                     local NextNode = PickNodeFromConnections(Data.GoalNode)
                     Data.GoalNode = NextNode
                     Data.GoalPoint = Nodes[NextNode].Pos
@@ -315,11 +370,13 @@ function NPCService.Run()
                     Data.Human:MoveTo(Data.GoalPoint)
 
                 else
+					-- Move NPC here
                     Data.Human:MoveTo(Data.GoalPoint)
 
                     local Distance = (Model:GetPivot().Position - Data.GoalPoint).Magnitude
                     if Distance > 5 then continue end
 
+					-- Once they get close, pick a new node
                     Data.ReachedPoint = true
                     Data.GoToNextPointAt = os.clock() + RNG:NextInteger(1, 3)
                 end
@@ -330,6 +387,14 @@ end
 
 function NPCService:Init()
     NPCFolder = New.Instance("Folder", "NPCs", Workspace)
+
+	Remotes.Server:CreateToServer("RequestNormalNPCVoiceline", {"Model"}, "Unreliable", function(Player: Player, ThisNPC: Model)
+		if not Player or not ThisNPC then return end
+		if not NPCs[ThisNPC] then return end
+		if ThisNPC:GetAttribute("Ragdoll") then return end
+
+		ThisNPC:SetAttribute("Voiceline", 1)
+	end)
 end
 
 function NPCService:Deferred()

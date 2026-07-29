@@ -16,14 +16,14 @@ local NPCInfo: {
             Rarity: NPCRariry, -- Common, Rare, Epic, Legendary, Mythical
 
             VoiceLines: {
+				-- Triggered when a player gets near the NPC
                 Normal: {
-                    {Line: string, SoundID: number}
+                    {Line: string, ID: number}
                 },
+
+				-- Triggered when a player pushes the NPC or another one knocks them
                 OnPushed: {
-                    {Line: string, SoundID: number}
-                },
-                Ragdolling: {
-                    {Line: string, SoundID: number}
+                    {Line: string, ID: number}
                 },
             },
 
@@ -68,9 +68,14 @@ NPCInfo["Common"] = {
         Rarity = "Common",
 
         VoiceLines = {
-            Normal = {},
-            OnPushed = {},
-            Ragdolling = {},
+            Normal = {
+				{Line = "Hello, how are you?", ID = 134186207323483},
+				{Line = "How's it going?", ID = 137802301900496}
+			},
+            OnPushed = {
+				{Line = "AHHHHHH!", ID = 78942373942610},
+				{Line = "Oh no!", ID = 132170778691513}
+			},
         },
 
         IdleAnimID = 0,
@@ -104,9 +109,14 @@ NPCInfo["Common"] = {
 		Rarity = "Common",
 
 		VoiceLines = {
-			Normal = {},
-			OnPushed = {},
-			Ragdolling = {},
+            Normal = {
+				{Line = "Hello, how are you?", ID = 134186207323483},
+				{Line = "How's it going?", ID = 137802301900496}
+			},
+            OnPushed = {
+				{Line = "AHHHHHH!", ID = 78942373942610},
+				{Line = "Oh no!", ID = 132170778691513}
+			},
 		},
 
 		IdleAnimID = 0,
@@ -139,9 +149,14 @@ NPCInfo["Common"] = {
 		Rarity = "Common",
 
 		VoiceLines = {
-			Normal = {},
-			OnPushed = {},
-			Ragdolling = {},
+            Normal = {
+				{Line = "Hello, how are you?", ID = 134186207323483},
+				{Line = "How's it going?", ID = 137802301900496}
+			},
+            OnPushed = {
+				{Line = "AHHHHHH!", ID = 78942373942610},
+				{Line = "Oh no!", ID = 132170778691513}
+			},
 		},
 
 		IdleAnimID = 0,

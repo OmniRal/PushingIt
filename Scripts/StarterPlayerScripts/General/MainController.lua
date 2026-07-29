@@ -40,10 +40,13 @@ local ControlModule
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local VOICELINE_REQUEST_COOLDOWN = 3
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local NPCService = Remotes.Client.NPCService
 local DataService = Remotes.Client.DataService
 local PushService = Remotes.Client.PushService
 local RagdollService = Remotes.Client.RagdollService
@@ -76,9 +79,31 @@ GroundParams.IgnoreWater = true
 --local Assets = ReplicatedStorage.Assets
 --local RNG = Random.new()
 
+local LastNPCVoicelineRequest = 0
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local function CheckNearNPCs()
+	if PlayerInfo.Dead or not PlayerInfo.Root then return end
+	if not Workspace:FindFirstChild("NPCs") then return end
+	if os.clock() < LastNPCVoicelineRequest + VOICELINE_REQUEST_COOLDOWN then return end
+
+	for _, NPC in Workspace.NPCs:GetChildren() do
+		if not NPC then continue end
+		if NPC:GetAttribute("Ragdoll") then continue end
+		local Human: Humanoid, Root: BasePart = NPC:FindFirstChild("Humanoid"), NPC:FindFirstChild("HumanoidRootPart")
+		if not Human or not Root then continue end
+		if Human.Health <= 0 then continue end
+
+		if (PlayerInfo.Root.Position - (Root.CFrame * CFrame.new(0, 0, -5)).Position ).Magnitude > 10 then return end
+
+		LastNPCVoicelineRequest = os.clock()
+
+		NPCService:RequestNormalNPCVoiceline(NPC)
+	end
+end
 
 -- Check if the player is touching the ground
 local function CheckGrounded()
@@ -296,6 +321,7 @@ end
 function MainController:RunHeartbeat()
     CheckGrounded()
     UpdateWalkSpeed()
+	CheckNearNPCs()
 end
 
 function MainController:Init()

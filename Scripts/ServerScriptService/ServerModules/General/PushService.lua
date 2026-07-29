@@ -209,7 +209,7 @@ function PushService.AttemptPush(Player: Player)
 	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
 	if not PVals or not PData then return end
 	
-	local Alive: boolean, _, Root: BasePart = Utility.Players.CheckAlive(Player)
+	local Alive: boolean, _, _, Root: BasePart = Utility.Players.CheckAlive(Player)
 	if not Alive or not Root then return end
 	
 	local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PData.PushCooldown - 1))
