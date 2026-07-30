@@ -105,7 +105,7 @@ end
 
 local function UpdateMenuButtonVisuals()
 	if not Menu or not MenuButton then return end
-	local Hover, Pressed, On, Locked = MenuButton:GetAttribute("Hover"), MenuButton:GetAttribute("Pressed"), MenuButton:GetAttribute("On"), MenuButton:GetAttribute("Locked")
+	local Hover, Pressed, On, Locked = MenuButton.Button:GetAttribute("Hover"), MenuButton.Button:GetAttribute("Pressed"), MenuButton.Button:GetAttribute("On"), MenuButton.Button:GetAttribute("Locked")
 
 	if not Locked then
 		if not Hover and not Pressed then
@@ -125,7 +125,7 @@ local function UpdateMenuButtonVisuals()
 		MenuButton.Icon.Line3.BackgroundColor3 = ColorPalette.OmniBlotRed2.RGB
 	end
 
-	Menu:SetAttribute("On", MenuButton:GetAttribute("On"))
+	Menu:SetAttribute("On", MenuButton.Button:GetAttribute("On"))
 end
 
 -- Hover, Pressed and On changes for the tab buttons
@@ -193,6 +193,31 @@ local function UpdatePlusSkillButtonVisuals(Plus: any)
 	end
 end
 
+local function TestViewportDummy()
+	if not Menu then return end
+
+	local Frame = Menu.Base.Windows.Stuff:FindFirstChild("Frame")
+	if not Frame then return end
+
+	local Dummy = ReplicatedStorage.Assets.Other.AnimDummy:Clone()
+	Dummy:PivotTo(CFrame.new(0, 0, 0))
+	Dummy.Parent = Frame.Viewport.WorldModel
+
+	local NewCam = Instance.new("Camera")
+	NewCam.CFrame = CFrame.new(0, 0, 10)
+	NewCam.Parent = Frame.Viewport
+
+	local NewAnim = Instance.new("Animation")
+	NewAnim.AnimationId = "rbxassetid://" .. 136393663879299
+	local NewTrack = Dummy.AnimationController.Animator:LoadAnimation(NewAnim)
+	NewTrack.Looped = true
+	NewTrack:Play()
+
+	warn(NewTrack.IsPlaying)
+
+	Frame.Viewport.CurrentCamera = NewCam
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -236,7 +261,7 @@ function MainMenuUI.Setup(Gui: ScreenGui)
 
 	-- Set up menu button
 	BasicInteractions.AddButton(MenuButton.Button, true)
-	BasicInteractions.ConnectFXInteractionsFN(MenuButton, UpdateMenuButtonVisuals)
+	BasicInteractions.ConnectFXInteractionsFN(MenuButton.Button, UpdateMenuButtonVisuals)
 	UpdateMenuButtonVisuals()
 
 	task.wait(1)
@@ -300,6 +325,8 @@ function MainMenuUI.Setup(Gui: ScreenGui)
 			end
 		end)
 	end
+
+	TestViewportDummy()
 end
 
 return MainMenuUI
