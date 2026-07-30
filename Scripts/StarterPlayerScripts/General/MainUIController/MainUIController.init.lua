@@ -27,10 +27,11 @@ local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Util
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
-local MainMenu = require(ReplicatedStorage.Source.ClientModules.UI.MainMenu)
+local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
+local MainMenuUI = require(ReplicatedStorage.Source.ClientModules.UI.MainMenuUI)
 local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
-local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
+local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
 
 --local GeneralUILibrary = require(ReplicatedStorage.Source.SharedModules.UI.GeneralUILibrary)
 
@@ -86,18 +87,29 @@ local function CreateNewGui()
 end
 
 local function SetupGui()
-	MainMenu.Setup(Gui)
+	TimerUI.Setup(Gui)
+	MainMenuUI.Setup(Gui)
     ScoreDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
-	TimerUI.Setup(Gui)
+	ErrorMessageUI.Setup(Gui)
 end
 
+-- Shows the XP bar filling gradually
 local function HandleAddXP()
     if PlayerInfo.AddXP <= 0 then return end
 
     if AddXPPauseUntil <= 0 then
-        PlayerInfo.AddXP -= 1
-        PlayerInfo.CurrentXP += 1
+		local IncBy = 1
+		if PlayerInfo.AddXP > 100 and PlayerInfo.AddXP <= 1000 then
+			IncBy = 10
+		elseif PlayerInfo.AddXP > 1000 and PlayerInfo.AddXP <= 10000 then
+			IncBy = 100
+		elseif PlayerInfo.AddXP > 10000 then
+			IncBy = 1000
+		end
+
+        PlayerInfo.AddXP -= IncBy
+        PlayerInfo.CurrentXP += IncBy
         if PlayerInfo.CurrentXP >= PlayerInfo.CurrentMaxXP then
             AddXPPauseUntil = os.clock() + ADD_XP_PAUSE
 
@@ -120,6 +132,8 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function MainUIController.NewError(Text: string) ErrorMessageUI.New(Text) end
 
 -- Update the players current level and xp
 function MainUIController.UpdateLevelInfoUI()
@@ -153,7 +167,7 @@ end
 
 -- Update all data dependent elements of the UI
 function MainUIController.UpdateAllUI()
-	MainMenu.UpdateSkills()
+	MainMenuUI.UpdateSkills()
 	PushChargeBarUI.UpdateDivBars()
 	MainUIController.UpdateLevelInfoUI()
 end
@@ -203,7 +217,7 @@ function MainUIController:Deferred()
 
 	DataService.FullDataUpdate:Connect(function()
 		task.defer(function()
-			MainMenu.UpdateSkills()
+			MainMenuUI.UpdateSkills()
 			PushChargeBarUI.UpdateDivBars()
 		end)
 	end)
@@ -212,7 +226,7 @@ function MainUIController:Deferred()
 		task.defer(function() 
 			for Entry, _ in UpdateList do
 				if Entry == "Skills" then
-					MainMenu.UpdateSkills()
+					MainMenuUI.UpdateSkills()
 					PushChargeBarUI.UpdateDivBars()
 				end
 			end

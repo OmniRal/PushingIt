@@ -97,7 +97,7 @@ local function CheckNearNPCs()
 		if not Human or not Root then continue end
 		if Human.Health <= 0 then continue end
 
-		if (PlayerInfo.Root.Position - (Root.CFrame * CFrame.new(0, 0, -5)).Position ).Magnitude > 10 then return end
+		if (PlayerInfo.Root.Position - (Root.CFrame * CFrame.new(0, 0, -5)).Position ).Magnitude > 10 then continue end
 
 		LastNPCVoicelineRequest = os.clock()
 
@@ -196,7 +196,7 @@ local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
 		if PlayerInfo.PushStarted then return end
 
 		local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PlayerInfo.Data.Skills.PushCooldown - 1))
-		if os.clock() < PlayerInfo.PushDone + CooldownTime then return end
+		if os.clock() < PlayerInfo.PushDone + CooldownTime then MainUIController.NewError("On cooldown!"); return end
 
 		local Result = PushService:StartPushCharge()
 		if Result == true then

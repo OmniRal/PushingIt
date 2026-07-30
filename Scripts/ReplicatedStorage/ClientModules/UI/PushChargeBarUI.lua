@@ -27,8 +27,8 @@ local ANIM_TIME = UI_Info.BaseAnimTime
 local TWEEN_STYLE = UI_Info.BaseTweenStyle
 local TWEEN_DIR = UI_Info.BaseTweenDir
 
-local ON_POSITION = UDim2.fromScale(0.5, 0.7)
-local OFF_POSITION = UDim2.fromScale(0.5, 0.75)
+local ON_POSITION = UDim2.fromScale(0.5, 0.85)
+local OFF_POSITION = UDim2.fromScale(0.5, 0.9)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes

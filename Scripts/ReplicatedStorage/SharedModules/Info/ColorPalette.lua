@@ -20,11 +20,6 @@ ColorPalette.OmniBlotBlack = {RGB = Color3.fromRGB(46, 46, 46), HEX = Color3.fro
 ColorPalette.JetWhite = {RGB = Color3.fromRGB(255, 255, 255), HEX = Color3.fromHex("#FFFFFF")}
 ColorPalette.JetBlack = {RGB = Color3.fromRGB(0, 0, 0), HEX = Color3.fromHex("#000000")}
 
-ColorPalette.ShopGreen = {RGB = Color3.fromRGB(74, 218, 49), HEX = Color3.fromHex("4ADA31")}
-ColorPalette.StatsBlue = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromHex("#EC652B")}
-ColorPalette.SkillsRed = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromHex("#EC652B")}
-ColorPalette.SettingsBlack = {RGB = Color3.fromRGB(236, 101, 43), HEX = Color3.fromHex("#EC652B")}
-
 ColorPalette.DarkGrey = {RGB = Color3.fromRGB(100, 100, 100), HEX = Color3.fromHex("#646464")}
 
 return ColorPalette

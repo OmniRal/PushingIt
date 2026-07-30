@@ -1,6 +1,6 @@
 -- OmniRal
 
-local MainMenu = {}
+local MainMenuUI = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -42,7 +42,7 @@ local DataService = Remotes.Client.DataService
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local LocalPlayer = Players.LocalPlayer
+--local LocalPlayer = Players.LocalPlayer
 
 local CurrentTab = "Shop"
 
@@ -197,7 +197,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainMenu.UpdateSkills()
+function MainMenuUI.UpdateSkills()
 	if not PlayerInfo.Data then return end
 	if not PlayerInfo.Data.Skills then return end
 
@@ -225,7 +225,7 @@ function MainMenu.UpdateSkills()
 	end
 end
 
-function MainMenu.Setup(Gui: ScreenGui)
+function MainMenuUI.Setup(Gui: ScreenGui)
 	if not Gui then return end
 
 	Menu = Gui:FindFirstChild("Menu")
@@ -235,7 +235,7 @@ function MainMenu.Setup(Gui: ScreenGui)
 	if not Base or not MenuButton then return end
 
 	-- Set up menu button
-	BasicInteractions.AddButton(MenuButton, true)
+	BasicInteractions.AddButton(MenuButton.Button, true)
 	BasicInteractions.ConnectFXInteractionsFN(MenuButton, UpdateMenuButtonVisuals)
 	UpdateMenuButtonVisuals()
 
@@ -302,4 +302,4 @@ function MainMenu.Setup(Gui: ScreenGui)
 	end
 end
 
-return MainMenu
+return MainMenuUI
