@@ -122,6 +122,7 @@ end
 -- Add basic states for a button
 -- @Button = The button that should have the interaction
 -- @ToggleFromActivation = When true, the buttons' ON attribute will toggle true and false when pressed
+-- @ControlOnIndependently = The buttons "On" attribute won't automatically update from the activated function here; the user can then control this from another script
 -- @DraggableElement = Which, if any, UI should be draggable. Often the draggable element will be the same as the button, but kept option for it to be something else
 -- @DragCondition = Runs this to make sure the element is allowed to be dragged
 -- @StartDrag = Runs once at the beginning of the drag
@@ -131,6 +132,7 @@ end
 function BasicInteractions.AddButton(
 	Button: GuiButton, 
 	ToggleFromActivation: boolean?,
+	ControlOnIndependently: boolean?,
 	DraggableElement: any?,
 	DragCondition: (() -> (boolean))?,
 	StartDrag: ((any) -> ())?,
@@ -155,6 +157,7 @@ function BasicInteractions.AddButton(
 	Button.Activated:Connect(function()
 		if Button:GetAttribute("Locked") then return end
 		
+		if ControlOnIndependently then return end -- Handle changing the on state from outside
 		if ToggleFromActivation then
 			Button:SetAttribute("On", not Button:GetAttribute("On")) -- Toggle it
 		else

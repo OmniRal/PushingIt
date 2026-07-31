@@ -4,6 +4,10 @@ local SharedGlobalValues = {}
 
 SharedGlobalValues.MaxLevel = 25
 
+SharedGlobalValues.ChangePVPModeCooldown = 5
+SharedGlobalValues.ChangePVPMode_PlayerRange = 10
+SharedGlobalValues.ChangePVPMode_PlayerVelocityTolerance = 0.2
+
 SharedGlobalValues.ChargeGain_Base = 1.4
 SharedGlobalValues.ChargeGain_Subtract = 0.2
 

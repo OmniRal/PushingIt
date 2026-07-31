@@ -28,7 +28,6 @@ local MainUIController = require(StarterPlayer.StarterPlayerScripts.Source.Gener
 local AnimationController = require(StarterPlayer.StarterPlayerScripts.Source.General.AnimationController)
 
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
-local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurva)
 
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
@@ -357,7 +356,7 @@ function MainController:Deferred()
         
         if PlayerInfo.CurrentLevel <= -1 then
             PlayerInfo.CurrentLevel = Data.Level
-            PlayerInfo.CurrentMaxXP = LevelXPCurve.CalculateXPNeeded(Data.Level)
+            PlayerInfo.CurrentMaxXP = Utility.LevelXPCurve.CalculateXPNeeded(Data.Level)
             PlayerInfo.CurrentXP = Data.XP
         end
 

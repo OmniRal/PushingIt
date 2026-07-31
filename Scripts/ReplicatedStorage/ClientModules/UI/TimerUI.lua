@@ -84,6 +84,8 @@ function TimerUI.RunHeartbeat()
 
 	-- Update players timer first
 	Timer.Num.Text = CalculateTimePassed(LocalPlayer:GetAttribute("SavedTime"), LocalPlayer:GetAttribute("TimerStartedAt"))
+
+	warn(LocalPlayer:GetAttribute("SavedTime"))
 end
 
 function TimerUI.Setup(Gui: ScreenGui)

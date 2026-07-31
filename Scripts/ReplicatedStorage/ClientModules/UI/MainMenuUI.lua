@@ -109,20 +109,20 @@ local function UpdateMenuButtonVisuals()
 
 	if not Locked then
 		if not Hover and not Pressed then
-			MenuButton.Icon.Size = UDim2.fromScale(0.7, 0.7)
+			MenuButton.Container.Icon.Size = UDim2.fromScale(0.7, 0.7)
 		elseif Hover and not Pressed then
-			MenuButton.Icon.Size = UDim2.fromScale(0.8, 0.8)
+			MenuButton.Container.Icon.Size = UDim2.fromScale(0.8, 0.8)
 		elseif Pressed then
-			MenuButton.Icon.Size = UDim2.fromScale(0.5, 0.5)
+			MenuButton.Container.Icon.Size = UDim2.fromScale(0.5, 0.5)
 		end
 	end
 
 	if not On then
-		for x = 1, 3 do MenuButton.Icon["Line" .. x].BackgroundColor3 = ColorPalette.DarkGrey.RGB end
+		for x = 1, 3 do MenuButton.Container.Icon["Line" .. x].BackgroundColor3 = ColorPalette.DarkGrey.RGB end
 	else
-		MenuButton.Icon.Line1.BackgroundColor3 = ColorPalette.OmniBlotGreen2.RGB
-		MenuButton.Icon.Line2.BackgroundColor3 = ColorPalette.OmniBlotBlue2.RGB
-		MenuButton.Icon.Line3.BackgroundColor3 = ColorPalette.OmniBlotRed2.RGB
+		MenuButton.Container.Icon.Line1.BackgroundColor3 = ColorPalette.OmniBlotGreen2.RGB
+		MenuButton.Container.Icon.Line2.BackgroundColor3 = ColorPalette.OmniBlotBlue2.RGB
+		MenuButton.Container.Icon.Line3.BackgroundColor3 = ColorPalette.OmniBlotRed2.RGB
 	end
 
 	Menu:SetAttribute("On", MenuButton.Button:GetAttribute("On"))
@@ -212,8 +212,6 @@ local function TestViewportDummy()
 	local NewTrack = Dummy.AnimationController.Animator:LoadAnimation(NewAnim)
 	NewTrack.Looped = true
 	NewTrack:Play()
-
-	warn(NewTrack.IsPlaying)
 
 	Frame.Viewport.CurrentCamera = NewCam
 end
