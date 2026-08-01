@@ -169,6 +169,14 @@
 											]
 										},
 										{
+											"name": "ModalWindowUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/ModalWindowUI.lua"
+											]
+										},
+										{
 											"name": "PushChargeBarUI",
 											"className": "ModuleScript",
 											"children": [],
@@ -281,6 +289,14 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "LevelXPCurve",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/General/Utility/LevelXPCurve.lua"
+													]
+												},
+												{
 													"name": "Players",
 													"className": "ModuleScript",
 													"children": [],
@@ -302,14 +318,6 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/General/Utility/Units.lua"
-													]
-												},
-												{
-													"name": "LevelXPCurve",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/General/Utility/LevelXPCurve.lua"
 													]
 												}
 											],
@@ -4839,37 +4847,6 @@
 											"filePaths": [],
 											"children": [
 												{
-													"name": "Icon",
-													"className": "Frame",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Line3",
-															"className": "Frame",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Line2",
-															"className": "Frame",
-															"filePaths": [],
-															"children": []
-														},
-														{
-															"name": "Line1",
-															"className": "Frame",
-															"filePaths": [],
-															"children": []
-														}
-													]
-												},
-												{
-													"name": "Stroke",
-													"className": "UIStroke",
-													"filePaths": [],
-													"children": []
-												},
-												{
 													"name": "Button",
 													"className": "ImageButton",
 													"filePaths": [],
@@ -4959,6 +4936,102 @@
 													]
 												}
 											]
+										},
+										{
+											"name": "ModalWindow_OG",
+											"className": "CanvasGroup",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Container",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Message",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Cancel",
+															"className": "CanvasGroup",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Frame",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Label",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Stroke",
+																			"className": "UIStroke",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														},
+														{
+															"name": "Confirm",
+															"className": "CanvasGroup",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Frame",
+																	"className": "Frame",
+																	"filePaths": [],
+																	"children": [
+																		{
+																			"name": "Label",
+																			"className": "TextLabel",
+																			"filePaths": [],
+																			"children": []
+																		},
+																		{
+																			"name": "Stroke",
+																			"className": "UIStroke",
+																			"filePaths": [],
+																			"children": []
+																		}
+																	]
+																},
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "ModalBlocker",
+											"className": "ImageButton",
+											"filePaths": [],
+											"children": []
 										}
 									],
 									"filePaths": [

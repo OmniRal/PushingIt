@@ -19,6 +19,7 @@ ColorPalette.OmniBlotBlack = {RGB = Color3.fromRGB(46, 46, 46), HEX = Color3.fro
 
 ColorPalette.JetWhite = {RGB = Color3.fromRGB(255, 255, 255), HEX = Color3.fromHex("#FFFFFF")}
 ColorPalette.JetBlack = {RGB = Color3.fromRGB(0, 0, 0), HEX = Color3.fromHex("#000000")}
+ColorPalette.MidGrey = {RGB = Color3.fromRGB(125, 125, 125), HEX = Color3.fromHex("7D7D7D")}
 
 ColorPalette.DarkGrey = {RGB = Color3.fromRGB(100, 100, 100), HEX = Color3.fromHex("#646464")}
 

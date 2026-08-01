@@ -34,6 +34,7 @@ local MainMenuUI = require(ReplicatedStorage.Source.ClientModules.UI.MainMenuUI)
 local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
 local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
+local ModalWindowUI = require(ReplicatedStorage.Source.ClientModules.UI.ModalWindowUI)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 
@@ -141,6 +142,7 @@ local function SetupGui()
     ScoreDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
 	ErrorMessageUI.Setup(Gui)
+	ModalWindowUI.Setup(Gui)
 
 	SetupPVPButton()
 end

@@ -18,6 +18,7 @@ local Workspace = game:GetService("Workspace")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local UIInfo = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
+local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -62,38 +63,25 @@ local function UpdateCloseButtonAnimations(Button: ImageButton, Cross: ImageLabe
 	TweenService:Create(Cross, TweenInfo.new(AnimTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = GoalSize}):Play()
 end
 
-local function UpdateStandardButtonAnimations(Button: any, Top: any, ToggleFromActivation: boolean?)
-	local Hover, Pressed, On = Button:GetAttribute("Hover"), Button:GetAttribute("Pressed"), Button:GetAttribute("On")
-	local GoalPosition = UDim2.fromScale(0.5, 0.5)
-	local GoalTransparency = 1
-	local UseScale = Button:GetAttribute("UseScale")
-	
-	if Hover and not Pressed then
-		GoalPosition = UDim2.new(0.5, 0, 0.5, -3)
-		if UseScale then
-			GoalPosition = UDim2.fromScale(0.5, 0.45)
-		end
-		
-	elseif (Hover and Pressed) or (ToggleFromActivation and On) then
-		GoalPosition = UDim2.new(0.5, 0, 0.5, 3)
-		GoalTransparency = 0.75
-		
-		if UseScale then
-			GoalPosition = UDim2.fromScale(0.5, 0.55)
-		end
+local function UpdateStandardButtonAnimations(Base: any, ToggleFromActivation: boolean?)
+	local On, Hover, Pressed, Locked = Base.Button:GetAttribute("On"), Base.Button:GetAttribute("Hover"), Base.Button:GetAttribute("Pressed"), Base.Button:GetAttribute("Locked")
+	local GoalSize = UDim2.fromScale(0.9, 0.9)
+	local GoalColor = ColorPalette.JetWhite.RGB
+	local GoalTransparency = if Locked then 0.75 else 0
+
+	if ToggleFromActivation and On then
+		GoalColor = ColorPalette.MidGrey.RGB
 	end
-	
-	--[[if ToggleFromActivation and On then
-		GoalPosition = UDim2.new(0.5, 0, 0.5, 3)
-		GoalTransparency = 0.75
-		
-		if UseScale then
-			GoalPosition = UDim2.new(0.5, 0.55)
-		end
-	end]]
-	
-	TweenService:Create(Top, TweenInfo.new(AnimTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Position = GoalPosition}):Play()
-	TweenService:Create(Top.Cover, TweenInfo.new(AnimTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {BackgroundTransparency = GoalTransparency}):Play()
+
+	if Hover and not Pressed then
+		GoalSize = UDim2.fromScale(1, 1)
+	elseif Pressed then
+		GoalSize = UDim2.fromScale(0.6, 0.6)
+	end
+
+	Base.Frame.Size = GoalSize
+	Base.GroupColor3 = GoalColor
+	Base.GoalTransparency = GoalTransparency
 end
 
 local function UpdateStandardButtonAnimations_2(Button: ImageButton, Icon: ImageLabel, ToggleFromActivation: boolean?, BaseSize: UDim2, HoverSize: UDim2, PressedSize: UDim2)
@@ -308,50 +296,36 @@ function BasicInteractions.AddCloseButton(Button: ImageButton, CloseFn: () -> ()
 	Button.Position = UDim2.new(1, -Size / 20, 0, 0)
 end
 
-function BasicInteractions.AddStandardButton(Button: ImageButton, Fn: () -> (), ToggleFromActivation: boolean?)
-	if not Button then warn("Standard button missing!") return end
+function BasicInteractions.AddStandardButton(Button: any, Fn: () -> (), ToggleFromActivation: boolean?)
+	if not Button then return end
 	
-	local Top, Back = Button:FindFirstChild("Top"), Button:FindFirstChild("Back")
-	if not Top or not Back then warn("Top or Back frames are missing in standard button") return end
-	
-	local Cover = Instance.new("Frame")
-	Cover.Name = "Cover"
-	Cover.BackgroundColor3 = Color3.new(0, 0, 0)
-	Cover.BackgroundTransparency = 1
-	Cover.Size = UDim2.fromScale(1, 1)
-	Cover.ZIndex = 2
-	
-	Top.Corner:Clone().Parent = Cover
-	
-	Cover.Parent = Top
-	
-	BasicInteractions.AddButton(Button, ToggleFromActivation)
+	BasicInteractions.AddButton(Button.Button, ToggleFromActivation)
 	
 	Button:GetAttributeChangedSignal("Hover"):Connect(function()
-		UpdateStandardButtonAnimations(Button, Top, ToggleFromActivation)
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		if Button:GetAttribute("Hover") then
-			UISounds.StandardButtonHover:Play()
+			--UISounds.StandardButtonHover:Play()
 		end
 	end)
 	
 	Button:GetAttributeChangedSignal("Pressed"):Connect(function()
-		UpdateStandardButtonAnimations(Button, Top, ToggleFromActivation)
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		if Button:GetAttribute("Pressed") then
-			UISounds.StandardButtonPress:Play()
+			--UISounds.StandardButtonPress:Play()
 		end
 	end)
 	
 	if ToggleFromActivation then
 		Button:GetAttributeChangedSignal("On"):Connect(function()
-			UpdateStandardButtonAnimations(Button, Top, ToggleFromActivation)
+			UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		end)
 	end
 	
 	Button:GetAttributeChangedSignal("Locked"):Connect(function()
-		
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 	end)
 	
-	Button.Activated:Connect(function()
+	Button.Button.Activated:Connect(function()
 		if Button:GetAttribute("Locked") then return end
 		Fn()
 	end)
