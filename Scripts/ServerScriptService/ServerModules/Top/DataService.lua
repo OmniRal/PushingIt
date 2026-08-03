@@ -57,7 +57,7 @@ local ProfileTemplate = {
 	}
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_26', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_27', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -154,6 +154,9 @@ local function RequestChangePVPMode(Player: Player)
 	if PData.PVPMode == nil or PData.LastPVPChange == nil then print("PVPMode or LastPVPChange data not found while trying to change PVP mode for", Player.Name); return end
 	
 	-- Make sure its not on cooldown
+	warn("_____")
+	warn(os.clock())
+	warn(PData.LastPVPChange + SharedGlobalValues.ChangePVPModeCooldown)
 	if os.clock() < PData.LastPVPChange + SharedGlobalValues.ChangePVPModeCooldown then return "On cooldown!" end
 	
 	-- Save data

@@ -125,12 +125,17 @@ local function SetupPVPButton()
 	BasicInteractions.ConnectFXInteractionsFN(PVPButton.Button, UpdateVisuals)
 
 	PVPButton.Button.Activated:Connect(function()
-		local Result = DataService:RequestChangePVPMode()
-		if Result == 1 then
-			print("Success!")
-		elseif Result ~= 1 and typeof(Result) == "string" then
-			ErrorMessageUI.New(Result)
-		end
+		ModalWindowUI.New("Turn " .. (if PlayerInfo.Data.PVPMode then "OFF" else "ON") .. " mode?",
+			function()
+				local Result = DataService:RequestChangePVPMode()
+				if Result == 1 then
+					print("Success!")
+				elseif Result ~= 1 and typeof(Result) == "string" then
+					ErrorMessageUI.New(Result)
+				end
+			end,
+			nil, "Yeah!", "Nah"
+		)
 	end)
 
 	UpdateVisuals()

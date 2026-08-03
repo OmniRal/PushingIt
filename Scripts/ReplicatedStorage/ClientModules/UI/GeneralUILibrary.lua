@@ -15,7 +15,7 @@ local Workspace = game:GetService("Workspace")
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
-local UI_Info = require(ReplicatedStorage.Source.SharedModules.UI.UI_Info)
+local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

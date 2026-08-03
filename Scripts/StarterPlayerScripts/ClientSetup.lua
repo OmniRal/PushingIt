@@ -10,7 +10,8 @@ Pronghorn:SetEnabledChannels({
 
 Pronghorn:Import({
     StarterPlayer.StarterPlayerScripts.Source,
-    ReplicatedStorage.Source.SharedModules
+    ReplicatedStorage.Source.SharedModules,
+    ReplicatedStorage.Source.ClientModules,
 })
 
 print("Pronghorn Client Import Complete.")
