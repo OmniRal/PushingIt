@@ -36,6 +36,16 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Formats time into something like 01 / 02 / 1993
+function Utility.FormatTime(TimeStamp: number?, European: boolean?)
+    TimeStamp = TimeStamp or os.time()
+    if not European then
+        return os.date("!%m / %d / %Y", TimeStamp)
+    else
+        return os.date("!%d / %m / %Y", TimeStamp)
+    end
+end
+
 function Utility.CheckRemotesLoaded(List: {string})
 	while true do
 		task.wait()
@@ -53,8 +63,6 @@ function Utility.ConvertSecondsToHMS(TotalSeconds: number)
 	local Hours = math.floor(TotalSeconds / 3600)
 	local Minutes = math.floor((TotalSeconds % 3600) / 60)
 	local Seconds = math.floor(TotalSeconds % 60)
-
-	
 
 	if Hours > 0 then
 		if Hours < 10 then Hours = "0" .. tostring(Hours); else Hours = tostring(Hours); end

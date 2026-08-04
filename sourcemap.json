@@ -116,6 +116,14 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "HazardController",
+									"className": "ModuleScript",
+									"children": [],
+									"filePaths": [
+										"Scripts/ReplicatedStorage/ClientModules/HazardController.lua"
+									]
+								},
+								{
 									"name": "UI",
 									"className": "Folder",
 									"children": [
@@ -211,14 +219,6 @@
 									],
 									"filePaths": [
 										"Scripts/ReplicatedStorage/ClientModules/UI"
-									]
-								},
-								{
-									"name": "HazardController",
-									"className": "ModuleScript",
-									"children": [],
-									"filePaths": [
-										"Scripts/ReplicatedStorage/ClientModules/HazardController.lua"
 									]
 								}
 							],
@@ -1183,6 +1183,62 @@
 					"name": "Assets",
 					"className": "Folder",
 					"children": [
+						{
+							"name": "Hazards",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "SpringLauncher",
+									"className": "Model",
+									"children": [
+										{
+											"name": "Base",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Attachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "SpringConstraint",
+													"className": "SpringConstraint",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "Root",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Cushion",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Attachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
+									]
+								}
+							],
+							"filePaths": [
+								"Assets/Replicated/Hazards"
+							]
+						},
 						{
 							"name": "Other",
 							"className": "Folder",
@@ -4429,6 +4485,361 @@
 																					]
 																				}
 																			]
+																		},
+																		{
+																			"name": "Noobs",
+																			"className": "CanvasGroup",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Scroller",
+																					"className": "ScrollingFrame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "OG",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Container",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Stroke",
+																											"className": "UIStroke",
+																											"filePaths": [],
+																											"children": []
+																										},
+																										{
+																											"name": "Title",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "NoobName",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "RarityName",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Gradient",
+																													"className": "UIGradient",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Info",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "FirstPushed",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "TimePushed",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Date",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "AmountPushed",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Main",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Viewport",
+																													"className": "ViewportFrame",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "FlavorText",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								}
+																							]
+																						},
+																						{
+																							"name": "GridLayout",
+																							"className": "UIGridLayout",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "Tabs",
+																			"className": "Frame",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Padding",
+																					"className": "UIPadding",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "ListLayout",
+																					"className": "UIListLayout",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Noobs",
+																					"className": "CanvasGroup",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Click",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Frame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Label",
+																									"className": "TextLabel",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Stroke",
+																									"className": "UIStroke",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				},
+																				{
+																					"name": "Stickers",
+																					"className": "CanvasGroup",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Click",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Frame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Label",
+																									"className": "TextLabel",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Stroke",
+																									"className": "UIStroke",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "Stickers",
+																			"className": "CanvasGroup",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Scroller",
+																					"className": "ScrollingFrame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "OG",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Container",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Stroke",
+																											"className": "UIStroke",
+																											"filePaths": [],
+																											"children": []
+																										},
+																										{
+																											"name": "Title",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "StickerName",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Gradient",
+																													"className": "UIGradient",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Info",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Date",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Main",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Icon",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								}
+																							]
+																						},
+																						{
+																							"name": "GridLayout",
+																							"className": "UIGridLayout",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
 																		}
 																	]
 																},
@@ -4988,6 +5399,12 @@
 																	"className": "ImageButton",
 																	"filePaths": [],
 																	"children": []
+																},
+																{
+																	"name": "Click",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
 																}
 															]
 														},
@@ -4996,6 +5413,12 @@
 															"className": "CanvasGroup",
 															"filePaths": [],
 															"children": [
+																{
+																	"name": "Button",
+																	"className": "ImageButton",
+																	"filePaths": [],
+																	"children": []
+																},
 																{
 																	"name": "Frame",
 																	"className": "Frame",
@@ -5016,7 +5439,7 @@
 																	]
 																},
 																{
-																	"name": "Button",
+																	"name": "Click",
 																	"className": "ImageButton",
 																	"filePaths": [],
 																	"children": []
@@ -5077,62 +5500,6 @@
 							"children": [],
 							"filePaths": [
 								"Assets/Replicated/UISounds.rbxm"
-							]
-						},
-						{
-							"name": "Hazards",
-							"className": "Folder",
-							"children": [
-								{
-									"name": "SpringLauncher",
-									"className": "Model",
-									"children": [
-										{
-											"name": "Base",
-											"className": "MeshPart",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Attachment",
-													"className": "Attachment",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "SpringConstraint",
-													"className": "SpringConstraint",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "Root",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Cushion",
-											"className": "MeshPart",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Attachment",
-													"className": "Attachment",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										}
-									],
-									"filePaths": [
-										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
-									]
-								}
-							],
-							"filePaths": [
-								"Assets/Replicated/Hazards"
 							]
 						}
 					],
@@ -5235,6 +5602,23 @@
 											]
 										},
 										{
+											"name": "HazardService",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "SpringLauncher",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
+													]
+												}
+											],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/HazardService/HazardService.init.lua"
+											]
+										},
+										{
 											"name": "NPCService",
 											"className": "ModuleScript",
 											"children": [],
@@ -5304,23 +5688,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WorldUIService.lua"
-											]
-										},
-										{
-											"name": "HazardService",
-											"className": "ModuleScript",
-											"children": [
-												{
-													"name": "SpringLauncher",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
-													]
-												}
-											],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/HazardService/HazardService.init.lua"
 											]
 										}
 									],

@@ -95,8 +95,11 @@ local function UpdateBase()
 	end
 end
 
-local function TurnOffTabs(Except: ImageButton)
-	for _, Tab in Tabs do
+-- Set all tabs to OFF, except a specific one; can also use a different dictionary
+local function TurnOffTabs(Except: ImageButton, List: {[string]: any}?)
+	local ThisList = List or Tabs
+
+	for _, Tab in ThisList do
 		if not Tab then continue end
 		if Tab == Except then continue end
 		Tab:SetAttribute("On", false)
@@ -135,7 +138,7 @@ local function UpdateTabVisuals(Tab: ImageButton, CopyTab: ImageButton)
 	local Cover = Tab:FindFirstChild("Cover")
 	if not Cover then return end
 
-	local Hover, Pressed, On = Tab:GetAttribute("Hover"), Tab:GetAttribute("Pressed"), Tab:GetAttribute("On")
+	local On, Hover, Pressed = Tab:GetAttribute("On"), Tab:GetAttribute("Hover"), Tab:GetAttribute("Pressed")
 	
 	Cover.Visible = false
 
@@ -166,6 +169,28 @@ local function UpdateTabVisuals(Tab: ImageButton, CopyTab: ImageButton)
 	end
 
 	CopyTab.Size = Tab.Size
+end
+
+local function UpdateSubTabVisuals(_, Tab: any, Window: any?)
+	local On, Hover, Pressed = Tab.Click:GetAttribute("On"), Tab.Click:GetAttribute("Hover"), Tab.Click:GetAttribute("Pressed")
+	
+	Tab.Frame.BackgroundTransparency = if On then 0.25 else 0.75
+	Tab.Frame.Label.TextTransparency = if On then 0.5 else 0.75
+	Tab.Frame.Stroke.Transparency = if On then 0.5 else 0.75
+
+	if not Hover and not Pressed then
+		Tab.Frame.Label.Size = UDim2.fromScale(0.9, 0.9)
+	elseif Hover and not Pressed then
+		Tab.Frame.Label.Size = UDim2.fromScale(1, 1)
+	elseif Pressed then
+		Tab.Frame.Label.Size = UDim2.fromScale(0.6, 0.6)
+	end
+
+	warn(Tab, Window)
+
+	-- Update which window is opened
+	if not Window then return end
+	Window.Visible = On
 end
 
 -- Hover, Pressed, Locked and On changes for the plus button that adds a skill point to the respective skill
@@ -216,6 +241,99 @@ local function TestViewportDummy()
 	Frame.Viewport.CurrentCamera = NewCam
 end
 
+local function SetupBasics()
+	if not Menu then return end
+
+	Menu:SetAttribute("On", false)
+	local MenuTween: any
+
+	Menu:GetAttributeChangedSignal("On"):Connect(function()
+		local GoalPosition, GoalTransparency, Direction = MENU_ON_POSITION, 0, Enum.EasingDirection.Out
+
+		if not Menu:GetAttribute("On") then
+			GoalPosition = MENU_OFF_POSITION
+			GoalTransparency = 1
+			Direction = Enum.EasingDirection.In
+		else
+			Menu.Visible = true
+		end
+
+		MenuTween = TweenService:Create(Menu, TweenInfo.new(AnimTime, Enum.EasingStyle.Back, Direction), {Position = GoalPosition, GroupTransparency = GoalTransparency})
+		MenuTween.Completed:Connect(function()
+			if Menu:GetAttribute("On") then return end
+			Menu.Visible = false
+		end)
+		MenuTween:Play()
+	end)
+	Menu.Position = MENU_OFF_POSITION
+	Menu.GroupTransparency = 1
+	Menu.Visible = true
+
+	-- Set up top tab buttons
+	for _, Tab in Menu.Tabs:GetChildren() do
+		if not Tab then continue end
+		if not Tab:IsA("ImageButton") then continue end
+
+		local CopyTab = Menu.BackTabs:FindFirstChild(Tab.Name)
+		if not CopyTab then return end
+
+		BasicInteractions.AddButton(Tab)
+		BasicInteractions.ConnectFXInteractionsFN(Tab, UpdateTabVisuals, false, false, false, true, CopyTab)
+		
+		if Tab.Name == "Shop" then Tab:SetAttribute("On", true) end
+
+		Tabs[Tab.Name] = Tab
+	end
+end
+
+-- Stuff window
+local function SetupStuff()
+	if not Menu then return end
+	local Stuff = Base.Windows.Stuff
+	
+	-- Wire sub tabs
+	local SubTabs: {[string]: any} = {}
+	for _, Button in Stuff.Tabs:GetChildren() do
+		if not Button:IsA("CanvasGroup") then continue end
+		
+		BasicInteractions.AddButton(Button.Click, true, true)
+		BasicInteractions.ConnectFXInteractionsFN(Button.Click, UpdateSubTabVisuals, nil, nil, nil, nil, Button, Stuff[Button.Name])
+		Button.Click.Activated:Connect(function()
+			Button.Click:SetAttribute("On", true)
+			TurnOffTabs(Button.Click, SubTabs)
+		end)
+
+		SubTabs[Button.Name] = Button.Click
+
+		-- Have this be the starting tab open
+		if Button.Name == "Noobs" then Button.Click:SetAttribute("On", true) end
+
+		UpdateSubTabVisuals(nil, Button, Stuff[Button.Name])
+	end
+end
+
+-- Skills window
+local function SetupSkills()
+	-- Wire tab buttosn
+	for _, Frame in Base.Windows.Skills.List:GetChildren() do
+		if not Frame:IsA("Frame") then continue end
+
+		Frame.Right.Plus.AutoButtonColor = false
+		BasicInteractions.AddButton(Frame.Right.Plus)
+		BasicInteractions.ConnectFXInteractionsFN(Frame.Right.Plus, UpdatePlusSkillButtonVisuals, false, false, true, false)
+
+		Frame.Right.Plus.Activated:Connect(function()
+			if Frame.Right.Plus:GetAttribute("Locked") then return end
+			local Result = DataService:RequestUpgradeSkill(Frame.Name)
+			if Result == 1 then
+				print("Success!")
+			else
+				print(Result)
+			end
+		end)
+	end
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -264,65 +382,9 @@ function MainMenuUI.Setup(Gui: ScreenGui)
 
 	task.wait(1)
 
-	Menu:SetAttribute("On", false)
-	local MenuTween: any
-
-	Menu:GetAttributeChangedSignal("On"):Connect(function()
-		local GoalPosition, GoalTransparency, Direction = MENU_ON_POSITION, 0, Enum.EasingDirection.Out
-
-		if not Menu:GetAttribute("On") then
-			GoalPosition = MENU_OFF_POSITION
-			GoalTransparency = 1
-			Direction = Enum.EasingDirection.In
-		else
-			Menu.Visible = true
-		end
-
-		MenuTween = TweenService:Create(Menu, TweenInfo.new(AnimTime, Enum.EasingStyle.Back, Direction), {Position = GoalPosition, GroupTransparency = GoalTransparency})
-		MenuTween.Completed:Connect(function()
-			if Menu:GetAttribute("On") then return end
-			Menu.Visible = false
-		end)
-		MenuTween:Play()
-	end)
-	Menu.Position = MENU_OFF_POSITION
-	Menu.GroupTransparency = 1
-	Menu.Visible = true
-
-	-- Set up tab buttons
-	for _, Tab in Menu.Tabs:GetChildren() do
-		if not Tab then continue end
-		if not Tab:IsA("ImageButton") then continue end
-
-		local CopyTab = Menu.BackTabs:FindFirstChild(Tab.Name)
-		if not CopyTab then return end
-
-		BasicInteractions.AddButton(Tab)
-		BasicInteractions.ConnectFXInteractionsFN(Tab, UpdateTabVisuals, false, false, false, true, CopyTab)
-		
-		if Tab.Name == "Shop" then Tab:SetAttribute("On", true) end
-
-		Tabs[Tab.Name] = Tab
-	end
-
-	-- Set up skills tab
-	for _, Frame in Base.Windows.Skills.List:GetChildren() do
-		if not Frame:IsA("Frame") then continue end
-
-		Frame.Right.Plus.AutoButtonColor = false
-		BasicInteractions.AddButton(Frame.Right.Plus)
-		BasicInteractions.ConnectFXInteractionsFN(Frame.Right.Plus, UpdatePlusSkillButtonVisuals, false, false, true, false)
-
-		Frame.Right.Plus.Activated:Connect(function()
-			if Frame.Right.Plus:GetAttribute("Locked") then return end
-			local Result = DataService:RequestUpgradeSkill(Frame.Name)
-			if Result == 1 then
-				print("Success!")
-			else
-				print(Result)
-			end
-		end)
-	end
+	SetupBasics()
+	SetupSkills()
+	SetupStuff()
 
 	TestViewportDummy()
 end

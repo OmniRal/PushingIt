@@ -64,7 +64,7 @@ local function UpdateCloseButtonAnimations(Button: ImageButton, Cross: ImageLabe
 end
 
 local function UpdateStandardButtonAnimations(Base: any, ToggleFromActivation: boolean?)
-	local On, Hover, Pressed, Locked = Base.Button:GetAttribute("On"), Base.Button:GetAttribute("Hover"), Base.Button:GetAttribute("Pressed"), Base.Button:GetAttribute("Locked")
+	local On, Hover, Pressed, Locked = Base.Click:GetAttribute("On"), Base.Click:GetAttribute("Hover"), Base.Click:GetAttribute("Pressed"), Base.Click:GetAttribute("Locked")
 	local GoalSize = UDim2.fromScale(0.8, 0.8)
 	local GoalColor = ColorPalette.JetWhite.RGB
 	local GoalTransparency = if Locked then 0.75 else 0
@@ -237,25 +237,25 @@ function BasicInteractions.ConnectFXInteractionsFN(Button: GuiButton, Fn: (...an
 
 	if not IgnoreHover then
 		Button:GetAttributeChangedSignal("Hover"):Connect(function()
-			Fn(Button, if Other then unpack(Other) else nil)
+			if Other then Fn(Button, unpack(Other)) else Fn(Button) end
 		end)
 	end
 
 	if not IgnorePressed then
 		Button:GetAttributeChangedSignal("Pressed"):Connect(function()
-			Fn(Button, if Other then unpack(Other) else nil)
+			if Other then Fn(Button, unpack(Other)) else Fn(Button) end
 		end)
 	end
 
 	if not IgnoreOn then
 		Button:GetAttributeChangedSignal("On"):Connect(function()
-			Fn(Button, if Other then unpack(Other) else nil)
+			if Other then Fn(Button, unpack(Other)) else Fn(Button) end
 		end)
 	end
 
 	if not IgnoreLocked then
 		Button:GetAttributeChangedSignal("Locked"):Connect(function()
-			Fn(Button, if Other then unpack(Other) else nil)
+			if Other then Fn(Button, unpack(Other)) else Fn(Button) end
 		end)
 	end
 end

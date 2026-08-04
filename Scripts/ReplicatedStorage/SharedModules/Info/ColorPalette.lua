@@ -23,4 +23,11 @@ ColorPalette.MidGrey = {RGB = Color3.fromRGB(125, 125, 125), HEX = Color3.fromHe
 
 ColorPalette.DarkGrey = {RGB = Color3.fromRGB(100, 100, 100), HEX = Color3.fromHex("#646464")}
 
+ColorPalette.Common = {RGB = Color3.fromRGB(226, 236, 255), HEX = Color3.fromHex("#e2ecff")}
+ColorPalette.Rare = {RGB = Color3.fromRGB(151, 255, 168), HEX = Color3.fromHex("#97ffa8")}
+ColorPalette.Epic = {RGB = Color3.fromRGB(255, 248, 149), HEX = Color3.fromHex("#fff895")}
+ColorPalette.Legendary = {RGB = Color3.fromRGB(255, 164, 157), HEX = Color3.fromHex("#ffa49d")}
+ColorPalette.Mythical = {RGB = Color3.fromRGB(205, 170, 255), HEX = Color3.fromHex("#cdaaff")}
+
+
 return ColorPalette

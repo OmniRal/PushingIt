@@ -54,10 +54,14 @@ local ProfileTemplate = {
 		
 		DodgeRange = 1,
 		DodgeCooldown = 1,
+	},
+
+	Noobs = {
+		-- [string]: {Time: number, Date: string, Pushes: number, }
 	}
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_27', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_33', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -154,25 +158,25 @@ local function RequestChangePVPMode(Player: Player)
 	if PData.PVPMode == nil or PData.LastPVPChange == nil then print("PVPMode or LastPVPChange data not found while trying to change PVP mode for", Player.Name); return end
 	
 	-- Make sure its not on cooldown
-	warn("_____")
-	warn(os.clock())
-	warn(PData.LastPVPChange + SharedGlobalValues.ChangePVPModeCooldown)
-	if os.clock() < PData.LastPVPChange + SharedGlobalValues.ChangePVPModeCooldown then return "On cooldown!" end
+
+	if os.time() < PData.LastPVPChange + SharedGlobalValues.ChangePVPModeCooldown then return "On cooldown!" end
 	
 	-- Save data
-	PData.LastPVPChange = os.clock()
+	PData.LastPVPChange = os.time()
 	PData.PVPMode = not PData.PVPMode
 	PData.SavedTime = 0
 	PData.TimerActive = PData.PVPMode
 	PData.TimerStartedAt = os.clock()
 
+	warn("Changing!!")
+
 	-- Send updated data to player
 	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
-		LastPVPChange = os.clock(),
+		LastPVPChange = os.time(),
 		PVPMode = PData.PVPMode,
 		SavedTime = PData.SavedTime,
 		TimerActive = PData.TimerActive,
-		TimerStartedAt = os.clock(),
+		TimerStartedAt = os.clock()
 	})
 
 	-- Change respective attributes (they exist so other players can see how who is in PVP mode and their timers)
