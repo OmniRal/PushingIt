@@ -63,8 +63,8 @@ local function UpdateCloseButtonAnimations(Button: ImageButton, Cross: ImageLabe
 	TweenService:Create(Cross, TweenInfo.new(AnimTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Size = GoalSize}):Play()
 end
 
-local function UpdateStandardButtonAnimations(Base: any, ToggleFromActivation: boolean?)
-	local On, Hover, Pressed, Locked = Base.Click:GetAttribute("On"), Base.Click:GetAttribute("Hover"), Base.Click:GetAttribute("Pressed"), Base.Click:GetAttribute("Locked")
+local function UpdateStandardButtonAnimations(Button: any, ToggleFromActivation: boolean?)
+	local On, Hover, Pressed, Locked = Button.Click:GetAttribute("On"), Button.Click:GetAttribute("Hover"), Button.Click:GetAttribute("Pressed"), Button.Click:GetAttribute("Locked")
 	local GoalSize = UDim2.fromScale(0.8, 0.8)
 	local GoalColor = ColorPalette.JetWhite.RGB
 	local GoalTransparency = if Locked then 0.75 else 0
@@ -79,9 +79,9 @@ local function UpdateStandardButtonAnimations(Base: any, ToggleFromActivation: b
 		GoalSize = UDim2.fromScale(0.5, 0.5)
 	end
 
-	Base.Frame.Size = GoalSize
-	Base.GroupColor3 = GoalColor
-	Base.GroupTransparency = GoalTransparency
+	Button.Frame.Size = GoalSize
+	Button.GroupColor3 = GoalColor
+	Button.GroupTransparency = GoalTransparency
 end
 
 local function UpdateStandardButtonAnimations_2(Button: ImageButton, Icon: ImageLabel, ToggleFromActivation: boolean?, BaseSize: UDim2, HoverSize: UDim2, PressedSize: UDim2)
@@ -296,37 +296,37 @@ function BasicInteractions.AddCloseButton(Button: ImageButton, CloseFn: () -> ()
 	Button.Position = UDim2.new(1, -Size / 20, 0, 0)
 end
 
-function BasicInteractions.AddStandardButton(Base: any, Fn: () -> (), ToggleFromActivation: boolean?)
-	if not Base then return end
+function BasicInteractions.AddStandardButton(Button: any, Fn: () -> (), ToggleFromActivation: boolean?)
+	if not Button then return end
 	
-	BasicInteractions.AddButton(Base.Button, ToggleFromActivation)
+	BasicInteractions.AddButton(Button.Click, ToggleFromActivation)
 	
-	Base.Button:GetAttributeChangedSignal("Hover"):Connect(function()
-		UpdateStandardButtonAnimations(Base, ToggleFromActivation)
-		if Base.Button:GetAttribute("Hover") then
+	Button.Click:GetAttributeChangedSignal("Hover"):Connect(function()
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
+		if Button.Click:GetAttribute("Hover") then
 			--UISounds.StandardButtonHover:Play()
 		end
 	end)
 	
-	Base.Button:GetAttributeChangedSignal("Pressed"):Connect(function()
-		UpdateStandardButtonAnimations(Base, ToggleFromActivation)
-		if Base.Button:GetAttribute("Pressed") then
+	Button.Click:GetAttributeChangedSignal("Pressed"):Connect(function()
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
+		if Button.Click:GetAttribute("Pressed") then
 			--UISounds.StandardButtonPress:Play()
 		end
 	end)
 	
 	if ToggleFromActivation then
-		Base.Button:GetAttributeChangedSignal("On"):Connect(function()
-			UpdateStandardButtonAnimations(Base, ToggleFromActivation)
+		Button.Click:GetAttributeChangedSignal("On"):Connect(function()
+			UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		end)
 	end
 	
-	Base.Button:GetAttributeChangedSignal("Locked"):Connect(function()
-		UpdateStandardButtonAnimations(Base, ToggleFromActivation)
+	Button.Click:GetAttributeChangedSignal("Locked"):Connect(function()
+		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 	end)
 	
-	Base.Button.Activated:Connect(function()
-		if Base.Button:GetAttribute("Locked") then return end
+	Button.Click.Activated:Connect(function()
+		if Button.Click:GetAttribute("Locked") then return end
 		Fn()
 	end)
 end

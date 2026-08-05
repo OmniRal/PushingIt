@@ -301,6 +301,9 @@ function MainUIController:Deferred()
             elseif typeof(Index) == "table" then
                 if Index[#Index] == "ChargePower" then
                     PushChargeBarUI.UpdateDivBars()
+
+				elseif Index[1] == "NPCs" then
+					MainMenuUI.UpdateStuff()
                 end
             end
         end)

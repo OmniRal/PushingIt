@@ -55,12 +55,12 @@ local NPCInfo: {
             Pants: number?,
 
             Movement: NPCMovement,
-        }
+		}
     }
 } = {}
 
 NPCInfo["Common"] = {
-    ["John"] = {
+    ["JohnDink"] = {
         FirstName = "John",
         LastName = "Dink",
 
@@ -100,8 +100,8 @@ NPCInfo["Common"] = {
 
         Movement = "Stationary",
 	},
-	
-	["Oog"] = {
+
+	["OogDoogt"] = {
 		FirstName = "Oog",
 		LastName = "Doogt",
 
@@ -141,7 +141,7 @@ NPCInfo["Common"] = {
 
 		Movement = "Stationary",
 	},
-	["Felipe"] = {
+	["FelipeSantiago"] = {
 		FirstName = "Felipe",
 		LastName = "Santiago",
 

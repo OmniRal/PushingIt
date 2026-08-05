@@ -327,6 +327,14 @@
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/General/Utility/Units.lua"
 													]
+												},
+												{
+													"name": "UI",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/General/Utility/UI.lua"
+													]
 												}
 											],
 											"filePaths": [
@@ -689,6 +697,30 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "Option",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
+											]
+										},
+										{
+											"name": "Signal",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
+											]
+										},
+										{
 											"name": "comm",
 											"className": "ModuleScript",
 											"children": [
@@ -786,30 +818,6 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_comm@0.3.0/comm/init.lua"
 											]
-										},
-										{
-											"name": "Option",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Option.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Promise.lua"
-											]
-										},
-										{
-											"name": "Signal",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_comm@0.3.0/Signal.lua"
-											]
 										}
 									],
 									"filePaths": [
@@ -820,31 +828,6 @@
 									"name": "sleitnick_component@2.4.5",
 									"className": "Folder",
 									"children": [
-										{
-											"name": "component",
-											"className": "ModuleScript",
-											"children": [
-												{
-													"name": "init.spec",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
-													]
-												},
-												{
-													"name": "wally",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
-													]
-												}
-											],
-											"filePaths": [
-												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
-											]
-										},
 										{
 											"name": "Promise",
 											"className": "ModuleScript",
@@ -876,6 +859,31 @@
 											"filePaths": [
 												"Packages/_Index/sleitnick_component@2.4.5/Trove.lua"
 											]
+										},
+										{
+											"name": "component",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "init.spec",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/init.spec.lua"
+													]
+												},
+												{
+													"name": "wally",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Packages/_Index/sleitnick_component@2.4.5/component/wally.toml"
+													]
+												}
+											],
+											"filePaths": [
+												"Packages/_Index/sleitnick_component@2.4.5/component/init.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -892,6 +900,14 @@
 											"children": [],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/Comm.lua"
+											]
+										},
+										{
+											"name": "Promise",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										},
 										{
@@ -933,14 +949,6 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_knit@1.4.7/knit/init.lua"
-											]
-										},
-										{
-											"name": "Promise",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_knit@1.4.7/Promise.lua"
 											]
 										}
 									],
@@ -987,6 +995,14 @@
 									"className": "Folder",
 									"children": [
 										{
+											"name": "Trove",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
+											]
+										},
+										{
 											"name": "shake",
 											"className": "ModuleScript",
 											"children": [
@@ -1009,14 +1025,6 @@
 											],
 											"filePaths": [
 												"Packages/_Index/sleitnick_shake@0.1.7/shake/init.lua"
-											]
-										},
-										{
-											"name": "Trove",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Packages/_Index/sleitnick_shake@0.1.7/Trove.lua"
 											]
 										}
 									],
@@ -2172,6 +2180,1285 @@
 									"filePaths": [
 										"Assets/Replicated/Other/AnimDummy.rbxm"
 									]
+								},
+								{
+									"name": "BaseNPC",
+									"className": "Model",
+									"children": [
+										{
+											"name": "RightLowerArm",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightElbow",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightElbowRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightWristRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "LeftLowerLeg",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftKneeRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftAnkleRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftKnee",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "RightUpperLeg",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightHip",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightKneeRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "LeftHand",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftGripAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftWristRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftWrist",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "RightUpperArm",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightElbowRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightShoulderAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightShoulder",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "LeftUpperLeg",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftHip",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftKneeRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "LowerTorso",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "WaistBackAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RootRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Root",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "WaistRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "WaistFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "WaistCenterAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "LeftLowerArm",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftElbowRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftWristRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftElbow",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "UpperTorso",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightCollarAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "NeckAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "WaistRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "NeckRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Waist",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "BodyFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftCollarAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "BodyBackAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Humanoid",
+											"className": "Humanoid",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "RightFoot",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightAnkleRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightAnkle",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "HumanoidRootPart",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RootRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "LeftUpperArm",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftShoulder",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftElbowRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftShoulderAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "RightHand",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightWrist",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightWristRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightGripAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "LeftFoot",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftAnkleRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftAnkle",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "RightLowerLeg",
+											"className": "MeshPart",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightKnee",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightAnkleRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightKneeRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Head",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "FaceCenterAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "face",
+													"className": "Decal",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "HairAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "FaceFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Mesh",
+													"className": "SpecialMesh",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Neck",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "OriginalSize",
+													"className": "Vector3Value",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "HatAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "NeckRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Other/BaseNPC.rbxm"
+									]
+								},
+								{
+									"name": "BaseNPC_R6",
+									"className": "Model",
+									"children": [
+										{
+											"name": "Head",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Mesh",
+													"className": "SpecialMesh",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "HairAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "HatAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "FaceFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "FaceCenterAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "face",
+													"className": "Decal",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "NeckRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Torso",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "NeckAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "BodyFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "BodyBackAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftCollarAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightCollarAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "WaistFrontAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "WaistCenterAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "WaistBackAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Right Shoulder",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Left Shoulder",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Right Hip",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Left Hip",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Neck",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "RightHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "LeftHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "NeckRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Left Arm",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftShoulderAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftGripAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Right Arm",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightShoulderAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightGripAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightShoulderRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Left Leg",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "LeftFootAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "LeftHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Right Leg",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RightFootAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RightHipRigAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "OriginalPosition",
+															"className": "Vector3Value",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "Humanoid",
+											"className": "Humanoid",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "HumanoidRootPart",
+											"className": "Part",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "RootAttachment",
+													"className": "Attachment",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "RootJoint",
+													"className": "Motor6D",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Other/BaseNPC_R6.rbxm"
+									]
 								}
 							],
 							"filePaths": [
@@ -3190,6 +4477,14 @@
 							],
 							"filePaths": [
 								"Assets/Replicated/Player"
+							]
+						},
+						{
+							"name": "UISounds",
+							"className": "Folder",
+							"children": [],
+							"filePaths": [
+								"Assets/Replicated/UISounds.rbxm"
 							]
 						},
 						{
@@ -4461,12 +5756,6 @@
 																	"filePaths": [],
 																	"children": [
 																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
 																			"name": "Frame",
 																			"className": "Frame",
 																			"filePaths": [],
@@ -4561,7 +5850,7 @@
 																											"filePaths": [],
 																											"children": [
 																												{
-																													"name": "FirstPushed",
+																													"name": "Date",
 																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
@@ -4573,7 +5862,7 @@
 																													"children": []
 																												},
 																												{
-																													"name": "TimePushed",
+																													"name": "AmountPushed",
 																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
@@ -4585,13 +5874,7 @@
 																													"children": []
 																												},
 																												{
-																													"name": "Date",
-																													"className": "TextLabel",
-																													"filePaths": [],
-																													"children": []
-																												},
-																												{
-																													"name": "AmountPushed",
+																													"name": "Pushes",
 																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
@@ -5395,12 +6678,6 @@
 																	]
 																},
 																{
-																	"name": "Button",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
-																},
-																{
 																	"name": "Click",
 																	"className": "ImageButton",
 																	"filePaths": [],
@@ -5414,7 +6691,7 @@
 															"filePaths": [],
 															"children": [
 																{
-																	"name": "Button",
+																	"name": "Click",
 																	"className": "ImageButton",
 																	"filePaths": [],
 																	"children": []
@@ -5437,12 +6714,6 @@
 																			"children": []
 																		}
 																	]
-																},
-																{
-																	"name": "Click",
-																	"className": "ImageButton",
-																	"filePaths": [],
-																	"children": []
 																}
 															]
 														}
@@ -5492,14 +6763,6 @@
 							],
 							"filePaths": [
 								"Assets/Replicated/UIs"
-							]
-						},
-						{
-							"name": "UISounds",
-							"className": "Folder",
-							"children": [],
-							"filePaths": [
-								"Assets/Replicated/UISounds.rbxm"
 							]
 						}
 					],
@@ -5574,14 +6837,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Classes/Quest.lua"
-											]
-										},
-										{
-											"name": "QuestBoard",
-											"className": "Folder",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Classes/QuestBoard"
 											]
 										}
 									],
@@ -7339,14 +8594,6 @@
 									],
 									"filePaths": [
 										"Scripts/StarterPlayerScripts/Other"
-									]
-								},
-								{
-									"name": "UIModules",
-									"className": "Folder",
-									"children": [],
-									"filePaths": [
-										"Scripts/StarterPlayerScripts/UIModules"
 									]
 								}
 							],

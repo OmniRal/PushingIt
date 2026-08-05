@@ -22,7 +22,7 @@ local List_4 = ServerGlobalValues.PlayerTestList
 
 ServerGlobalValues["CleanupAssetDump"] = true
 
-ServerGlobalValues.NPC_Use_R6 = true
+
 
 --------------------------------------------------------------------------------------------
 

@@ -396,6 +396,8 @@ function MainController:Deferred()
             end
 
             ThisData[Index[#Index]] = Value
+
+			warn("CLIENT DATA: ", PlayerInfo.Data)
         end
     end)
 

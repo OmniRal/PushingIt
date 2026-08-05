@@ -19,9 +19,13 @@ local TweenService = game:GetService("TweenService")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
+local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
+local Util_UI = require(ReplicatedStorage.Source.SharedModules.General.Utility.UI)
+local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -50,6 +54,8 @@ local Menu: any?
 local Base: any?
 local MenuButton: any?
 local Tabs: {[string]: ImageButton} = {}
+
+local Assets = ReplicatedStorage.Assets
 
 local AnimTime = UI_Info.BaseAnimTime
 
@@ -310,6 +316,12 @@ local function SetupStuff()
 
 		UpdateSubTabVisuals(nil, Button, Stuff[Button.Name])
 	end
+
+	Stuff.Noobs.Scroller.OG.Visible = false
+
+	task.delay(3, function()
+		MainMenuUI.UpdateStuff()
+	end)
 end
 
 -- Skills window
@@ -337,6 +349,91 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function MainMenuUI.UpdateStuff()
+	local PData = PlayerInfo.Data
+	if not PData then return end
+
+	local Stuff = Base.Windows.Stuff
+
+	-- Update NPCs / Noobs
+	local TotalCells = 0
+	for Name, Data in PData.NPCs do
+		local Frame = Stuff.Noobs.Scroller:FindFirstChild(Name)
+		if Frame then
+			Frame.Container.Info.Pushes.Text = Data.Pushes
+		else
+			Frame = Stuff.Noobs.Scroller.OG:Clone()
+			Frame.Name = Name
+
+			-- Find the correct NPC info
+			local Info = NPCInfo.Common.JohnDink
+			local ThisRarity = "Common"
+			for _, Rarity in SharedGlobalValues.Rarities do
+				if not NPCInfo[Rarity] then continue end
+				if not NPCInfo[Rarity][Name] then continue end
+				Info = NPCInfo[Rarity][Name]
+				ThisRarity = Rarity
+				break
+			end
+
+			-- Make the NPC
+			local NewNPC = if not SharedGlobalValues.NPC_Use_R6 then Assets.Other.BaseNPC:Clone() else Assets.Other.BaseNPC_R6:Clone()
+			
+			local Description = Instance.new("HumanoidDescription")
+			Description.HeadColor = Info.HeadColor or Info.SkinColor
+			Description.TorsoColor = Info.TorsoColor or Info.SkinColor
+			Description.LeftArmColor = Info.LeftArmColor or Info.SkinColor
+			Description.RightArmColor = Info.RightArmColor or Info.SkinColor
+			Description.LeftLegColor = Info.LeftLegColor or Info.SkinColor
+			Description.RightLegColor = Info.RightLegColor or Info.SkinColor
+			
+			Description.Face = Info.FaceID
+
+			Description.HatAccessory = Info.Hat or 0
+			Description.HairAccessory = Info.Hair or 0
+			Description.FaceAccessory = Info.Face or 0
+			Description.NeckAccessory = Info.Neck or 0
+			Description.ShouldersAccessory = Info.Shoulder or 0
+			Description.FrontAccessory = Info.Front or 0
+			Description.BackAccessory = Info.Back or 0
+			Description.WaistAccessory = Info.Waist or 0
+			
+			Description.Shirt = Info.Shirt or 0
+			Description.Pants = Info.Pants or 0
+
+			Description.Parent = NewNPC
+
+			Frame.Container.Title.NoobName.Text = Info.FirstName .. " " .. Info.LastName
+			Frame.Container.Title.RarityName.Text = ThisRarity
+			Frame.Container.Title.BackgroundColor3 = ColorPalette[ThisRarity].RGB
+
+			local Ratio = 0.8
+			local WorldModel = Instance.new("WorldModel")
+			WorldModel.Parent = Frame.Container.Main.Viewport
+			NewNPC.Parent = WorldModel
+			NewNPC:PivotTo(CFrame.new(0, 0.5, 0) * CFrame.Angles(0, math.pi, 0))
+			local NewCam = Instance.new("Camera")
+			NewCam.CFrame = CFrame.new(Vector3.new(2 * Ratio, 1 * Ratio, 7 * Ratio), Vector3.new(0, 0, 0))
+			NewCam.Parent = Frame.Container.Main.Viewport
+			Frame.Container.Main.Viewport.CurrentCamera = NewCam
+			Frame.Container.Main.FlavorText.Text = Info.FlavorText
+
+			Frame.Container.Info.Date.Text = Utility.FormatTime(Data.Time)
+			Frame.Container.Info.Pushes.Text = Data.Pushes
+
+			Frame.Visible = true
+			Frame.Parent = Stuff.Noobs.Scroller
+
+			local Success, Error = pcall(function() NewNPC.Humanoid:ApplyDescriptionAsync(Description) end)
+			if not Success then warn(Error) end
+		end
+
+		TotalCells += 1
+	end
+
+	Util_UI.UpdateSingleScroller(Stuff.Noobs.Scroller, Stuff.Noobs.Scroller.GridLayout, TotalCells, 3, "Portrait")
+end
 
 function MainMenuUI.UpdateSkills()
 	if not PlayerInfo.Data then return end

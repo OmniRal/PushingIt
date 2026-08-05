@@ -222,7 +222,6 @@ function PushService.AttemptPush(Player: Player)
 	local Power = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
 	
 	local FinalPower = BASE_POWER * math.clamp(Power, 0.1, 6)
-
 	
 	warn("___")
 	print("Level: ", Power)
@@ -236,6 +235,7 @@ function PushService.AttemptPush(Player: Player)
 		
 		task.spawn(function()
 			PushService.PushModel(Player, NPC)
+			DataService.AddNPCPushCount(Player, NPC.Name)
 			task.wait()
 			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 		end)

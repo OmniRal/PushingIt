@@ -2,6 +2,10 @@
 
 local SharedGlobalValues = {}
 
+SharedGlobalValues.Rarities = {"Common", "Rare", "Epic", "Legendary", "Mythical"}
+
+SharedGlobalValues.NPC_Use_R6 = true
+
 SharedGlobalValues.MaxLevel = 25
 
 SharedGlobalValues.ChangePVPModeCooldown = 5

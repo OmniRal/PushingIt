@@ -56,12 +56,12 @@ local ProfileTemplate = {
 		DodgeCooldown = 1,
 	},
 
-	Noobs = {
-		-- [string]: {Time: number, Date: string, Pushes: number, }
+	NPCs = {
+		-- [string]: {Time: number, Pushes: number, New: boolean}
 	}
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_33', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_35', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -315,6 +315,25 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
 end
 
+function DataService.AddNPCPushCount(Player: Player, NPCName: string)
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return end
+	if not PData.NPCs then return end
+
+	if not PData.NPCs[NPCName] then
+		-- If the NPC isn't added already, add it
+		PData.NPCs[NPCName] = {Time = os.time(), Pushes = 1, New = true}
+		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName}, PData.NPCs[NPCName])
+	else
+		-- NPC exists, just add up the total pushes
+		PData.NPCs[NPCName].Pushes += 1
+		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName, "Pushes"}, PData.NPCs[NPCName].Pushes)
+	end
+
+	warn("NPC Data Server: ", PData)
+end
+
 function DataService.WaitForPlayerDataLoaded(Player)
 	if Player:GetAttribute("DataLoaded") then return end
 	Player:GetAttributeChangedSignal("DataLoaded"):Wait()
@@ -326,6 +345,7 @@ function DataService:Init()
 	Remotes.Server:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
 	Remotes.Server:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 	
+	Remotes.Server:CreateToServer("RequestNotNew", {"table"}, "Returns", function(Player: Player, Item) end)
 	Remotes.Server:CreateToServer("RequestChangePVPMode", {}, "Returns", function(Player: Player) return RequestChangePVPMode(Player) end)
 	Remotes.Server:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string) return RequestUpgradeSkill(Player, ThisSkill) end)
 	

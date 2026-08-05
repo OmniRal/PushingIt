@@ -18,10 +18,11 @@ local Workspace = game:GetService("Workspace")
 
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+
+local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
-local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
-local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -81,7 +82,7 @@ local NPCFolder: Folder
 
 local RunThread: thread?
 
-local Assets = ServerStorage.Assets
+local Assets = ReplicatedStorage.Assets
 local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +223,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 
     local Info = NPCInfo[NPCRarity][NPCName]
 
-    local NewNPC = if not ServerGlobalValues.NPC_Use_R6 then Assets.Misc.BaseNPC:Clone() else Assets.Misc.BaseNPC_R6:Clone()
+    local NewNPC = if not SharedGlobalValues.NPC_Use_R6 then Assets.Other.BaseNPC:Clone() else Assets.Other.BaseNPC_R6:Clone()
     NewNPC.Name = NPCName
     
     local Description = Instance.new("HumanoidDescription")
@@ -287,7 +288,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 	-- Add voicelines billboard UI, sound, and attribute connection
 	local LastNormal = 0 -- Last time a normal voiceline was used
 
-	local SpeechBox = ReplicatedStorage.Assets.UIs:FindFirstChild("SpeechBox"):Clone()
+	local SpeechBox = Assets.UIs:FindFirstChild("SpeechBox"):Clone()
 	SpeechBox.Parent = NewNPC.Head
 
 	local VoiceSound = Instance.new("Sound")
@@ -327,7 +328,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 		task.delay(3, function() SpeechBox.Enabled = false end)
 	end)
 
-	if not ServerGlobalValues.NPC_Use_R6 then
+	if not SharedGlobalValues.NPC_Use_R6 then
     	RagdollService.SetRagdoll(NewNPC)
 	else
 		RagdollService.SetRagdoll_R6(NewNPC)
