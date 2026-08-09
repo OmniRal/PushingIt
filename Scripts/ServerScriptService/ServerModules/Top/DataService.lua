@@ -58,7 +58,11 @@ local ProfileTemplate = {
 
 	NPCs = {
 		-- [string]: {Time: number, Pushes: number, New: boolean}
-	}
+	},
+
+	Stamps = {
+		-- [string]: {Time: number, New: boolean}
+	},
 }
 
 local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_35', ProfileTemplate)
@@ -330,8 +334,20 @@ function DataService.AddNPCPushCount(Player: Player, NPCName: string)
 		PData.NPCs[NPCName].Pushes += 1
 		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName, "Pushes"}, PData.NPCs[NPCName].Pushes)
 	end
+end
 
-	warn("NPC Data Server: ", PData)
+function DataService.CollectStamp(Player: Player, StampName: string): boolean
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return false end
+	if not PData.Stamps then return false end
+
+	if PData.Stamps[StampName] then return false end
+
+	PData.Stamps[StampName] = {Time = os.time(), New = true}
+	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Stamps", StampName}, PData.Stamps[StampName])
+
+	return true
 end
 
 function DataService.WaitForPlayerDataLoaded(Player)

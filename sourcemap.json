@@ -321,19 +321,19 @@
 													]
 												},
 												{
-													"name": "Units",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ReplicatedStorage/SharedModules/General/Utility/Units.lua"
-													]
-												},
-												{
 													"name": "UI",
 													"className": "ModuleScript",
 													"children": [],
 													"filePaths": [
 														"Scripts/ReplicatedStorage/SharedModules/General/Utility/UI.lua"
+													]
+												},
+												{
+													"name": "Units",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/SharedModules/General/Utility/Units.lua"
 													]
 												}
 											],
@@ -437,6 +437,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/ShopInfo.lua"
+											]
+										},
+										{
+											"name": "StampInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/StampInfo.lua"
 											]
 										}
 									],
@@ -5862,7 +5870,7 @@
 																													"children": []
 																												},
 																												{
-																													"name": "AmountPushed",
+																													"name": "Pushes",
 																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
@@ -5870,12 +5878,6 @@
 																												{
 																													"name": "Stroke",
 																													"className": "UIStroke",
-																													"filePaths": [],
-																													"children": []
-																												},
-																												{
-																													"name": "Pushes",
-																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
 																												}
@@ -6000,6 +6002,38 @@
 																							]
 																						}
 																					]
+																				},
+																				{
+																					"name": "Stamps",
+																					"className": "CanvasGroup",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "Click",
+																							"className": "ImageButton",
+																							"filePaths": [],
+																							"children": []
+																						},
+																						{
+																							"name": "Frame",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Label",
+																									"className": "TextLabel",
+																									"filePaths": [],
+																									"children": []
+																								},
+																								{
+																									"name": "Stroke",
+																									"className": "UIStroke",
+																									"filePaths": [],
+																									"children": []
+																								}
+																							]
+																						}
+																					]
 																				}
 																			]
 																		},
@@ -6086,6 +6120,127 @@
 																												{
 																													"name": "Stroke",
 																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Main",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Icon",
+																													"className": "ImageLabel",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										}
+																									]
+																								}
+																							]
+																						},
+																						{
+																							"name": "GridLayout",
+																							"className": "UIGridLayout",
+																							"filePaths": [],
+																							"children": []
+																						}
+																					]
+																				}
+																			]
+																		},
+																		{
+																			"name": "Stamps",
+																			"className": "CanvasGroup",
+																			"filePaths": [],
+																			"children": [
+																				{
+																					"name": "Stroke",
+																					"className": "UIStroke",
+																					"filePaths": [],
+																					"children": []
+																				},
+																				{
+																					"name": "Scroller",
+																					"className": "ScrollingFrame",
+																					"filePaths": [],
+																					"children": [
+																						{
+																							"name": "OG",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Container",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Stroke",
+																											"className": "UIStroke",
+																											"filePaths": [],
+																											"children": []
+																										},
+																										{
+																											"name": "Title",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "StickerName",
+																													"className": "TextLabel",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Gradient",
+																													"className": "UIGradient",
+																													"filePaths": [],
+																													"children": []
+																												}
+																											]
+																										},
+																										{
+																											"name": "Info",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Padding",
+																													"className": "UIPadding",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Stroke",
+																													"className": "UIStroke",
+																													"filePaths": [],
+																													"children": []
+																												},
+																												{
+																													"name": "Date",
+																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
 																												}
@@ -6759,6 +6914,21 @@
 									"filePaths": [
 										"Assets/Replicated/UIs/SpeechBox.rbxm"
 									]
+								},
+								{
+									"name": "StampPickupUI",
+									"className": "BillboardGui",
+									"children": [
+										{
+											"name": "Icon",
+											"className": "ImageLabel",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/UIs/StampPickupUI.rbxm"
+									]
 								}
 							],
 							"filePaths": [
@@ -6919,6 +7089,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/SignalService.lua"
+											]
+										},
+										{
+											"name": "StampService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/StampService.lua"
 											]
 										},
 										{
