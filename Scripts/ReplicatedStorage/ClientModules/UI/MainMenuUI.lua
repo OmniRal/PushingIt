@@ -25,7 +25,9 @@ local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPa
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local Util_UI = require(ReplicatedStorage.Source.SharedModules.General.Utility.UI)
+
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
+local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -318,6 +320,7 @@ local function SetupStuff()
 	end
 
 	Stuff.Noobs.Scroller.OG.Visible = false
+	Stuff.Stickers.Scroller.OG.Visible = false
 
 	task.delay(3, function()
 		MainMenuUI.UpdateStuff()
@@ -350,18 +353,17 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function MainMenuUI.UpdateStuff()
+function MainMenuUI.UpdateStuff_NPC()
 	local PData = PlayerInfo.Data
 	if not PData then return end
 
 	local Stuff = Base.Windows.Stuff
 
-	-- Update NPCs / Noobs
 	local TotalCells = 0
 	for Name, Data in PData.NPCs do
 		local Frame = Stuff.Noobs.Scroller:FindFirstChild(Name)
 		if Frame then
-			Frame.Container.Info.Pushes.Text = Data.Pushes
+			Frame.Container.Info.Amount.Text = Data.Pushes
 		else
 			Frame = Stuff.Noobs.Scroller.OG:Clone()
 			Frame.Name = Name
@@ -408,6 +410,7 @@ function MainMenuUI.UpdateStuff()
 			Frame.Container.Title.RarityName.Text = ThisRarity
 			Frame.Container.Title.BackgroundColor3 = ColorPalette[ThisRarity].RGB
 
+			-- Setup the viewport stuff
 			local Ratio = 0.8
 			local WorldModel = Instance.new("WorldModel")
 			WorldModel.Parent = Frame.Container.Main.Viewport
@@ -420,7 +423,7 @@ function MainMenuUI.UpdateStuff()
 			Frame.Container.Main.FlavorText.Text = Info.FlavorText
 
 			Frame.Container.Info.Date.Text = Utility.FormatTime(Data.Time)
-			Frame.Container.Info.Pushes.Text = Data.Pushes
+			Frame.Container.Info.Amount.Text = Data.Pushes
 
 			Frame.Visible = true
 			Frame.Parent = Stuff.Noobs.Scroller
@@ -433,6 +436,43 @@ function MainMenuUI.UpdateStuff()
 	end
 
 	Util_UI.UpdateSingleScroller(Stuff.Noobs.Scroller, Stuff.Noobs.Scroller.GridLayout, TotalCells, 3, "Portrait")
+end
+
+function MainMenuUI.UpdateStuff_Stickers()
+	local PData = PlayerInfo.Data
+	if not PData then return end
+
+	local Stuff = Base.Windows.Stuff
+
+	local TotalCells = 0
+	for Name, Data in PData.Stickers do
+		local Frame = Stuff.Stickers.Scroller:FindFirstChild(Name)
+		if Frame then
+			Frame.Container.Info.Amount.Text = Data.Amount
+		elseif not Frame then
+			local Info = StickerInfo[Name]
+			if not Info then continue end
+
+			Frame = Stuff.Stickers.Scroller.OG:Clone()
+			Frame.Name = Name
+
+			Frame.Container.Title.StickerName.Text = Name
+			Frame.Container.Main.Icon.Image = "rbxassetid://" .. Info.ID
+			Frame.Container.Info.Date.Text = Utility.FormatTime(Data.Time)
+			Frame.Container.Info.Amount.Text = Data.Amount
+			Frame.Visible = true
+			Frame.Parent = Stuff.Stickers.Scroller
+		end
+
+		TotalCells += 1
+	end		
+	
+	Util_UI.UpdateSingleScroller(Stuff.Stickers.Scroller, Stuff.Stickers.Scroller.GridLayout, TotalCells, 3, "Portrait")
+end
+
+function MainMenuUI.UpdateStuff()
+	MainMenuUI.UpdateStuff_NPC()
+	MainMenuUI.UpdateStuff_Stickers()
 end
 
 function MainMenuUI.UpdateSkills()

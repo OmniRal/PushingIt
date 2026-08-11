@@ -1,6 +1,6 @@
 -- OmniRal
 
-local StampService = {}
+local StickerService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
@@ -18,7 +18,9 @@ local Debris = game:GetService("Debris")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -31,7 +33,7 @@ local GRID_Size = 32
 local LIFE_TIME = 1000
 local SURFACE_OFFSET = 0.02
 
-local COLLECT_COOLDOWN = 0.5
+local COOLDOWN = 0.5
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -41,7 +43,7 @@ local COLLECT_COOLDOWN = 0.5
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local AllStamps: {} = {}
+local AllStickers: {} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -68,10 +70,10 @@ local function FindNearestHit(HitPositions: { [number]: Vector3? }, Row: number,
 	return nil
 end
 
-local function SetStamp(Stamp: BasePart)
+local function SetSticker(Sticker: BasePart, StickerName: string)
 	local Debounce = false
 	
-	Stamp.Touched:Connect(function(Hit: BasePart)
+	Sticker.Touched:Connect(function(Hit: BasePart)
 		if Debounce then return end
 		if not Hit then return end
 		if not Hit.Parent then return end
@@ -83,6 +85,15 @@ local function SetStamp(Stamp: BasePart)
 		if not Alive then return end
 
 		Debounce = true
+		
+		local Success, Amount = DataService.CollectSticker(ThisPlayer, StickerName)
+		if Success then
+			Remotes.Server.StickerService.StickerGrabbed:Fire(ThisPlayer, Sticker, Amount)
+		end
+
+		task.wait(COOLDOWN)
+
+		Debounce = false
 	end)
 end
 
@@ -90,7 +101,7 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function StampService.PlaceStamp(ProjectorPart: BasePart, StampID: number, Ignore: {}?, Lifetime: number?): MeshPart?
+function StickerService.PlaceSticker(ProjectorPart: BasePart, StickerID: number, Ignore: {}?, Lifetime: number?): MeshPart?
 	local GridSize = GRID_Size
 	
 	local Params = RaycastParams.new()
@@ -171,14 +182,14 @@ function StampService.PlaceStamp(ProjectorPart: BasePart, StampID: number, Ignor
 	MeshPart.Name = "Sticker"
 	MeshPart.Anchored = true
 	MeshPart.CanCollide = false
-	MeshPart.CanQuery = false -- so future stamps' raycasts pass straight through existing stickers
+	MeshPart.CanQuery = false -- so future Stickers' raycasts pass straight through existing stickers
 	MeshPart.CastShadow = false
 	MeshPart.Transparency = 1
 	MeshPart.Parent = Workspace
 
 	--[[local Decal = Instance.new("Decal")
-	Decal.Texture = "rbxassetid://" .. StampID
-	Decal.ColorMap = "rbxassetid://" .. StampID
+	Decal.Texture = "rbxassetid://" .. StickerID
+	Decal.ColorMap = "rbxassetid://" .. StickerID
 	Decal.Face = Enum.NormalId.Top
 	Decal.Parent = MeshPart]]
 
@@ -194,20 +205,27 @@ function StampService.PlaceStamp(ProjectorPart: BasePart, StampID: number, Ignor
 	return MeshPart
 end
 
-function StampService.GetAllStamps()
+function StickerService.GetAllStickers()
 	local Folder = Instance.new("Folder")
-	Folder.Name = "Stamps"
+	Folder.Name = "Stickers"
 	Folder.Parent = Workspace
 
-	for _, Stamp in CollectionService:GetTagged("Stamp") do
-		if not Stamp then continue end
-
-		SetStamp(Stamp)
+	for _, Sticker in CollectionService:GetTagged("Sticker") do
+		if not Sticker then continue end
+		if not StickerInfo[Sticker:GetAttribute("StickerName")] then continue end
+		SetSticker(Sticker, Sticker:GetAttribute("StickerName"))
 	end
 end
 
-function StampService:Deferred()
-	--StampService.New(Workspace.ProjectorPart, 118698866213297)
+function StickerService:Init()
+	Remotes.Server:CreateToClient("StickerGrabbed", {"BasePart", "number"}, "Reliable")
 end
 
-return StampService
+function StickerService:Deferred()
+	--StickerService.New(Workspace.ProjectorPart, 118698866213297)
+	task.delay(2, function()
+		StickerService.GetAllStickers()
+	end)
+end
+
+return StickerService

@@ -303,7 +303,10 @@ function MainUIController:Deferred()
                     PushChargeBarUI.UpdateDivBars()
 
 				elseif Index[1] == "NPCs" then
-					MainMenuUI.UpdateStuff()
+					MainMenuUI.UpdateStuff_NPC()
+
+				elseif Index[1] == "Stickers" then
+					MainMenuUI.UpdateStuff_Stickers()
                 end
             end
         end)

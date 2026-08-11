@@ -60,12 +60,12 @@ local ProfileTemplate = {
 		-- [string]: {Time: number, Pushes: number, New: boolean}
 	},
 
-	Stamps = {
-		-- [string]: {Time: number, New: boolean}
+	Stickers = {
+		-- [string]: {Time: number, Amount: number, New: boolean}
 	},
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_35', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_39', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -336,18 +336,20 @@ function DataService.AddNPCPushCount(Player: Player, NPCName: string)
 	end
 end
 
-function DataService.CollectStamp(Player: Player, StampName: string): boolean
+function DataService.CollectSticker(Player: Player, StickerName: string): (boolean, number?)
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
 	if not PData then return false end
-	if not PData.Stamps then return false end
+	if not PData.Stickers then return false end
 
-	if PData.Stamps[StampName] then return false end
+	if PData.Stickers[StickerName] then 
+		PData.Stickers[StickerName].Amount += 1 
+	else
+		PData.Stickers[StickerName] = {Time = os.time(), Amount = 1, New = true}
+	end
+	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Stickers", StickerName}, PData.Stickers[StickerName])
 
-	PData.Stamps[StampName] = {Time = os.time(), New = true}
-	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Stamps", StampName}, PData.Stamps[StampName])
-
-	return true
+	return true, PData.Stickers[StickerName].Amount
 end
 
 function DataService.WaitForPlayerDataLoaded(Player)
