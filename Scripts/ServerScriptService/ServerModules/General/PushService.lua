@@ -163,6 +163,7 @@ function PushService.PushModel(Player: Player?, Model: Model, RootModel: Model?)
 		end
 	end
 	
+	-- Add the player as a pusher
 	if not table.find(ModelRagdolls[Model].Pushers, Player) then
 		table.insert(ModelRagdolls[Model].Pushers, Player)
 	end

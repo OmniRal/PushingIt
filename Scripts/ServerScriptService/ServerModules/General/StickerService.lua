@@ -20,6 +20,7 @@ local Debris = game:GetService("Debris")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local PushService = require(ServerScriptService.Source.ServerModules.General.PushService)
 local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
@@ -33,7 +34,7 @@ local GRID_Size = 32
 local LIFE_TIME = 1000
 local SURFACE_OFFSET = 0.02
 
-local COOLDOWN = 0.5
+local COOLDOWN = 3
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -71,29 +72,31 @@ local function FindNearestHit(HitPositions: { [number]: Vector3? }, Row: number,
 end
 
 local function SetSticker(Sticker: BasePart, StickerName: string)
-	local Debounce = false
+	Sticker.Parent = Workspace.Stickers
+	Sticker:SetAttribute("Debounce", false)
 	
 	Sticker.Touched:Connect(function(Hit: BasePart)
-		if Debounce then return end
+		if Sticker:GetAttribute("Debounce") then return end
 		if not Hit then return end
 		if not Hit.Parent then return end
-		
-		local ThisPlayer = Players:FindFirstChild(Hit.Parent.Name)
-		if not ThisPlayer then return end
-		
-		local Alive = Utility.Players.CheckAlive(ThisPlayer)
-		if not Alive then return end
+		if not Hit.Parent:IsA("Model") then return end
 
-		Debounce = true
+		local Pushers = PushService.GetPushers(Hit.Parent)
+		if not Pushers then return end
 		
-		local Success, Amount = DataService.CollectSticker(ThisPlayer, StickerName)
-		if Success then
-			Remotes.Server.StickerService.StickerGrabbed:Fire(ThisPlayer, Sticker, Amount)
+		Sticker:SetAttribute("Debounce", true)
+		
+		for _, ThisPlayer in Pushers do
+			if not ThisPlayer then continue end
+			local Success, Amount = DataService.CollectSticker(ThisPlayer, StickerName)
+			if Success then
+				Remotes.Server.StickerService.StickerGrabbed:Fire(ThisPlayer, Sticker, Amount)
+			end
 		end
 
 		task.wait(COOLDOWN)
 
-		Debounce = false
+		Sticker:SetAttribute("Debounce", false)
 	end)
 end
 

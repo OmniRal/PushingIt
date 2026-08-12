@@ -3490,6 +3490,19 @@
 													"className": "ImageLabel",
 													"filePaths": [],
 													"children": []
+												},
+												{
+													"name": "Container",
+													"className": "CanvasGroup",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
 												}
 											]
 										},
@@ -3503,12 +3516,30 @@
 													"className": "ParticleEmitter",
 													"filePaths": [],
 													"children": []
+												},
+												{
+													"name": "Pulse",
+													"className": "ParticleEmitter",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Pulse_2",
+													"className": "ParticleEmitter",
+													"filePaths": [],
+													"children": []
 												}
 											]
 										},
 										{
 											"name": "Sparkles",
 											"className": "ParticleEmitter",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Icon",
+											"className": "ImageLabel",
 											"filePaths": [],
 											"children": []
 										}
@@ -5919,7 +5950,7 @@
 																													"children": []
 																												},
 																												{
-																													"name": "Pushes",
+																													"name": "Amount",
 																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
@@ -5927,12 +5958,6 @@
 																												{
 																													"name": "Stroke",
 																													"className": "UIStroke",
-																													"filePaths": [],
-																													"children": []
-																												},
-																												{
-																													"name": "Amount",
-																													"className": "TextLabel",
 																													"filePaths": [],
 																													"children": []
 																												}
