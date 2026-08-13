@@ -3490,19 +3490,6 @@
 													"className": "ImageLabel",
 													"filePaths": [],
 													"children": []
-												},
-												{
-													"name": "Container",
-													"className": "CanvasGroup",
-													"filePaths": [],
-													"children": [
-														{
-															"name": "Icon",
-															"className": "ImageLabel",
-															"filePaths": [],
-															"children": []
-														}
-													]
 												}
 											]
 										},
@@ -3511,12 +3498,6 @@
 											"className": "Attachment",
 											"filePaths": [],
 											"children": [
-												{
-													"name": "Glow",
-													"className": "ParticleEmitter",
-													"filePaths": [],
-													"children": []
-												},
 												{
 													"name": "Pulse",
 													"className": "ParticleEmitter",
@@ -3534,12 +3515,6 @@
 										{
 											"name": "Sparkles",
 											"className": "ParticleEmitter",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Icon",
-											"className": "ImageLabel",
 											"filePaths": [],
 											"children": []
 										}

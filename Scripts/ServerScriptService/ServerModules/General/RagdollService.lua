@@ -8,7 +8,7 @@ local RagdollService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
---local Players = game:GetService("Players")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 --local PhysicsService = game:GetService("PhysicsService")
@@ -22,8 +22,8 @@ local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
+local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local PushService = require(ServerScriptService.Source.ServerModules.General.PushService)
-local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -129,7 +129,7 @@ end
 local function SetCollisions(Model: Instance, Folder: Instance)
     if not Model or not Folder then return end
 
-	local ThisList = if ServerGlobalValues.NPC_Use_R6 then ModelCollisions else ModelCollisions_R6
+	local ThisList = if SharedGlobalValues.NPC_Use_R6 then ModelCollisions else ModelCollisions_R6
 
     for _, Table in ThisList do
         local Part0 = Model:FindFirstChild(Table[1])
@@ -176,6 +176,19 @@ local function PartHit(Model: Model, Root: BasePart, BodyPart: BasePart, Hit: Ba
 
 	-- If NPC knocked over another, give bonus points and increase streak
 	PushService.ScoreUp(Pushers, SharedGlobalValues.BonusPointsPerConsecutiveHit, SharedGlobalValues.MultiplierGainPerConsecutiveHit, OtherRagdoll.PrimaryPart.Position)
+end
+
+local function CheckPlayerTimer(Model: Model)
+	if not Model then return end
+	local Player = Players:FindFirstChild(Model.Name)
+	if not Player then return end
+
+	if Model:GetAttribute("Ragdoll") then
+		DataService.StopTimer(Player)
+
+	else
+		DataService.StartTimer(Player)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -277,6 +290,7 @@ function RagdollService.SetRagdoll(Model: Model)
             HeadCollision.CollisionGroup = "Default"
         end
 
+		CheckPlayerTimer(Model)
         if not Model:HasTag("NPC") then return end
 
         task.spawn(function()

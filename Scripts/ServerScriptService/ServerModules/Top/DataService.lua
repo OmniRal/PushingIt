@@ -172,8 +172,6 @@ local function RequestChangePVPMode(Player: Player)
 	PData.TimerActive = PData.PVPMode
 	PData.TimerStartedAt = os.clock()
 
-	warn("Changing!!")
-
 	-- Send updated data to player
 	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
 		LastPVPChange = os.time(),
@@ -317,6 +315,58 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
 	
 	if DoNotSendUpdate then return end
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
+end
+
+function DataService.StartTimer(Player: Player)
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return end
+
+	-- Make sure player is in PVP mode
+	if not PData.PVPMode then return end
+
+	-- Make sure timer isn't already running; really should only be relevant when the player first joins
+	if PData.TimerActive then
+		Player:SetAttribute("SavedTime", PData.SavedTime)
+	else
+		PData.SavedTime = 0
+		Player:SetAttribute("SavedTime", 0)
+	end
+
+	PData.LastPVPChange = os.time()
+	Player:SetAttribute("TimerActive", true)
+	Player:SetAttribute("TimerStartedAt", os.clock())
+
+	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
+		LastPVPChange = os.time(),
+		SavedTime = PData.SavedTime,
+		TimerActive = true,
+		TimerStartedAt = os.clock(),
+	})
+end
+
+function DataService.StopTimer(Player: Player)
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return end
+
+	-- Make sure player is in PVP mode
+	if not PData.PVPMode then return end
+
+	-- Save data
+	PData.LastPVPChange = os.time()
+	PData.SavedTime = 0
+	PData.TimerActive = false
+
+	-- Send updated data to player
+	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
+		LastPVPChange = os.time(),
+		SavedTime = PData.SavedTime,
+		TimerActive = PData.TimerActive,
+	})
+
+	Player:SetAttribute("SavedTime", 0)
+	Player:SetAttribute("TimerActive", PData.TimerActive)
 end
 
 function DataService.AddNPCPushCount(Player: Player, NPCName: string)

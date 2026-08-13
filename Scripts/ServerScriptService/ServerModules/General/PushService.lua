@@ -34,6 +34,9 @@ local BASE_DODGE_FORCE = 50
 local INC_DODGE_FORCE = 15
 local DODGE_DURATION = 0.1
 
+local RAGDOLL_TIME = 3 -- How long the player stays a ragdoll before they can get up
+local IMMUNSE_TIME = 3 -- After a player comes out of being ragdolled, how long are they immune
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -66,6 +69,8 @@ local ModelRagdolls: {
 
 local function CheckAliveAndClose(Root: BasePart, Model: Model): (boolean, BasePart?)
 	if not Model then return false end
+	if Model:GetAttribute("Dodging") then return false end
+	if Model:GetAttribute("Immune") then return false end
 	
 	--if Model:GetAttribute("Ragdoll") then return false end
 	
@@ -228,7 +233,35 @@ function PushService.AttemptPush(Player: Player)
 	print("Level: ", Power)
 	print("Power: ", FinalPower)
 
-	-- First look for NPCs to push
+	-- First, look for other players to push
+	for _, OtherPlayer in Players:GetPlayers() do
+		if not OtherPlayer then continue end
+		if OtherPlayer == Player then continue end
+		if not OtherPlayer.Character then continue end
+		local CanPush, OtherRoot = CheckAliveAndClose(Root, OtherPlayer.Character)
+		if not CanPush or not OtherRoot then continue end
+
+		task.spawn(function()
+			-- Push player
+			PushService.PushModel(Player, OtherPlayer.Character)
+			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
+
+			-- Stop them from ragdolling, but make them immune
+			task.wait(RAGDOLL_TIME)
+			if not OtherPlayer then return end
+			if not OtherPlayer.Character then return end
+			OtherPlayer.Character:SetAttribute("Ragdoll", false)
+			OtherPlayer.Character:SetAttribute("Immune", true)
+
+			-- Take away immunity
+			task.wait(IMMUNSE_TIME)
+			if not OtherPlayer then return end
+			if not OtherPlayer.Character then return end
+			OtherPlayer.Character:SetAttribute("Immune", false)
+		end)
+	end
+
+	-- Second, look for NPCs to push
 	for _, NPC: Model in CollectionService:GetTagged("NPC") do
 		if not NPC then continue end
 		local CanPush, OtherRoot = CheckAliveAndClose(Root, NPC)
@@ -241,8 +274,7 @@ function PushService.AttemptPush(Player: Player)
 			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 		end)
 	end
-	
-	-- Then look for other players to push
+
 	return true
 end
 
@@ -271,6 +303,8 @@ function PushService.AttemptDodge(Player: Player)
 
 		LineVel:Destroy()
 		AlignPos:Destroy()
+
+		task.wait(DODGE_DURATION * 2)
 
 		Char:SetAttribute("Dodging", false)
 	end)
@@ -328,32 +362,6 @@ function PushService.ResetScore(ThisPlayer: Player)
 	Remotes.Server.PushService.ScoreChanged:Fire(ThisPlayer, 0, 0, 0)
 end
 
-function PushService.StartTimer(ThisPlayer: Player)
-	-- Make sure the player is in PVP mode first
-	local PVPMode = DataService.GetIndex(ThisPlayer, "PVPMode")
-	if not PVPMode then return end
-	
-	ThisPlayer:SetAttribute("TimerActive", true)
-	ThisPlayer:SetAttribute("SavedTime", 0)
-	
-	-- Make sure timer isn't already running; really should only be relevant when the player first joins
-	local IsActive = DataService.GetIndex(ThisPlayer, "TimerActive")
-	if IsActive then
-		local SavedTime = DataService.GetIndex(ThisPlayer, "SavedTime")
-		ThisPlayer:SetAttribute("SavedTime", SavedTime)
-	end
-	
-	DataService.SetIndex(ThisPlayer, "TimerActive", true, true)
-	DataService.SetIndex(ThisPlayer, "TimerStartedAt", os.clock(), true)
-	
-	ThisPlayer:SetAttribute("TimerStartedAt", os.clock())
-end
-
-function PushService.StopTimer(ThisPlayer: Player)
-	DataService.SetIndex(ThisPlayer, "TimerActive", false, true)
-	ThisPlayer:SetAttribute("TimerActive", false)
-end
-
 function PushService.PlayerAdded(Player: Player)
 	if PlayerVals[Player] then return end
 	PlayerVals[Player] = {
@@ -377,11 +385,11 @@ function PushService.PlayerAdded(Player: Player)
 		if not Human or not Root then return end
 		
 		CheckedStartTimer = true
-		PushService.StartTimer(Player)
+		DataService.StartTimer(Player)
 	end)
 	
 	if CheckedStartTimer then return end
-	PushService.StartTimer(Player)
+	DataService.StartTimer(Player)
 end
 
 function PushService.PlayerRemoving(Player: Player)
