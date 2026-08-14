@@ -125,7 +125,7 @@ local function PlayerRemoving(Player: Player)
 		Profile.Data.SavedTime = 0
 	end
 	
-	warn("SAVED TIME: ", os.clock() - Player:GetAttribute("Joined"))
+	warn("SAVED TIME: ", os.time() - Player:GetAttribute("Joined"))
 	
 	Profile:Release()
 end
@@ -317,7 +317,7 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
 end
 
-function DataService.StartTimer(Player: Player)
+function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
 	if not PData then return end
@@ -326,7 +326,7 @@ function DataService.StartTimer(Player: Player)
 	if not PData.PVPMode then return end
 
 	-- Make sure timer isn't already running; really should only be relevant when the player first joins
-	if PData.TimerActive then
+	if not ResetSaveTime then
 		Player:SetAttribute("SavedTime", PData.SavedTime)
 	else
 		PData.SavedTime = 0

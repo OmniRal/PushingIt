@@ -237,6 +237,7 @@ function PushService.AttemptPush(Player: Player)
 	for _, OtherPlayer in Players:GetPlayers() do
 		if not OtherPlayer then continue end
 		if OtherPlayer == Player then continue end
+		if not OtherPlayer:GetAttribute("PVPMode") then return end
 		if not OtherPlayer.Character then continue end
 		local CanPush, OtherRoot = CheckAliveAndClose(Root, OtherPlayer.Character)
 		if not CanPush or not OtherRoot then continue end

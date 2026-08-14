@@ -19,6 +19,7 @@ local TweenService = game:GetService("TweenService")
 --local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
+local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -31,6 +32,8 @@ local ANIM_TIME = UI_Info.BaseAnimTime
 local ON_POSITION = UDim2.fromScale(0.5, 0.05)
 local OFF_POSITION = UDim2.fromScale(0.5, -0.1)
 
+local ALLOW_TIMER_ON_SELF = false -- If true, the timer over avatars can be placed on the local player
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -42,8 +45,8 @@ local OFF_POSITION = UDim2.fromScale(0.5, -0.1)
 local LocalPlayer = Players.LocalPlayer
 
 local Timer: any -- Personal timer; displayed at the top
-local OtherTimers: {[Player]: {Timer: any, Dead: boolean}} = {} -- Other players timers; billboard guis above their heads
-local PlayerAddedTimerConnections: {[Player]: RBXScriptConnection?} = {}
+local CharTimers: {[Player]: {Timer: any, Dead: boolean}} = {} -- Other players timers; billboard guis above their heads
+local OtherPlayerConnections: {[Player]: {RBXScriptConnection?}} = {}
 
 local DisplayOnlySeconds = true
 
@@ -74,33 +77,56 @@ local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
 	return FinalVersion .. "s"
 end
 
+local function UpdateCharTimer(Player: Player)
+	if not Player then return end
+	if not CharTimers[Player] then return end
+
+	local ThisTimer = CharTimers[Player].Timer
+	if not ThisTimer or CharTimers[Player].Dead then return end
+
+	local GoalSize, GoalDirection = UDim2.new(1, 150, 0.3, 50), Enum.EasingDirection.Out
+	local GoalColor = ColorPalette.JetWhite.RGB
+
+	if not Player:GetAttribute("TimerActive") then
+		GoalColor = ColorPalette.MidGrey.RGB
+	end
+
+	if not Player:GetAttribute("PVPMode") then
+		GoalSize = UDim2.new(0, 0, 0, 0)
+		GoalDirection = Enum.EasingDirection.In
+	end
+
+	TweenService:Create(ThisTimer, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, GoalDirection), {Size = GoalSize}):Play()
+	TweenService:Create(ThisTimer.Num, TweenInfo.new(ANIM_TIME), {TextColor3 = GoalColor}):Play()
+end
+
 -- Add a timer above another players head (not the LocalPlayer)
 local function AddTimerForChar(Player: Player)
 	if not Player then return end
-	if Player == LocalPlayer then return end
 	
 	local Alive, Char: Model, Human: Humanoid, Root: BasePart = Utility.Players.CheckAlive(Player)
 	if not Alive or not Char or not Human or not Root then return end
 	
-	if Char:SetAttribute("TimerSetupDone") then return end
+	if Char:GetAttribute("TimerSetupDone") then return end
+	Char:SetAttribute("TimerSetupDone", true)
 	
 	local NewTimerUI = ReplicatedStorage.Assets.UIs.CharTimer:Clone()
 	NewTimerUI.Name = "Timer"
 	NewTimerUI.Parent = Root
 	
-	if not OtherTimers[Player] then
-		OtherTimers[Player] = {Timer = NewTimerUI, Dead = false}
+	if not CharTimers[Player] then
+		CharTimers[Player] = {Timer = NewTimerUI, Dead = false}
 	else
-		OtherTimers[Player].Timer = NewTimerUI
-		OtherTimers[Player].Dead = false
+		CharTimers[Player].Timer = NewTimerUI
+		CharTimers[Player].Dead = false
 	end
 	
 	local DeathConnection: RBXScriptConnection? = nil
 	
 	-- When the player dies, remove that connection
 	DeathConnection =  Human.HealthChanged:Connect(function()
-		if OtherTimers[Player] then
-			OtherTimers[Player].Dead = true
+		if CharTimers[Player] then
+			CharTimers[Player].Dead = true
 		end
 		if not DeathConnection then return end
 		DeathConnection:Disconnect()
@@ -108,16 +134,38 @@ local function AddTimerForChar(Player: Player)
 end
 
 local function AddConnectionsToPlayer(Player: Player)
-	--if Player == LocalPlayer then continue end
+	if Player == LocalPlayer and not ALLOW_TIMER_ON_SELF then return end
+	if OtherPlayerConnections[Player] then return end
+
+	OtherPlayerConnections[Player] = {}
+
+	-- Make sure atrributes are created
+	while true do
+		task.wait()
+		if Player:GetAttribute("PVPMode") == nil then continue end
+		if Player:GetAttribute("TimerActive") == nil then continue end
+		break
+	end
 	
-	PlayerAddedTimerConnections[Player] = Player.CharacterAdded:Connect(function()
+	-- Add timer above head connection
+	table.insert(OtherPlayerConnections[Player], Player.CharacterAdded:Connect(function()
 		task.delay(0.25, function()
 			AddTimerForChar(Player)
 		end)
-	end)
+	end))
+
+	-- Update timer when PVP mode changes
+	table.insert(OtherPlayerConnections[Player], Player:GetAttributeChangedSignal("PVPMode"):Connect(function()
+		UpdateCharTimer(Player)
+	end))
+
+	-- Update timer when Timer active changes
+	table.insert(OtherPlayerConnections[Player], Player:GetAttributeChangedSignal("TimerActive"):Connect(function() 
+		UpdateCharTimer(Player)
+	end))
 	
 	-- Incase it didn't work when the player first entered
-	task.delay(1, function()
+	task.delay(2, function()
 		AddTimerForChar(Player)
 	end)
 end
@@ -129,13 +177,13 @@ end
 
 function TimerUI.RunHeartbeat()
 	if not LocalPlayer:GetAttribute("TimerActive") then return end
-	if not OtherTimers then return end
+	if not CharTimers then return end
 	
 	-- Update players timer first
 	Timer.Num.Text = CalculateTimePassed(LocalPlayer:GetAttribute("SavedTime"), LocalPlayer:GetAttribute("TimerStartedAt"))
 	
 	--warn(LocalPlayer:GetAttribute("SavedTime"))
-	for Player, Data in OtherTimers do
+	for Player, Data in CharTimers do
 		if not Player or not Data then continue end
 		if Data.Dead then
 			Data.Timer = nil; continue
@@ -164,8 +212,19 @@ function TimerUI.Setup(Gui: ScreenGui)
 		TweenService:Create(Timer, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, EasingDirection), {Position = GoalPosition}):Play()
 	end)
 	
+	-- Show or hide the timer based on PVP mode
 	LocalPlayer:GetAttributeChangedSignal("PVPMode"):Connect(function()
 		Timer:SetAttribute("Enabled", LocalPlayer:GetAttribute("PVPMode"))
+	end)
+
+	-- Make timer text white or grey based on if its active
+	LocalPlayer:GetAttributeChangedSignal("TimerActive"):Connect(function()
+		local GoalColor = ColorPalette.JetWhite.RGB
+		if not LocalPlayer:GetAttribute("TimerActive") then
+			GoalColor = ColorPalette.MidGrey.RGB
+		end
+
+		TweenService:Create(Timer.Num, TweenInfo.new(ANIM_TIME), {TextColor3 = GoalColor}):Play()
 	end)
 	
 	Timer.Position = OFF_POSITION
@@ -176,43 +235,25 @@ function TimerUI.Setup(Gui: ScreenGui)
 	
 	-- Add a connection for when a player (re)spawns
 	Players.PlayerAdded:Connect(function(Player: Player)
-		if Player == LocalPlayer then return end
-		PlayerAddedTimerConnections[Player] = Player.CharacterAdded:Connect(function()
-			task.delay(0.25, function()
-				AddTimerForChar(Player)
-			end)
-		end)
-		
-		-- Incase it didn't work when the player first entered
-		task.delay(3, function()
-			AddTimerForChar(Player)
-		end)
+		task.spawn(function() AddConnectionsToPlayer(Player) end)
 	end)
 	
-	-- Destroy the connection once a player leaves
+	-- Destroy old connections once a player leaves
 	Players.PlayerRemoving:Connect(function(Player: Player)
-		local Connection = PlayerAddedTimerConnections[Player]
-		if not Connection then return end
-		Connection:Disconnect()
-		
-		PlayerAddedTimerConnections[Player] = nil
+		if not OtherPlayerConnections[Player] then return end
+
+		for _, Connection in OtherPlayerConnections[Player] do
+			if not Connection then continue end
+			Connection:Disconnect()
+		end
+
+		OtherPlayerConnections[Player] = nil
 	end)
 	
 	-- Add the same stuff for existing players
 	for _, Player in Players:GetPlayers() do
 		if not Player then continue end
-		--if Player == LocalPlayer then continue end
-		
-		PlayerAddedTimerConnections[Player] = Player.CharacterAdded:Connect(function()
-			task.delay(0.25, function()
-				AddTimerForChar(Player)
-			end)
-		end)
-		
-		-- Incase it didn't work when the player first entered
-		task.delay(1, function()
-			AddTimerForChar(Player)
-		end)
+		task.spawn(function() AddConnectionsToPlayer(Player) end)
 	end
 end
 

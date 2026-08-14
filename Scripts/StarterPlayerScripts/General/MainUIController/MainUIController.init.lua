@@ -325,8 +325,6 @@ function MainUIController:Deferred()
     RunService.Heartbeat:Connect(function(DeltaTime: number)
         MainUIController.RunHeartbeat(DeltaTime)
     end)
-
-	warn("LOADED MAIN UIIIII")
 end
 
 return MainUIController

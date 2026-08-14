@@ -194,8 +194,6 @@ local function UpdateSubTabVisuals(_, Tab: any, Window: any?)
 		Tab.Frame.Label.Size = UDim2.fromScale(0.6, 0.6)
 	end
 
-	warn(Tab, Window)
-
 	-- Update which window is opened
 	if not Window then return end
 	Window.Visible = On

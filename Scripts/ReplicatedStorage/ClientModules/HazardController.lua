@@ -148,8 +148,6 @@ function HazardController:Deferred()
 		ReplaceHazardModels()
 		HazardController.Run()
 	end)
-	
-    warn("Hyper jizz")
 end
 
 return HazardController

@@ -187,7 +187,7 @@ local function CheckPlayerTimer(Model: Model)
 		DataService.StopTimer(Player)
 
 	else
-		DataService.StartTimer(Player)
+		DataService.StartTimer(Player, true)
 	end
 end
 

@@ -368,16 +368,16 @@ function MainController:Deferred()
 	DataService.MultiDataUpdate:Connect(function(UpdateList: {[string]: any})
 		if not PlayerInfo.Data then return end
 
-        warn("UPDATED: ", UpdateList)
+        --warn("UPDATED: ", UpdateList)
 		
 		-- Update the cached player data on the client
 		for Entry, Value in UpdateList do
 			if PlayerInfo.Data[Entry] == nil then continue end
-            warn(Entry, Value)
+            --warn(Entry, Value)
 			PlayerInfo.Data[Entry] = Value
 		end
 
-        warn("New Data: ", PlayerInfo.Data)
+        --warn("New Data: ", PlayerInfo.Data)
 	end)
 
     DataService.SingleDataUpdate:Connect(function(Index: string | {}, Value: any)
@@ -397,7 +397,7 @@ function MainController:Deferred()
 
             ThisData[Index[#Index]] = Value
 
-			warn("CLIENT DATA: ", PlayerInfo.Data)
+			--warn("CLIENT DATA: ", PlayerInfo.Data)
         end
     end)
 
