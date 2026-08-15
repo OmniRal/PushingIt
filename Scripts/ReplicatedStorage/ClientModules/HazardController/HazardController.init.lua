@@ -7,11 +7,10 @@ local HazardController = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CollectionService = game:GetService("CollectionService")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
---local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
+local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -39,24 +38,7 @@ local Slows: {[Model | BasePart]: number} = {}
 
 local Assets = ReplicatedStorage.Assets
 
-local SpecificSetups: {[string]: (Original: BasePart | Model, PlaceHere: CFrame, NicerModel: Model) -> ()} = {
-	["SpringLauncher"] = function(Original: any, _: CFrame, NicerModel: any)
-        Original.Transparency = 1
-        local BaseCushionCFrame = NicerModel.Cushion.CFrame
-
-        Original:GetAttributeChangedSignal("Launched"):Connect(function()
-            if not Original:GetAttribute("Launched") then return end
-
-            local UpTween = TweenService:Create(NicerModel.Cushion, TweenInfo.new(1, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out), {CFrame = BaseCushionCFrame * CFrame.new(0, 2, 0)})
-            local DownTween = TweenService:Create(NicerModel.Cushion, TweenInfo.new(0.4, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {CFrame = BaseCushionCFrame})
-            UpTween.Completed:Connect(function()
-                task.wait(0.5)
-                DownTween:Play()
-            end)
-            UpTween:Play()
-        end)
-	end,
-}
+local Modules = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -90,11 +72,12 @@ local function ReplaceHazardModels()
 		
 		local NicerModel = Assets.Hazards[Replace.Name]:Clone()
 		NicerModel:PivotTo(PlaceHere)
-		NicerModel.Parent = Replace.Parent
-		
-		if not SpecificSetups[Replace.Name] then continue end
-		
-		SpecificSetups[Replace.Name](Replace, PlaceHere, NicerModel)
+		NicerModel.Parent = Workspace.ClientVisuals
+
+		if not Modules[Replace.Name] then continue end
+		if not Modules[Replace.Name].Setup then continue end
+
+		Modules[Replace.Name].Setup(Replace, PlaceHere, NicerModel)
 	end
 end
 
@@ -144,6 +127,11 @@ end
 
 function HazardController:Deferred()
 	task.delay(3, function()
+		-- Get modules within this module for each hazard
+		for _, Script in script:GetChildren() do
+			Modules[Script.Name] = require(Script)
+		end
+
 		GetAllHazards()
 		ReplaceHazardModels()
 		HazardController.Run()
