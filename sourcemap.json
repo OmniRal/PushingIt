@@ -6967,6 +6967,14 @@
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
 													]
+												},
+												{
+													"name": "BounceBumper",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceBumper.lua"
+													]
 												}
 											],
 											"filePaths": [

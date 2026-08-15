@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --local StarterPlayer = game:GetService("StarterPlayer")
 local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -55,7 +56,7 @@ local DisplayOnlySeconds = true
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
-	local TotalSeconds = tostring(os.clock() - StartedAt + SavedTime)
+	local TotalSeconds = tostring(Workspace:GetServerTimeNow() - StartedAt + SavedTime)
 	local FinalVersion: string = ""
 	
 	local LeftToCheck = 3

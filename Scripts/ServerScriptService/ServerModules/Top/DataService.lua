@@ -1,11 +1,24 @@
---!nocheck
+-- OmniRal
 
 local DataService = {}
 
-local ReplicatedStorage = game:GetService('ReplicatedStorage')
-local Players = game:GetService('Players')
-local ServerScriptService = game:GetService('ServerScriptService')
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Services
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local Workspace = game:GetService("Workspace")
 --local MarketplaceService = game:GetService("MarketplaceService")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Modules
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
+--local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
+--local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
@@ -14,16 +27,20 @@ local ProfileService = require(ServerScriptService.Source.ProfileService)
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
---local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
---local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
---local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Constants
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Remotes
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 DataService.ProfileReady = false
 DataService.ServiceReady = false
-
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local ProfileTemplate = {
 	LogInTimes = 0,
@@ -71,9 +88,8 @@ local Profiles = {}
 local UpgradeSkillRequests: {[Player]: boolean} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
------------------
--- Private API --
------------------
+-- Private Functions
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local function PlayerAdded(Player)
 	while not DataService.ProfileReady or not DataService.ServiceReady do
@@ -116,16 +132,18 @@ end
 local function PlayerRemoving(Player: Player)
 	local Profile = Profiles[Player]
 	if not Profile then return end
+
+	local Joined = Player:GetAttribute("Joined")
 	
-	Profile.Data.LoggedInDuration += os.time() - Player:GetAttribute("Joined")
+	Profile.Data.LoggedInDuration += os.time() - Joined
 
 	if Profile.Data.PVPMode then
-		Profile.Data.SavedTime += os.time() - Player:GetAttribute("Joined")
+		Profile.Data.SavedTime += os.time() - Profile.Data.LastPVPChange
 	else
 		Profile.Data.SavedTime = 0
 	end
 	
-	warn("SAVED TIME: ", os.time() - Player:GetAttribute("Joined"))
+	warn("SAVED TIME: ", os.time() - Joined)
 	
 	Profile:Release()
 end
@@ -170,7 +188,7 @@ local function RequestChangePVPMode(Player: Player)
 	PData.PVPMode = not PData.PVPMode
 	PData.SavedTime = 0
 	PData.TimerActive = PData.PVPMode
-	PData.TimerStartedAt = os.clock()
+	PData.TimerStartedAt = Workspace:GetServerTimeNow()
 
 	-- Send updated data to player
 	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
@@ -178,14 +196,14 @@ local function RequestChangePVPMode(Player: Player)
 		PVPMode = PData.PVPMode,
 		SavedTime = PData.SavedTime,
 		TimerActive = PData.TimerActive,
-		TimerStartedAt = os.clock()
+		TimerStartedAt = Workspace:GetServerTimeNow()
 	})
 
 	-- Change respective attributes (they exist so other players can see how who is in PVP mode and their timers)
 	Player:SetAttribute("PVPMode", PData.PVPMode)
 	Player:SetAttribute("SavedTime", 0)
 	Player:SetAttribute("TimerActive", PData.TimerActive)
-	Player:SetAttribute("TimerStartedAt", os.clock()) 
+	Player:SetAttribute("TimerStartedAt", Workspace:GetServerTimeNow()) 
 	
 	return 1
 end
@@ -217,10 +235,27 @@ local function RequestUpgradeSkill(Player: Player, ThisSkill: string)
 	return 1
 end
 
+-- Make an item in the players data no longer new
+local function RequestNotNew(Player: Player, ItemDestination: {string}): boolean
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return false end
+
+	local GotItem = PData
+	for n, Sub in ipairs(ItemDestination) do
+		if not GotItem[Sub] then return false end
+		if n ~= #ItemDestination then continue end
+		if GotItem.New == nil then return false end
+		GotItem.New = false
+		break
+	end
+
+	return true
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-----------------
--- Public API --
-----------------
+-- Public API
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function DataService.GetProfileTable(Player: Player)
 	while not DataService.ServiceReady do
@@ -335,13 +370,13 @@ function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 
 	PData.LastPVPChange = os.time()
 	Player:SetAttribute("TimerActive", true)
-	Player:SetAttribute("TimerStartedAt", os.clock())
+	Player:SetAttribute("TimerStartedAt", Workspace:GetServerTimeNow())
 
 	Remotes.Server.DataService.MultiDataUpdate:Fire(Player, {
 		LastPVPChange = os.time(),
 		SavedTime = PData.SavedTime,
 		TimerActive = true,
-		TimerStartedAt = os.clock(),
+		TimerStartedAt = Workspace:GetServerTimeNow(),
 	})
 end
 
@@ -393,8 +428,10 @@ function DataService.CollectSticker(Player: Player, StickerName: string): (boole
 	if not PData.Stickers then return false end
 
 	if PData.Stickers[StickerName] then 
+		-- Sticker collected again
 		PData.Stickers[StickerName].Amount += 1 
 	else
+		-- Sticker collected for the first time
 		PData.Stickers[StickerName] = {Time = os.time(), Amount = 1, New = true}
 	end
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Stickers", StickerName}, PData.Stickers[StickerName])
@@ -413,7 +450,7 @@ function DataService:Init()
 	Remotes.Server:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
 	Remotes.Server:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 	
-	Remotes.Server:CreateToServer("RequestNotNew", {"table"}, "Returns", function(Player: Player, Item) end)
+	Remotes.Server:CreateToServer("RequestNotNew", {"table"}, "Returns", function(Player: Player, ItemDestination: {string}) RequestNotNew(Player, ItemDestination) end)
 	Remotes.Server:CreateToServer("RequestChangePVPMode", {}, "Returns", function(Player: Player) return RequestChangePVPMode(Player) end)
 	Remotes.Server:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string) return RequestUpgradeSkill(Player, ThisSkill) end)
 	
@@ -439,13 +476,11 @@ function DataService:Init()
 	Kills = 0,
 	Assists = 0,
 	}
-end]]
+	end]]
 
-self.ProfileReady = true
+	self.ProfileReady = true
 
-------------------------------------------------------------------------------------------------------------------
-
-print("Data Service Init...")
+	print("Data Service Init...")
 end
 
 function DataService:Deferred()
