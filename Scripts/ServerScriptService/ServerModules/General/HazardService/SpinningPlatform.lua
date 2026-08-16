@@ -1,19 +1,14 @@
 -- OmniRal
 
-local HazardService = {}
+local SpinningPlatform = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CollectionService = game:GetService("CollectionService")
-local Workspace = game:GetService("Workspace")
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local Mods: {[string]: ModuleScript} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -35,21 +30,51 @@ local Mods: {[string]: ModuleScript} = {}
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function HazardService:Deferred()
-	for _, Module in script:GetChildren() do
-		if not Module:IsA("ModuleScript") then continue end
-		Mods[Module.Name] = require(Module)
-	end
-	
-	for Name, Module in Mods do
-		for _, Hazard in CollectionService:GetTagged(Name) do
-			if not Hazard then continue end
-			if not Module.Setup then continue end
-			
-			Module.Setup(Hazard)
-			Hazard.Parent = Workspace.Hazards
-		end
-	end
+function SpinningPlatform.Setup(Platform: BasePart)
+	local Speed = Platform:GetAttribute("Speed")
+
+	local Model = Instance.new("Model")
+	Model.Name = "Spinner"
+	Model.Parent = Platform.Parent
+
+	Platform.Name = "Platform"
+
+	local Base = Instance.new("Part")
+	Base.Anchored = true
+	Base.CanCollide = false
+	Base.CanQuery = false
+	Base.CanTouch = false
+	Base.Transparency = 1
+	Base.Size = Vector3.new(2, 1, 2)
+	Base.CFrame = Platform.CFrame * CFrame.new(0, -1, 0)
+	Base.Parent = Model
+
+	local PointA = Instance.new("Attachment")
+	PointA.CFrame = CFrame.new(0, 1, 0) * CFrame.Angles(0, 0, math.pi / 2)
+	PointA.Parent = Base
+
+	local PointB = Instance.new("Attachment")
+	PointB.CFrame = CFrame.new(0, 0, 0) * CFrame.Angles(0, 0, math.pi / 2)
+	PointB.Parent = Platform
+
+	local Hinge = Instance.new("HingeConstraint")
+	Hinge.Name = "HingeMotor"
+	Hinge.Attachment0 = PointA
+	Hinge.Attachment1 = PointB
+	Hinge.ActuatorType = Enum.ActuatorType.Motor
+	Hinge.AngularVelocity = Speed
+	Hinge.MotorMaxAcceleration = 1000000000
+	Hinge.MotorMaxTorque = 1000000000
+	Hinge.Parent = Base
+
+	Platform.Anchored = false
+
+	local Decal = Instance.new("Decal")
+	Decal.Texture = "rbxassetid://95758051013867"
+	Decal.Color3 = Color3.new(0, 0, 0)
+	Decal.Face = Enum.NormalId.Top
+	Decal.Transparency = 0.5
+	Decal.Parent = Platform
 end
 
-return HazardService
+return SpinningPlatform

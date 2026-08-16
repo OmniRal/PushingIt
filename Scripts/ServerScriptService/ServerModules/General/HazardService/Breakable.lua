@@ -1,23 +1,20 @@
 -- OmniRal
 
-local HazardService = {}
+local Breakable = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CollectionService = game:GetService("CollectionService")
-local Workspace = game:GetService("Workspace")
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Mods: {[string]: ModuleScript} = {}
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local COOLDOWN = 7
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -35,21 +32,34 @@ local Mods: {[string]: ModuleScript} = {}
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function HazardService:Deferred()
-	for _, Module in script:GetChildren() do
-		if not Module:IsA("ModuleScript") then continue end
-		Mods[Module.Name] = require(Module)
-	end
+function Breakable.Setup(Box: BasePart)
+	local PowerNeeded = (Box.Size.X + Box.Size.Y + Box.Size.Z) * 0.5
 	
-	for Name, Module in Mods do
-		for _, Hazard in CollectionService:GetTagged(Name) do
-			if not Hazard then continue end
-			if not Module.Setup then continue end
-			
-			Module.Setup(Hazard)
-			Hazard.Parent = Workspace.Hazards
-		end
-	end
+	Box.CanTouch = true
+	Box:SetAttribute("Broken", false)
+	Box:SetAttribute("Direction", Vector3.new(0, 0, 0))
+
+	Box.Touched:Connect(function(Hit: BasePart)
+		if Box:GetAttribute("Broken") then return end
+		
+		if not Hit then return end
+		if not Hit.Parent then return end
+		local Human, Root = Hit.Parent:FindFirstChild("Humanoid") :: Humanoid, Hit.Parent:FindFirstChild("HumanoidRootPart") :: BasePart
+		if not Human or not Root then return end
+		if not Hit.Parent:GetAttribute("Ragdoll") then return end
+		
+		local Velocity = Root.AssemblyLinearVelocity
+		if math.abs(Velocity.Magnitude) < PowerNeeded then return end
+
+		Box:SetAttribute("Direction", Velocity)
+		Box:SetAttribute("Broken", true)
+		Box.CanTouch = false
+
+		task.wait(COOLDOWN)
+
+		Box:SetAttribute("Broken", false)
+		Box.CanTouch = true
+	end)
 end
 
-return HazardService
+return Breakable

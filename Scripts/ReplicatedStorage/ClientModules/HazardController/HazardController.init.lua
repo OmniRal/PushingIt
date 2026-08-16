@@ -55,7 +55,17 @@ end
 local function ReplaceHazardModels()
 	for _, Replace in CollectionService:GetTagged("Replace") do
 		if not Replace then continue end
-		if not Assets.Hazards:FindFirstChild(Replace.Name) then continue end
+		
+		local ChosenModule = Replace.Name
+		local ChosenModel = Assets.Hazards:FindFirstChild(Replace.Name)
+
+		if Replace:HasTag("Breakable") then
+			ChosenModule = "Breakable"
+			ChosenModel = Assets.Hazards:FindFirstChild("Breakable")
+			warn("YES", Replace.Name, ChosenModel)
+		end
+
+		if not ChosenModel then continue end
 		
 		local PlaceHere: CFrame
 		if Replace:IsA("BasePart") then
@@ -70,14 +80,14 @@ local function ReplaceHazardModels()
 			end
 		end
 		
-		local NicerModel = Assets.Hazards[Replace.Name]:Clone()
+		local NicerModel = ChosenModel:Clone()
 		NicerModel:PivotTo(PlaceHere)
 		NicerModel.Parent = Workspace.ClientVisuals
 
-		if not Modules[Replace.Name] then continue end
-		if not Modules[Replace.Name].Setup then continue end
+		if not Modules[ChosenModule] then continue end
+		if not Modules[ChosenModule].Setup then continue end
 
-		Modules[Replace.Name].Setup(Replace, PlaceHere, NicerModel)
+		Modules[ChosenModule].Setup(Replace, PlaceHere, NicerModel)
 	end
 end
 
@@ -126,6 +136,11 @@ function HazardController.Run()
 end
 
 function HazardController:Deferred()
+	-- Make a base empty model for breakables
+	local BaseBreakable = Instance.new("Model")
+	BaseBreakable.Name = "Breakable"
+	BaseBreakable.Parent = Assets.Hazards
+
 	task.delay(3, function()
 		-- Get modules within this module for each hazard
 		for _, Script in script:GetChildren() do

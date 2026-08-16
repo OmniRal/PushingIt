@@ -116,6 +116,39 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "HazardController",
+									"className": "ModuleScript",
+									"children": [
+										{
+											"name": "BounceBumper",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceBumper.lua"
+											]
+										},
+										{
+											"name": "SpringLauncher",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/SpringLauncher.lua"
+											]
+										},
+										{
+											"name": "Breakable",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/Breakable.lua"
+											]
+										}
+									],
+									"filePaths": [
+										"Scripts/ReplicatedStorage/ClientModules/HazardController/HazardController.init.lua"
+									]
+								},
+								{
 									"name": "StickerController",
 									"className": "ModuleScript",
 									"children": [],
@@ -219,31 +252,6 @@
 									],
 									"filePaths": [
 										"Scripts/ReplicatedStorage/ClientModules/UI"
-									]
-								},
-								{
-									"name": "HazardController",
-									"className": "ModuleScript",
-									"children": [
-										{
-											"name": "SpringLauncher",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/HazardController/SpringLauncher.lua"
-											]
-										},
-										{
-											"name": "BounceBumper",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceBumper.lua"
-											]
-										}
-									],
-									"filePaths": [
-										"Scripts/ReplicatedStorage/ClientModules/HazardController/HazardController.init.lua"
 									]
 								}
 							],
@@ -1229,6 +1237,45 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "BounceBumper",
+									"className": "Model",
+									"children": [
+										{
+											"name": "BottomFrame",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "LeftFrame",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Center",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "RightFrame",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "TopFrame",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Hazards/BounceBumper.rbxm"
+									]
+								},
+								{
 									"name": "SpringLauncher",
 									"className": "Model",
 									"children": [
@@ -1273,45 +1320,6 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
-									]
-								},
-								{
-									"name": "BounceBumper",
-									"className": "Model",
-									"children": [
-										{
-											"name": "BottomFrame",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "LeftFrame",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Center",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "RightFrame",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "TopFrame",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										}
-									],
-									"filePaths": [
-										"Assets/Replicated/Hazards/BounceBumper.rbxm"
 									]
 								}
 							],
@@ -7030,6 +7038,22 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
+													]
+												},
+												{
+													"name": "SpinningPlatform",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpinningPlatform.lua"
+													]
+												},
+												{
+													"name": "Breakable",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/Breakable.lua"
 													]
 												}
 											],

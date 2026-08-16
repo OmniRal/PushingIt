@@ -104,15 +104,14 @@ end
 local function SetupCollisions()
     PhysicsService:RegisterCollisionGroup("Players")
     PhysicsService:RegisterCollisionGroup("NoClip")
-    PhysicsService:RegisterCollisionGroup("Loot")
-    PhysicsService:RegisterCollisionGroup("LootWalls")
+	PhysicsService:RegisterCollisionGroup("Debris")
+
     PhysicsService:CollisionGroupSetCollidable("Default", "Players", true)
-    PhysicsService:CollisionGroupSetCollidable("Players", "Players", false)
+	PhysicsService:CollisionGroupSetCollidable("Default", "Debris", true)
     PhysicsService:CollisionGroupSetCollidable("Default", "NoClip", false)
-    
-    PhysicsService:CollisionGroupSetCollidable("Players", "Loot", false)
-    PhysicsService:CollisionGroupSetCollidable("Players", "LootWalls", false)
-    PhysicsService:CollisionGroupSetCollidable("Loot", "LootWalls", true)
+
+    PhysicsService:CollisionGroupSetCollidable("Players", "Players", true)
+    PhysicsService:CollisionGroupSetCollidable("Players", "Debris", false)
 end
 
 local function ToggleParticles(Player: Player, Parts: {BasePart}, Particles: {{Name: string, Set: boolean}})

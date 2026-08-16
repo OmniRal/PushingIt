@@ -84,6 +84,12 @@ local function BuildStretchyMaterial(Center: BasePart, GridSize: number)
 	MeshPart.CFrame = Center.CFrame
 	MeshPart.Parent = Center.Parent
 
+	local Decal = Instance.new("Decal")
+	Decal.Texture = "rbxassetid://98851568916910"
+	Decal.Transparency = 0.75
+	Decal.Face = Enum.NormalId.Front
+	Decal.Parent = MeshPart
+
 	return Mesh, Vertices
 end
 
