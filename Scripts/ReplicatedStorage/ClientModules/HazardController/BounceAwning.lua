@@ -1,10 +1,12 @@
 -- OmniRal
 
-local Breakable = {}
+local BounceOriginal = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -13,8 +15,6 @@ local Breakable = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local COOLDOWN = 7
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -32,36 +32,55 @@ local COOLDOWN = 7
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function Breakable.Setup(Box: BasePart)
-	local PowerNeeded = (Box.Size.X + Box.Size.Y + Box.Size.Z) * 0.5
-	
-	Box.CanTouch = true
-	Box:SetAttribute("Broken", false)
-	Box:SetAttribute("Direction", Vector3.new(0, 0, 0))
+function BounceOriginal.Setup(Original: any, _, NicerModel: any)
+    
+    local PointA = Original.CFrame * CFrame.new(0, Original.Size.Y / 2, Original.Size.Z / 2)
+    local PointB = Original.CFrame * CFrame.new(0, -Original.Size.Y / 2, -Original.Size.Z / 2)
+    local PlaceHere = CFrame.new(PointA.Position, PointB.Position)
+    
+    NicerModel:PivotTo(PlaceHere)
+    
+    local RotVal = Instance.new("NumberValue")
+    RotVal.Name = "Rot"
+    RotVal.Value = 0
+    RotVal.Parent = NicerModel
+    RotVal.Changed:Connect(function() NicerModel:PivotTo(PlaceHere * CFrame.Angles(math.rad(RotVal.Value), 0, 0)) end)
 
-	Box.Touched:Connect(function(Hit: BasePart)
-		if Box:GetAttribute("Broken") then return end
-		
-		if not Hit then return end
-		if not Hit.Parent then return end
-		local Human, Root = Hit.Parent:FindFirstChild("Humanoid") :: Humanoid, Hit.Parent:FindFirstChild("HumanoidRootPart") :: BasePart
-		if not Human or not Root then return end
-		if not Hit.Parent:GetAttribute("Ragdoll") then return end
-		
-		local Velocity = Root.AssemblyLinearVelocity
-		if math.abs(Velocity.Magnitude) < PowerNeeded then return end
+    local Distance = (PointA.Position - PointB.Position).Magnitude
 
-		Box.CanCollide = false
-		Box:SetAttribute("Direction", Velocity)
-		Box:SetAttribute("Broken", true)
-		Box.CanTouch = false
+    NicerModel.Rod.Size = Vector3.new(Original.Size.X, 0.5, 0.5)
+    NicerModel.Main.Size = Vector3.new(Original.Size.X, 0.25, Distance)
+    NicerModel.Main.CFrame = NicerModel.Rod.CFrame * CFrame.new(0, 0, -Distance / 2)
+    NicerModel.Main.Color = Original.Color
+    NicerModel.Edge.Size = Vector3.new(Original.Size.X, 0.5, 0.25)
+    NicerModel.Edge.CFrame = NicerModel.Main.CFrame * CFrame.new(0, -0.25, -Distance / 2 + 0.125)
+    NicerModel.Edge.Color = Original.Color
 
-		task.wait(COOLDOWN)
+    Original.Texture:Clone().Parent = NicerModel.Main
+    local MainTexture = Original.Texture:Clone()
+    MainTexture.Face = Enum.NormalId.Top
+    MainTexture.Parent = NicerModel.Main
+    local EdgeTexture = Original.Texture:Clone()
+    EdgeTexture.Face = Enum.NormalId.Front
+    EdgeTexture.Parent = NicerModel.Edge
 
-		Box:SetAttribute("Broken", false)
-		Box.CanTouch = true
-		Box.CanCollide = true
+    local PlayingAnimation = false
+	Original:GetAttributeChangedSignal("Launched"):Connect(function()
+		if not Original:GetAttribute("Launched") then return end
+		if PlayingAnimation then return end
+
+        PlayingAnimation = true
+        local FlapOut = TweenService:Create(RotVal, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Value = 45})
+        local FlapIn = TweenService:Create(RotVal, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {Value = 0})
+
+        FlapOut.Completed:Connect(function() FlapIn:Play() end)
+        FlapIn.Completed:Connect(function() PlayingAnimation = false end)
+
+        FlapOut:Play()
 	end)
+
+    Original.Transparency = 1
+    Original.Texture:Destroy()
 end
 
-return Breakable
+return BounceOriginal

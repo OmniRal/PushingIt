@@ -6,7 +6,6 @@ local BounceBumper = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local RunService = game:GetService("RunService")
 local AssetService = game:GetService("AssetService")
 local TweenService = game:GetService("TweenService")
 

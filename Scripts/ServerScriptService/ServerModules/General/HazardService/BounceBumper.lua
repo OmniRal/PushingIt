@@ -39,6 +39,7 @@ local RNG = Random.new()
 
 function BounceBumper.Setup(Bumper: BasePart)
 	local Power = Bumper:GetAttribute("Power") :: NumberRange
+	local Normal = Bumper.CFrame.LookVector
     local Debounce = false
 
     Bumper:SetAttribute("Launched", false)
@@ -56,8 +57,6 @@ function BounceBumper.Setup(Bumper: BasePart)
 
         Debounce = true
         Bumper:SetAttribute("Launched", true)
-
-		local Normal = Bumper.CFrame.LookVector
 
 		local IncomingVelocity = Root.AssemblyLinearVelocity
 		local IncomingSpeed = IncomingVelocity.Magnitude

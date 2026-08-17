@@ -13,6 +13,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local PhysicsService = game:GetService("PhysicsService")
 local Workspace = game:GetService("Workspace")
 local Debris = game:GetService("Debris")
+local StarterGui = game:GetService("StarterGui")
 
 local PhysicsService = game:GetService("PhysicsService")
 
@@ -49,6 +50,7 @@ local PlayerValues: {
     [Player]: {
         RespawnTime: number,
         LastDiedLocation: CFrame?,
+        DeathConnection: RBXScriptConnection?,
     }
 } = {}
 local HandlingPlayerLeaving = false
@@ -86,13 +88,14 @@ local function SetupRespawning(Player: Player, Character: any)
 
             PValues.RespawnTime = Players.RespawnTime
 
-            for x = Players.RespawnTime, 0, -1 do
+            for _ = Players.RespawnTime, 0, -1 do
                 task.wait(1)
                 PValues.RespawnTime -= 1
             end
 
             SpawnCharacter(Player)
 
+            if not PValues.DeathConnection then return end
             PValues.DeathConnection:Disconnect()
             PValues.DeathConnection = nil
         end)
@@ -125,6 +128,16 @@ local function ToggleParticles(Player: Player, Parts: {BasePart}, Particles: {{N
             Part[Info.Name].Enabled = Info.Set
         end
     end
+end
+
+local function BasicMapSetup()
+    local Map = Workspace.Map
+
+    Map.MapCenter.Texture:Destroy()
+    Map.MapCenter.CanCollide = false
+    local BlockMesh = Instance.new("BlockMesh")
+    BlockMesh.Scale = Vector3.new(100, 1, 100)
+    BlockMesh.Parent = Map.MapCenter
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -192,6 +205,9 @@ function CoreGameService:Deferred()
     end
 
     --RandomFunction()
+    BasicMapSetup()
+
+    StarterGui.MainGui:Destroy()
 end
 
 function CoreGameService.PlayerAdded(Player: Player)
@@ -203,7 +219,7 @@ function CoreGameService.PlayerAdded(Player: Player)
     PlayerValues[Player] = {
         RespawnTime = 0,
         LastDiedLocation = nil,
-        Resources = {Tree = 0, Rock = 0, Crystal = 0}
+        DeathConnection = nil,
     }
     
     Player.CharacterAdded:Connect(function(Character: any)

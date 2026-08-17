@@ -1,10 +1,12 @@
 -- OmniRal
 
-local Breakable = {}
+local BounceDoor = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -13,8 +15,6 @@ local Breakable = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local COOLDOWN = 7
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -32,36 +32,52 @@ local COOLDOWN = 7
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function Breakable.Setup(Box: BasePart)
-	local PowerNeeded = (Box.Size.X + Box.Size.Y + Box.Size.Z) * 0.5
-	
-	Box.CanTouch = true
-	Box:SetAttribute("Broken", false)
-	Box:SetAttribute("Direction", Vector3.new(0, 0, 0))
+function BounceDoor.Setup(Original: any)
+	local PlayingAnimation = false
 
-	Box.Touched:Connect(function(Hit: BasePart)
-		if Box:GetAttribute("Broken") then return end
-		
-		if not Hit then return end
-		if not Hit.Parent then return end
-		local Human, Root = Hit.Parent:FindFirstChild("Humanoid") :: Humanoid, Hit.Parent:FindFirstChild("HumanoidRootPart") :: BasePart
-		if not Human or not Root then return end
-		if not Hit.Parent:GetAttribute("Ragdoll") then return end
-		
-		local Velocity = Root.AssemblyLinearVelocity
-		if math.abs(Velocity.Magnitude) < PowerNeeded then return end
+    local DoorModel = Instance.new("Model")
+    DoorModel.Name = "DoorModel"
+    DoorModel.Parent = Original.Parent
 
-		Box.CanCollide = false
-		Box:SetAttribute("Direction", Velocity)
-		Box:SetAttribute("Broken", true)
-		Box.CanTouch = false
+    Original.Parent = DoorModel
 
-		task.wait(COOLDOWN)
+    local Side = if Original.Side.Position.X < 0 then -1 else 1
+    local Hinge = Instance.new("Part")
+    Hinge.Name = "Hinge"
+    Hinge.Anchored = true
+    Hinge.CanCollide = false
+    Hinge.CanQuery = false
+    Hinge.CanTouch = false
+    Hinge.Transparency = 1
+    Hinge.Size = Vector3.new(1, 1, 1)
+    Hinge.CFrame = Original.CFrame * CFrame.new(Original.Size.X / 2 * Side, 0, 0)
+    Hinge.Parent = DoorModel
 
-		Box:SetAttribute("Broken", false)
-		Box.CanTouch = true
-		Box.CanCollide = true
+    DoorModel.PrimaryPart = Hinge
+
+    local OriginalCF = DoorModel:GetPivot()
+
+    local RotVal = Instance.new("NumberValue")
+    RotVal.Name = "Rot"
+    RotVal.Value = 0
+    RotVal.Parent = Hinge
+    RotVal.Changed:Connect(function() DoorModel:PivotTo(OriginalCF * CFrame.Angles(0, math.rad(RotVal.Value), 0)) end)
+
+	Original:GetAttributeChangedSignal("Launched"):Connect(function()
+		if not Original:GetAttribute("Launched") then return end
+		if PlayingAnimation then return end
+
+        PlayingAnimation = true
+        local FlapOut = TweenService:Create(RotVal, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Value = 135 * -Side})
+        local FlapIn = TweenService:Create(RotVal, TweenInfo.new(0.5, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {Value = 0})
+
+        FlapOut.Completed:Connect(function() FlapIn:Play() end)
+        FlapIn.Completed:Connect(function() PlayingAnimation = false end)
+
+        FlapOut:Play()
 	end)
+
+    Original.FrontSurface = "Smooth"
 end
 
-return Breakable
+return BounceDoor

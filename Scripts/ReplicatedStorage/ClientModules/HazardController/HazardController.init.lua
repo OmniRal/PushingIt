@@ -62,7 +62,6 @@ local function ReplaceHazardModels()
 		if Replace:HasTag("Breakable") then
 			ChosenModule = "Breakable"
 			ChosenModel = Assets.Hazards:FindFirstChild("Breakable")
-			warn("YES", Replace.Name, ChosenModel)
 		end
 
 		if not ChosenModel then continue end
@@ -88,6 +87,18 @@ local function ReplaceHazardModels()
 		if not Modules[ChosenModule].Setup then continue end
 
 		Modules[ChosenModule].Setup(Replace, PlaceHere, NicerModel)
+	end
+
+	-- Get models that just need animations
+	for  _, Animate in CollectionService:GetTagged("Animate") do
+		if not Animate then continue end
+
+		local ChosenModule = Animate.Name
+
+		if not Modules[ChosenModule] then continue end
+		if not Modules[ChosenModule].Setup then continue end
+
+		Modules[ChosenModule].Setup(Animate)
 	end
 end
 
