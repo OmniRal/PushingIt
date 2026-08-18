@@ -85,20 +85,20 @@ local function UpdateCharTimer(Player: Player)
 	local ThisTimer = CharTimers[Player].Timer
 	if not ThisTimer or CharTimers[Player].Dead then return end
 
-	local GoalSize, GoalDirection = UDim2.new(1, 150, 0.3, 50), Enum.EasingDirection.Out
+	local GoalSize, GoalDirection = UDim2.fromScale(1, 0.5), Enum.EasingDirection.Out
 	local GoalColor = ColorPalette.JetWhite.RGB
 
 	if not Player:GetAttribute("TimerActive") then
 		GoalColor = ColorPalette.MidGrey.RGB
 	end
 
-	if not Player:GetAttribute("PVPMode") then
+	if not Player:GetAttribute("PVPMode") or not LocalPlayer:GetAttribute("PVPMode") then
 		GoalSize = UDim2.new(0, 0, 0, 0)
 		GoalDirection = Enum.EasingDirection.In
 	end
 
-	TweenService:Create(ThisTimer, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, GoalDirection), {Size = GoalSize}):Play()
-	TweenService:Create(ThisTimer.Num, TweenInfo.new(ANIM_TIME), {TextColor3 = GoalColor}):Play()
+	--TweenService:Create(ThisTimer, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, GoalDirection), {Size = GoalSize}):Play()
+	TweenService:Create(ThisTimer.Num, TweenInfo.new(ANIM_TIME, Enum.EasingStyle.Back, GoalDirection), {TextColor3 = GoalColor, Size = GoalSize}):Play()
 end
 
 -- Add a timer above another players head (not the LocalPlayer)
@@ -107,12 +107,16 @@ local function AddTimerForChar(Player: Player)
 	
 	local Alive, Char: Model, Human: Humanoid, Root: BasePart = Utility.Players.CheckAlive(Player)
 	if not Alive or not Char or not Human or not Root then return end
+
+	Human.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	Human.NameDisplayDistance = 0
+	Human.HealthDisplayDistance = 0
 	
 	if Char:GetAttribute("TimerSetupDone") then return end
 	Char:SetAttribute("TimerSetupDone", true)
 	
-	local NewTimerUI = ReplicatedStorage.Assets.UIs.CharTimer:Clone()
-	NewTimerUI.Name = "Timer"
+	local NewTimerUI = ReplicatedStorage.Assets.UIs.CharUI:Clone()
+	NewTimerUI.PlayerName.Text = Player.Name
 	NewTimerUI.Parent = Root
 	
 	if not CharTimers[Player] then
@@ -132,6 +136,8 @@ local function AddTimerForChar(Player: Player)
 		if not DeathConnection then return end
 		DeathConnection:Disconnect()
 	end)
+
+	UpdateCharTimer(Player)
 end
 
 local function AddConnectionsToPlayer(Player: Player)
@@ -166,7 +172,7 @@ local function AddConnectionsToPlayer(Player: Player)
 	end))
 	
 	-- Incase it didn't work when the player first entered
-	task.delay(2, function()
+	task.delay(3, function()
 		AddTimerForChar(Player)
 	end)
 end
@@ -216,6 +222,13 @@ function TimerUI.Setup(Gui: ScreenGui)
 	-- Show or hide the timer based on PVP mode
 	LocalPlayer:GetAttributeChangedSignal("PVPMode"):Connect(function()
 		Timer:SetAttribute("Enabled", LocalPlayer:GetAttribute("PVPMode"))
+
+		-- Update timers for other players
+		for _, OtherPlayer in Players:GetPlayers() do
+			if not OtherPlayer then continue end
+			if OtherPlayer == LocalPlayer then continue end
+			UpdateCharTimer(OtherPlayer)
+		end
 	end)
 
 	-- Make timer text white or grey based on if its active
@@ -251,11 +264,14 @@ function TimerUI.Setup(Gui: ScreenGui)
 		OtherPlayerConnections[Player] = nil
 	end)
 	
-	-- Add the same stuff for existing players
-	for _, Player in Players:GetPlayers() do
-		if not Player then continue end
-		task.spawn(function() AddConnectionsToPlayer(Player) end)
-	end
+	task.delay(3, function()
+		-- Add the same stuff for existing players
+		for _, Player in Players:GetPlayers() do
+			if not Player then continue end
+			warn("Adding for", Player)
+			task.spawn(function() AddConnectionsToPlayer(Player) end)
+		end
+	end)
 end
 
 return TimerUI

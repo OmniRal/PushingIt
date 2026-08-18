@@ -234,32 +234,34 @@ function PushService.AttemptPush(Player: Player)
 	print("Power: ", FinalPower)
 
 	-- First, look for other players to push
-	for _, OtherPlayer in Players:GetPlayers() do
-		if not OtherPlayer then continue end
-		if OtherPlayer == Player then continue end
-		if not OtherPlayer:GetAttribute("PVPMode") then return end
-		if not OtherPlayer.Character then continue end
-		local CanPush, OtherRoot = CheckAliveAndClose(Root, OtherPlayer.Character)
-		if not CanPush or not OtherRoot then continue end
+	if Player:GetAttribute("PVPMode") then
+		for _, OtherPlayer in Players:GetPlayers() do
+			if not OtherPlayer then continue end
+			if OtherPlayer == Player then continue end
+			if not OtherPlayer:GetAttribute("PVPMode") then continue end
+			if not OtherPlayer.Character then continue end
+			local CanPush, OtherRoot = CheckAliveAndClose(Root, OtherPlayer.Character)
+			if not CanPush or not OtherRoot then continue end
 
-		task.spawn(function()
-			-- Push player
-			PushService.PushModel(Player, OtherPlayer.Character)
-			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
+			task.spawn(function()
+				-- Push player
+				PushService.PushModel(Player, OtherPlayer.Character)
+				OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 
-			-- Stop them from ragdolling, but make them immune
-			task.wait(RAGDOLL_TIME)
-			if not OtherPlayer then return end
-			if not OtherPlayer.Character then return end
-			OtherPlayer.Character:SetAttribute("Ragdoll", false)
-			OtherPlayer.Character:SetAttribute("Immune", true)
+				-- Stop them from ragdolling, but make them immune
+				task.wait(RAGDOLL_TIME)
+				if not OtherPlayer then return end
+				if not OtherPlayer.Character then return end
+				OtherPlayer.Character:SetAttribute("Ragdoll", false)
+				OtherPlayer.Character:SetAttribute("Immune", true)
 
-			-- Take away immunity
-			task.wait(IMMUNSE_TIME)
-			if not OtherPlayer then return end
-			if not OtherPlayer.Character then return end
-			OtherPlayer.Character:SetAttribute("Immune", false)
-		end)
+				-- Take away immunity
+				task.wait(IMMUNSE_TIME)
+				if not OtherPlayer then return end
+				if not OtherPlayer.Character then return end
+				OtherPlayer.Character:SetAttribute("Immune", false)
+			end)
+		end
 	end
 
 	-- Second, look for NPCs to push

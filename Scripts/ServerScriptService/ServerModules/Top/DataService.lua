@@ -358,7 +358,10 @@ function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 	if not PData then return end
 
 	-- Make sure player is in PVP mode
-	if not PData.PVPMode then return end
+	if not PData.PVPMode then
+		Player:SetAttribute("TimerActive", false)
+		return 
+	end
 
 	-- Make sure timer isn't already running; really should only be relevant when the player first joins
 	if not ResetSaveTime then

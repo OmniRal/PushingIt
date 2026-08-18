@@ -316,11 +316,27 @@
 									"className": "ModuleScript",
 									"children": [
 										{
+											"name": "BounceAwning",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceAwning.lua"
+											]
+										},
+										{
 											"name": "BounceBumper",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceBumper.lua"
+											]
+										},
+										{
+											"name": "BounceDoor",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceDoor.lua"
 											]
 										},
 										{
@@ -337,22 +353,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/HazardController/SpringLauncher.lua"
-											]
-										},
-										{
-											"name": "BounceDoor",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceDoor.lua"
-											]
-										},
-										{
-											"name": "BounceAwning",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceAwning.lua"
 											]
 										}
 									],
@@ -1449,6 +1449,33 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "BounceAwning",
+									"className": "Model",
+									"children": [
+										{
+											"name": "Edge",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Main",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										},
+										{
+											"name": "Rod",
+											"className": "Part",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Hazards/BounceAwning.rbxm"
+									]
+								},
+								{
 									"name": "BounceBumper",
 									"className": "Model",
 									"children": [
@@ -1532,53 +1559,6 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
-									]
-								},
-								{
-									"name": "BounceAwning",
-									"className": "Model",
-									"children": [
-										{
-											"name": "Rod",
-											"className": "Part",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Main",
-											"className": "Part",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Texture",
-													"className": "Texture",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										},
-										{
-											"name": "Edge",
-											"className": "Part",
-											"filePaths": [],
-											"children": [
-												{
-													"name": "Decal",
-													"className": "Decal",
-													"filePaths": [],
-													"children": []
-												},
-												{
-													"name": "Texture",
-													"className": "Texture",
-													"filePaths": [],
-													"children": []
-												}
-											]
-										}
-									],
-									"filePaths": [
-										"Assets/Replicated/Hazards/BounceAwning.rbxm"
 									]
 								}
 							],
@@ -7174,6 +7154,41 @@
 									"filePaths": [
 										"Assets/Replicated/UIs/StampPickupUI.rbxm"
 									]
+								},
+								{
+									"name": "CharUI",
+									"className": "BillboardGui",
+									"children": [
+										{
+											"name": "Num",
+											"className": "TextLabel",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Stroke",
+													"className": "UIStroke",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										},
+										{
+											"name": "PlayerName",
+											"className": "TextLabel",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Stroke",
+													"className": "UIStroke",
+													"filePaths": [],
+													"children": []
+												}
+											]
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/UIs/CharUI.rbxm"
+									]
 								}
 							],
 							"filePaths": [
@@ -7292,11 +7307,27 @@
 											"className": "ModuleScript",
 											"children": [
 												{
+													"name": "BounceAwning",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceAwning.lua"
+													]
+												},
+												{
 													"name": "BounceBumper",
 													"className": "ModuleScript",
 													"children": [],
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceBumper.lua"
+													]
+												},
+												{
+													"name": "BounceDoor",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceDoor.lua"
 													]
 												},
 												{
@@ -7321,22 +7352,6 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
-													]
-												},
-												{
-													"name": "BounceAwning",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceAwning.lua"
-													]
-												},
-												{
-													"name": "BounceDoor",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceDoor.lua"
 													]
 												}
 											],
