@@ -391,6 +391,22 @@
 													"filePaths": [
 														"Scripts/ReplicatedStorage/ClientModules/UI/Components/PropertyVals.lua"
 													]
+												},
+												{
+													"name": "DragSlider",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/ClientModules/UI/Components/DragSlider.lua"
+													]
+												},
+												{
+													"name": "ToggleSwitch",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ReplicatedStorage/ClientModules/UI/Components/ToggleSwitch.lua"
+													]
 												}
 											],
 											"filePaths": [
@@ -7157,6 +7173,51 @@
 											"className": "ImageButton",
 											"filePaths": [],
 											"children": []
+										},
+										{
+											"name": "PVPSwitch",
+											"className": "CanvasGroup",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "Button",
+													"className": "ImageButton",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "Bar",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "Knob",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Label",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												}
+											]
 										}
 									],
 									"filePaths": [

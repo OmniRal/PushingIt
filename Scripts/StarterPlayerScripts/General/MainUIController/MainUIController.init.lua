@@ -35,8 +35,9 @@ local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDi
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
 local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
 local ModalWindowUI = require(ReplicatedStorage.Source.ClientModules.UI.ModalWindowUI)
-local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
+local ToggleSwitch = require(ReplicatedStorage.Source.ClientModules.UI.Components.ToggleSwitch)
+local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -61,7 +62,7 @@ MainUIController.Menu = "None"
 local LocalPlayer = Players.LocalPlayer
 
 local Gui: any
-local PVPButton: any
+local PVPSwitch: any
 
 local AddXPPauseUntil = 0
 local CachedTweens: {[any]: Tween} = {}
@@ -93,38 +94,10 @@ local function CreateNewGui()
 end
 
 local function SetupPVPButton()
-	PVPButton = Gui:WaitForChild("PVPButton")
-	if not PVPButton then return end
+	PVPSwitch = Gui:WaitForChild("PVPSwitch")
+	if not PVPSwitch then return end
 
-	local LastOnState = false
-
-	local function UpdateVisuals()
-		local On, Hover, Pressed = PVPButton.Button:GetAttribute("On"), PVPButton.Button:GetAttribute("Hover"), PVPButton.Button:GetAttribute("Pressed") 
-
-		local GoalPosition, GoalColor = UDim2.fromScale(0.25, 0.5), ColorPalette.DarkGrey.RGB
-		if On then
-			GoalPosition = UDim2.fromScale(0.75, 0.5)
-			GoalColor = ColorPalette.OmniBlotRed2.RGB
-		end
-
-		if LastOnState ~= On then
-			LastOnState = On
-			TweenService:Create(PVPButton.Switch, TweenInfo.new(AnimTime / 2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = GoalPosition, BackgroundColor3 = GoalColor}):Play()
-		end
-
-		if not Hover and not Pressed then
-			PVPButton.Switch.Size = UDim2.fromScale(0.7, 0.7)
-		elseif Hover and not Pressed then
-			PVPButton.Switch.Size = UDim2.fromScale(0.8, 0.8)
-		elseif Pressed then
-			PVPButton.Switch.Size = UDim2.fromScale(0.6, 0.6)
-		end
-	end
-
-	BasicInteractions.AddButton(PVPButton.Button, true, true)
-	BasicInteractions.ConnectFXInteractionsFN(PVPButton.Button, UpdateVisuals)
-
-	PVPButton.Button.Activated:Connect(function()
+	ToggleSwitch.AddSwitch(PVPSwitch, function()
 		ModalWindowUI.New("Turn " .. (if PlayerInfo.Data.PVPMode then "OFF" else "ON") .. " mode?",
 			function()
 				local Result = DataService:RequestChangePVPMode()
@@ -137,8 +110,6 @@ local function SetupPVPButton()
 			nil, "Yeah!", "Nah"
 		)
 	end)
-
-	UpdateVisuals()
 end
 
 local function SetupGui()
@@ -228,7 +199,7 @@ function MainUIController.UpdateAllUI()
 	MainMenuUI.UpdateSkills()
 	PushChargeBarUI.UpdateDivBars()
 	MainUIController.UpdateLevelInfoUI()
-	PVPButton.Button:SetAttribute("On", PlayerInfo.Data.PVPMode)
+	PVPSwitch.Button:SetAttribute("On", PlayerInfo.Data.PVPMode)
 end
 
 function MainUIController.ControlPushBar(Action: "Start" | "Stop" | "StopAndHide")
@@ -285,7 +256,7 @@ function MainUIController:Deferred()
 					MainMenuUI.UpdateSkills()
 					PushChargeBarUI.UpdateDivBars()
 				elseif Entry == "PVPMode" then
-					PVPButton.Button:SetAttribute("On", Value)
+					PVPSwitch.Button:SetAttribute("On", Value)
 				end
 			end
 		end)
@@ -296,7 +267,7 @@ function MainUIController:Deferred()
             --local PData = PlayerInfo.Data
 
             if typeof(Index) == "string" then
-				if Index == "PVPMode" then PVPButton.Button:SetAttribute("On", Value) end
+				if Index == "PVPMode" then PVPSwitch.Button:SetAttribute("On", Value) end
 
             elseif typeof(Index) == "table" then
                 if Index[#Index] == "ChargePower" then
