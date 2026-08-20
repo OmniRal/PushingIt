@@ -9,7 +9,8 @@ local NPCService = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
-local ServerStorage = game:GetService("ServerStorage")
+--local ServerStorage = game:GetService("ServerStorage")
+local SoundService = game:GetService("SoundService")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -295,6 +296,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 	VoiceSound.Name = "VoiceSound"
 	VoiceSound.RollOffMaxDistance = 50
 	VoiceSound.Parent = NewNPC.Head
+	VoiceSound.SoundGroup = SoundService.Voiceovers
 
 	NewNPC:SetAttribute("Voiceline", 0)
 	NewNPC:GetAttributeChangedSignal("Voiceline"):Connect(function()
