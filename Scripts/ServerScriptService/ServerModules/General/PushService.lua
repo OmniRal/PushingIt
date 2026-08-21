@@ -211,7 +211,7 @@ function PushService.StartPushCharge(Player: Player)
 end
 
 -- Player tries to push an NPC or another player
-function PushService.AttemptPush(Player: Player)
+function PushService.AttemptPush(Player: Player, AimDirection: number)
 	local PVals, PData = PlayerVals[Player], DataService.GetSkills(Player)
 	if not PVals or not PData then return end
 	
@@ -233,6 +233,13 @@ function PushService.AttemptPush(Player: Player)
 	print("Level: ", Power)
 	print("Power: ", FinalPower)
 
+	local RootCF = Root.CFrame
+	if AimDirection == 1 then
+		RootCF *= CFrame.Angles(math.rad(75), 0, 0)
+	elseif AimDirection == 3 then
+		RootCF *= CFrame.Angles(math.rad(-75), 0, 0)
+	end
+
 	-- First, look for other players to push
 	if Player:GetAttribute("PVPMode") then
 		for _, OtherPlayer in Players:GetPlayers() do
@@ -246,7 +253,8 @@ function PushService.AttemptPush(Player: Player)
 			task.spawn(function()
 				-- Push player
 				PushService.PushModel(Player, OtherPlayer.Character)
-				OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
+
+				OtherRoot.AssemblyLinearVelocity = RootCF.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 
 				-- Stop them from ragdolling, but make them immune
 				task.wait(RAGDOLL_TIME)
@@ -274,7 +282,7 @@ function PushService.AttemptPush(Player: Player)
 			PushService.PushModel(Player, NPC)
 			DataService.AddNPCPushCount(Player, NPC.Name)
 			task.wait()
-			OtherRoot.AssemblyLinearVelocity = Root.CFrame.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
+			OtherRoot.AssemblyLinearVelocity = RootCF.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 		end)
 	end
 
@@ -409,8 +417,8 @@ function PushService:Init()
 	end)
 	
 	-- Upon releasing the charge; push the player
-	Remotes.Server:CreateToServer("AttemptPush", {}, "Returns", function(Player: Player)
-		return PushService.AttemptPush(Player)
+	Remotes.Server:CreateToServer("AttemptPush", {"number"}, "Returns", function(Player: Player, AimDirection: number)
+		return PushService.AttemptPush(Player, AimDirection)
 	end)
 
 	Remotes.Server:CreateToServer("AttemptDodge", {}, "Returns", function(Player: Player)

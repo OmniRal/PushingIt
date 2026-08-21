@@ -74,7 +74,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Add a swtich to have functionality
-function ToggleSwitch.AddSwitch(Switch: any, Fn: () -> ()?)
+function ToggleSwitch.AddSwitch(Switch: any, Fn: () -> ()?, ControlOnIndependently: boolean?)
 	if not Switch then warn ("Switch is missing!"); return end
 	if not Fn then warn("Switch function is missing!"); return end
 	
@@ -95,6 +95,7 @@ function ToggleSwitch.AddSwitch(Switch: any, Fn: () -> ()?)
 	BasicInteractions.ConnectFXInteractionsFN(Switch.Button, UpdateSwitchVisuals, nil, nil, nil, nil, Switch)
 	
 	Switch.Button.Activated:Connect(function()
+		if ControlOnIndependently then Fn(); return end
 		ToggleStates[Name].State = not ToggleStates[Name].State
 		
 		-- Make sure all the UI switches associated with this value are updated
@@ -111,6 +112,18 @@ function ToggleSwitch.AddSwitch(Switch: any, Fn: () -> ()?)
 		end]]
 
 		Fn()
+	end)
+
+	if not ControlOnIndependently then return end
+	Switch:GetAttributeChangedSignal("On"):Connect(function()
+		ToggleStates[Name].State = Switch:GetAttribute("On")
+		
+		for _, OtherSwitch in ToggleStates[Name].Switches do
+			if not OtherSwitch then continue end
+			if OtherSwitch == Switch then continue end
+			Switch:SetAttribute("On", ToggleStates[Name].State)
+			UpdateSwitchVisuals(nil, Switch)
+		end
 	end)
 end
 

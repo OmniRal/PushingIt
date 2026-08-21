@@ -41,7 +41,7 @@ local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Comp
 -- @Range = The min and max value that the slider represents
 -- @Increments = How many pieces Range (must exist) should be cut up in
 -- @StartValue = Moves the slider to this start value
-function DragSlider.Set(Slider: Frame, Fn: (number) -> (), Range: NumberRange?, Increments: number?, StartValue: number?)
+function DragSlider.AddSlider(Slider: Frame, Fn: (number) -> (), Range: NumberRange?, Increments: number?, StartValue: number?)
 	local Bar = Slider:FindFirstChild("Bar") :: Frame
 	if not Bar then warn("Missing Bar in Slider!"); return end
 	
@@ -49,6 +49,7 @@ function DragSlider.Set(Slider: Frame, Fn: (number) -> (), Range: NumberRange?, 
 	if not Line or not Button then warn("Missing Line or Button in Slider!"); return end
 	
 	local FixedPositions: {number} = {}
+	Slider:SetAttribute("Val", StartValue)
 	
 	local function UpdateFixedPositions()
 		if not Range or not Increments then return end
@@ -87,6 +88,8 @@ function DragSlider.Set(Slider: Frame, Fn: (number) -> (), Range: NumberRange?, 
 			end
 
 			Button.Position = UDim2.new(0, NewPosition, 0.5, 0)
+			local Percent = NewPosition / Bar.AbsoluteSize.X
+			Slider:SetAttribute("Val", (if Range then Range.Max else 100) * Percent)
 		end
 	end
 	

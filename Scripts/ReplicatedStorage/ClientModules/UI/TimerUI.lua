@@ -7,6 +7,7 @@ local TimerUI = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Players = game:GetService("Players")
+local StarterPlayer = game:GetService("StarterPlayer")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 --local StarterPlayer = game:GetService("StarterPlayer")
 local TweenService = game:GetService("TweenService")
@@ -21,6 +22,7 @@ local Workspace = game:GetService("Workspace")
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
+local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -49,8 +51,6 @@ local Timer: any -- Personal timer; displayed at the top
 local CharTimers: {[Player]: {Timer: any, Dead: boolean}} = {} -- Other players timers; billboard guis above their heads
 local OtherPlayerConnections: {[Player]: {RBXScriptConnection?}} = {}
 
-local DisplayOnlySeconds = true
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -71,8 +71,8 @@ local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
 		if LeftToCheck <= 0 then break end
 	end
 	
-	if not DisplayOnlySeconds then
-		return Utility.ConvertSecondsToHMS(TotalSeconds) .. "." .. string.sub(FinalVersion, string.len(FinalVersion) - 1, string.len(FinalVersion))
+	if PlayerInfo.Data and PlayerInfo.Data.Settings and PlayerInfo.Data.Settings.DisplayMinutes then
+		return Utility.ConvertSecondsToHMS(TotalSeconds, true) .. "." .. string.sub(FinalVersion, string.len(FinalVersion) - 1, string.len(FinalVersion)) .. "s"
 	end
 	
 	return FinalVersion .. "s"

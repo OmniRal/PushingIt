@@ -80,9 +80,17 @@ local ProfileTemplate = {
 	Stickers = {
 		-- [string]: {Time: number, Amount: number, New: boolean}
 	},
+
+	Settings = {
+		DisplayMinutes = false,
+
+		MusicVolume = 1,
+		VoiceoversVolume = 1,
+		SoundFXVolume = 1,
+	}
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_40', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_42', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -251,6 +259,25 @@ local function RequestNotNew(Player: Player, ItemDestination: {string}): boolean
 	end
 
 	return true
+end
+
+local function RequestChangeSetting(Player: Player, ThisSetting: string, Value: any): boolean
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return false end
+
+	if PData.Settings[ThisSetting] == nil then return false end
+
+	local Success = false
+	if ThisSetting == "DisplayMinutes" and typeof(Value) == "boolean" then
+		PData.Settings[ThisSetting] = Value; Success = true
+	end
+
+	if string.find(ThisSetting, "Volume") and typeof(Value) == "number" then
+		PData.Settings[ThisSetting] = Value; Success = true
+	end
+
+	return Success, PData.Settings[ThisSetting]
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -454,8 +481,9 @@ function DataService:Init()
 	Remotes.Server:CreateToClient("GiveAddXP", {"number"}, "Reliable")
 	
 	Remotes.Server:CreateToServer("RequestNotNew", {"table"}, "Returns", function(Player: Player, ItemDestination: {string}) RequestNotNew(Player, ItemDestination) end)
-	Remotes.Server:CreateToServer("RequestChangePVPMode", {}, "Returns", function(Player: Player) return RequestChangePVPMode(Player) end)
 	Remotes.Server:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string) return RequestUpgradeSkill(Player, ThisSkill) end)
+	Remotes.Server:CreateToServer("RequestChangePVPMode", {}, "Returns", function(Player: Player) return RequestChangePVPMode(Player) end)
+	Remotes.Server:CreateToServer("RequestChangeSetting", {"string", "any"}, "Returns", function(Player: Player, ThisSetting: string, Value: any) return RequestChangeSetting(Player, ThisSetting, Value) end)
 	
 	--[[for WeaponName, W_Info in pairs(WeaponInfo) do
 	local WeaponUnlocked = false

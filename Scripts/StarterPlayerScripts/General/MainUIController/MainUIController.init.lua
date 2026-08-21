@@ -19,7 +19,6 @@ local TweenService = game:GetService("TweenService")
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurve)
@@ -28,16 +27,18 @@ local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Util
 local DeviceController = require(StarterPlayer.StarterPlayerScripts.Source.General.DeviceController)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
-local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
+--local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
+local AimerUI = require(ReplicatedStorage.Source.ClientModules.UI.AimerUI)
 local MainMenuUI = require(ReplicatedStorage.Source.ClientModules.UI.MainMenuUI)
 local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
 local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
 local ModalWindowUI = require(ReplicatedStorage.Source.ClientModules.UI.ModalWindowUI)
 
+--local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
 local ToggleSwitch = require(ReplicatedStorage.Source.ClientModules.UI.Components.ToggleSwitch)
-local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
+--local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -58,6 +59,11 @@ local PushService = Remotes.Client.PushService
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 MainUIController.Menu = "None"
+MainUIController.Modules = {
+	["TimerUI"] = TimerUI,
+	["AimerUI"] = AimerUI,
+	["ErrorMessageUI"] = ErrorMessageUI,
+}
 
 local LocalPlayer = Players.LocalPlayer
 
@@ -67,7 +73,7 @@ local PVPSwitch: any
 local AddXPPauseUntil = 0
 local CachedTweens: {[any]: Tween} = {}
 
-local AnimTime = UI_Info.BaseAnimTime
+--local AnimTime = UI_Info.BaseAnimTime
 
 local Assets = ReplicatedStorage.Assets
 
@@ -109,11 +115,12 @@ local function SetupPVPButton()
 			end,
 			nil, "Yeah!", "Nah"
 		)
-	end)
+	end, true)
 end
 
 local function SetupGui()
 	TimerUI.Setup(Gui)
+	AimerUI.Setup(Gui)
 	MainMenuUI.Setup(Gui)
     ScoreDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
@@ -161,8 +168,6 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-function MainUIController.NewError(Text: string) ErrorMessageUI.New(Text) end
 
 -- Update the players current level and xp
 function MainUIController.UpdateLevelInfoUI()
@@ -262,7 +267,7 @@ function MainUIController:Deferred()
 		end)
 	end)
 
-	DataService.SingleDataUpdate:Connect(function(Index: string, Value: any)
+	DataService.SingleDataUpdate:Connect(function(Index, Value: any)
         task.defer(function()
             --local PData = PlayerInfo.Data
 

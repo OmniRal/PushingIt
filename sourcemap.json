@@ -476,6 +476,14 @@
 											"filePaths": [
 												"Scripts/ReplicatedStorage/ClientModules/UI/UI_Info.lua"
 											]
+										},
+										{
+											"name": "AimerUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/AimerUI.lua"
+											]
 										}
 									],
 									"filePaths": [
@@ -6579,12 +6587,6 @@
 																	"filePaths": [],
 																	"children": [
 																		{
-																			"name": "Label",
-																			"className": "TextLabel",
-																			"filePaths": [],
-																			"children": []
-																		},
-																		{
 																			"name": "Box",
 																			"className": "CanvasGroup",
 																			"filePaths": [],
@@ -6626,7 +6628,7 @@
 																							"children": [
 																								{
 																									"name": "Switch",
-																									"className": "CanvasGroup",
+																									"className": "Frame",
 																									"filePaths": [],
 																									"children": [
 																										{
@@ -6806,6 +6808,66 @@
 																						},
 																						{
 																							"name": "VoiceoverVolume",
+																							"className": "Frame",
+																							"filePaths": [],
+																							"children": [
+																								{
+																									"name": "Icon",
+																									"className": "ImageLabel",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Label",
+																											"className": "TextLabel",
+																											"filePaths": [],
+																											"children": []
+																										}
+																									]
+																								},
+																								{
+																									"name": "Slider",
+																									"className": "Frame",
+																									"filePaths": [],
+																									"children": [
+																										{
+																											"name": "Bar",
+																											"className": "Frame",
+																											"filePaths": [],
+																											"children": [
+																												{
+																													"name": "Line",
+																													"className": "Frame",
+																													"filePaths": [],
+																													"children": [
+																														{
+																															"name": "Stroke",
+																															"className": "UIStroke",
+																															"filePaths": [],
+																															"children": []
+																														}
+																													]
+																												},
+																												{
+																													"name": "Button",
+																													"className": "ImageButton",
+																													"filePaths": [],
+																													"children": [
+																														{
+																															"name": "Stroke",
+																															"className": "UIStroke",
+																															"filePaths": [],
+																															"children": []
+																														}
+																													]
+																												}
+																											]
+																										}
+																									]
+																								}
+																							]
+																						},
+																						{
+																							"name": "SoundFXVolume",
 																							"className": "Frame",
 																							"filePaths": [],
 																							"children": [
@@ -7344,7 +7406,7 @@
 										},
 										{
 											"name": "PVPSwitch",
-											"className": "CanvasGroup",
+											"className": "Frame",
 											"filePaths": [],
 											"children": [
 												{
@@ -7482,6 +7544,58 @@
 											"className": "ImageButton",
 											"filePaths": [],
 											"children": []
+										},
+										{
+											"name": "Aimer",
+											"className": "CanvasGroup",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "A_3",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "A_2",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "A_1",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
+												},
+												{
+													"name": "ListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												}
+											]
 										}
 									],
 									"filePaths": [
@@ -9457,6 +9571,14 @@
 					"children": [],
 					"filePaths": [
 						"Assets/SoundService/Voiceovers.rbxm"
+					]
+				},
+				{
+					"name": "SoundFX",
+					"className": "SoundGroup",
+					"children": [],
+					"filePaths": [
+						"Assets/SoundService/SoundFX.rbxm"
 					]
 				}
 			],

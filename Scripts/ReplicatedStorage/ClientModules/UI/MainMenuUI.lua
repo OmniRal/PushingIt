@@ -11,6 +11,7 @@ local StarterPlayer = game:GetService("StarterPlayer")
 --local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -21,6 +22,8 @@ local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.Playe
 
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
+local ToggleSwitch = require(ReplicatedStorage.Source.ClientModules.UI.Components.ToggleSwitch)
+local DragSlider = require(ReplicatedStorage.Source.ClientModules.UI.Components.DragSlider)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
@@ -347,6 +350,48 @@ local function SetupSkills()
 	end
 end
 
+-- Settings window
+local function SetupSettings()
+	if not Menu then return end
+	local Settings = Base.Windows.Settings
+
+	local TimerFormatSwitch = Settings.Box.Scroller.TimerFormat.Switch
+
+	local MusicVolumeSlider = Settings.Box.Scroller.MusicVolume.Slider
+	local VoiceoversVolumeSlider = Settings.Box.Scroller.VoiceoversVolume.Slider
+	local SoundFXVolumeSlider = Settings.Box.Scroller.SoundFXVolume.Slider
+
+	ToggleSwitch.AddSwitch(TimerFormatSwitch, function() 
+		local Success, Result = DataService:RequestChangeSetting("DisplayMinutes", not TimerFormatSwitch.Button:GetAttribute("On"))
+		if not Success then return end
+		PlayerInfo.Data.Settings.DisplayMinutes = Result
+		TimerFormatSwitch.Button:SetAttribute("On", not TimerFormatSwitch.Button:GetAttribute("On"))
+	end, true)
+
+	DragSlider.AddSlider(MusicVolumeSlider, function() 
+		DataService:RequestChangeSetting("MusicVolume", MusicVolumeSlider:GetAttribute("Val"))
+		SoundService.Music.Volume = MusicVolumeSlider:GetAttribute("Val")
+	end, NumberRange.new(0, 1), 10, 1)
+
+	DragSlider.AddSlider(VoiceoversVolumeSlider, function() 
+		DataService:RequestChangeSetting("VoiceoversVolume", VoiceoversVolumeSlider:GetAttribute("Val"))
+		SoundService.Voiceovers.Volume = VoiceoversVolumeSlider:GetAttribute("Val")
+	end, NumberRange.new(0, 1), 10, 1)
+
+	DragSlider.AddSlider(SoundFXVolumeSlider, function() 
+		DataService:RequestChangeSetting("SoundFXVolume", SoundFXVolumeSlider:GetAttribute("Val"))
+		SoundService.SoundFX.Volume = SoundFXVolumeSlider:GetAttribute("Val")
+	end, NumberRange.new(0, 1), 10, 1)
+
+	task.delay(3, function()
+		TimerFormatSwitch.Button:SetAttribute("On", PlayerInfo.Data.Settings.DisplayMinutes)
+
+		SoundService.Music.Volume = PlayerInfo.Data.Settings.MusicVolume
+		SoundService.Voiceovers.Volume = PlayerInfo.Data.Settings.VoiceoversVolume
+		SoundService.SoundFX.Volume = PlayerInfo.Data.Settings.SoundFXVolume
+	end)
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -520,6 +565,7 @@ function MainMenuUI.Setup(Gui: ScreenGui)
 	SetupBasics()
 	SetupSkills()
 	SetupStuff()
+	SetupSettings()
 
 	TestViewportDummy()
 end

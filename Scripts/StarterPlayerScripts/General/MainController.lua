@@ -8,9 +8,9 @@ local MainController = {}
 
 local UserGameSettings = UserSettings().GameSettings
 
-local ContextActionService = game:GetService("ContextActionService")
 local Players = game:GetService("Players")
 local StarterPlayer = game:GetService("StarterPlayer")
+local ContextActionService = game:GetService("ContextActionService")
 --local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -40,6 +40,9 @@ local ControlModule
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local VOICELINE_REQUEST_COOLDOWN = 3
+
+local AIM_UP_DEGREES = 40
+local AIM_DOWN_DEGREES = -60
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -162,6 +165,23 @@ local function UpdateWalkSpeed()
     PlayerInfo.Human.WalkSpeed = TotalWalkSpeed
 end
 
+-- Update which way the push should be aimed based on the camera look direction
+local function UpdatePushAim(GetID: boolean?): number?
+	local Degrees = math.deg(math.asin(Camera.CFrame.LookVector.Y))
+
+	local LineID = 2
+	if Degrees >= AIM_UP_DEGREES then
+		LineID = 1
+	elseif Degrees <= AIM_DOWN_DEGREES then
+		LineID = 3
+	end
+
+	MainUIController.Modules.AimerUI.SetAimerLine(LineID)
+
+	if not GetID then return end
+	return LineID
+end
+
 local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
     local Params = {...}
 
@@ -178,11 +198,11 @@ local function PushAnimFunc(Keyframe: string, AnimName: string, ...)
         end
 
     elseif Keyframe == "Push" then
-       PushService:AttemptPush()
-	   MainUIController.ControlPushBar("StopAndHide")
+       	PushService:AttemptPush(UpdatePushAim(true))
+	   	MainUIController.ControlPushBar("StopAndHide")
 
-	   local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * PlayerInfo.Data.Skills.PushCooldown)
-	   MainUIController.RunAbilityCooldown("Push", CooldownTime)
+	   	local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * PlayerInfo.Data.Skills.PushCooldown)
+	   	MainUIController.RunAbilityCooldown("Push", CooldownTime)
     end
 end
 
@@ -195,13 +215,18 @@ local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
 		if PlayerInfo.PushStarted then return end
 
 		local CooldownTime = SharedGlobalValues.PushCooldown_Base - (SharedGlobalValues.PushCooldown_Subtract * (PlayerInfo.Data.Skills.PushCooldown - 1))
-		if os.clock() < PlayerInfo.PushDone + CooldownTime then MainUIController.NewError("On cooldown!"); return end
+		if os.clock() < PlayerInfo.PushDone + CooldownTime then 
+			MainUIController.Modules.ErrorMessageUI.New("On cooldown!") 
+			return
+		end
 
 		local Result = PushService:StartPushCharge()
 		if Result == true then
 			PlayerInfo.PushStarted = true
 			MainUIController.ControlPushBar("Start")
 			AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "StartPush", false, 1, PushAnimFunc)
+			MainUIController.Modules.AimerUI.Toggle(true)
+			UpdatePushAim()
 		end
 
     elseif State == Enum.UserInputState.End then
@@ -210,7 +235,7 @@ local function AttemptPush(_, State: Enum.UserInputState, _: InputObject)
 		PlayerInfo.PushStarted = false
 		PlayerInfo.PushDone = os.clock()
         AnimationController.PlayNew(LocalPlayer.Character, "PushAnimations", "FinishPush", false, 1, PushAnimFunc)
-
+		MainUIController.Modules.AimerUI.Toggle(false)
     end
 end
 
@@ -400,6 +425,11 @@ function MainController:Deferred()
 			--warn("CLIENT DATA: ", PlayerInfo.Data)
         end
     end)
+
+	Camera:GetPropertyChangedSignal("CFrame"):Connect(function() 
+		if not PlayerInfo.PushStarted then return end
+		UpdatePushAim() 
+	end)
 
     PushService.ScoreChanged:Connect(function(Points: number, Streak: number, Multipler: number)
 		PlayerInfo.CurrentPoints = Points

@@ -59,7 +59,7 @@ function Utility.CheckRemotesLoaded(List: {string})
 	end
 end
 
-function Utility.ConvertSecondsToHMS(TotalSeconds: number)
+function Utility.ConvertSecondsToHMS(TotalSeconds: number, CutHours: boolean?)
 	local Hours = math.floor(TotalSeconds / 3600)
 	local Minutes = math.floor((TotalSeconds % 3600) / 60)
 	local Seconds = math.floor(TotalSeconds % 60)
@@ -81,8 +81,12 @@ function Utility.ConvertSecondsToHMS(TotalSeconds: number)
 	else
 		Seconds = "00"
 	end
-		
-	return Hours .. ":" .. Minutes .. ":" .. Seconds
+	
+	if not CutHours then
+		return Hours .. ":" .. Minutes .. ":" .. Seconds
+	else
+		return Minutes .. ":" .. Seconds
+	end
 end
 
 function Utility.ChangeModelTransparency(Model: Model, To: number, Ignore: {string}?, GetDescendants: boolean?)
