@@ -384,11 +384,30 @@ local function SetupSettings()
 	end, NumberRange.new(0, 1), 10, 1)
 
 	task.delay(3, function()
+		while true do
+			task.wait(0.1)
+			if not PlayerInfo then continue end
+			if not PlayerInfo.Data then continue end
+			if not PlayerInfo.Data.Settings then continue end
+			break
+		end
+
 		TimerFormatSwitch.Button:SetAttribute("On", PlayerInfo.Data.Settings.DisplayMinutes)
+		MusicVolumeSlider:SetAttribute("ForceVal", PlayerInfo.Data.Settings.MusicVolume)
+		VoiceoversVolumeSlider:SetAttribute("ForceVal", PlayerInfo.Data.Settings.VoiceoversVolume)
+		SoundFXVolumeSlider:SetAttribute("ForceVal", PlayerInfo.Data.Settings.SoundFXVolume)
+
+		warn("Music: ", PlayerInfo.Data.Settings.MusicVolume)
+		warn("Voiceover: ", PlayerInfo.Data.Settings.VoiceoversVolume)
+		warn("Sound FX: ", PlayerInfo.Data.Settings.SoundFXVolume)
+
+
 
 		SoundService.Music.Volume = PlayerInfo.Data.Settings.MusicVolume
 		SoundService.Voiceovers.Volume = PlayerInfo.Data.Settings.VoiceoversVolume
 		SoundService.SoundFX.Volume = PlayerInfo.Data.Settings.SoundFXVolume
+
+
 	end)
 end
 

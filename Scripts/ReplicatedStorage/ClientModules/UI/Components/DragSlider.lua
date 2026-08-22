@@ -50,7 +50,8 @@ function DragSlider.AddSlider(Slider: Frame, Fn: (number) -> (), Range: NumberRa
 	
 	local FixedPositions: {number} = {}
 	Slider:SetAttribute("Val", StartValue)
-	
+	Slider:SetAttribute("ForceVal", StartValue)
+
 	local function UpdateFixedPositions()
 		if not Range or not Increments then return end
 		
@@ -114,6 +115,16 @@ function DragSlider.AddSlider(Slider: Frame, Fn: (number) -> (), Range: NumberRa
 		end, 
 		nil
 	)
+
+	Slider:GetAttributeChangedSignal("ForceVal"):Connect(function()
+		local ForceVal = Slider:GetAttribute("ForceVal")
+		if not ForceVal then return end
+		local Percent = ForceVal / if Range then Range.Max else 100
+		local Pos = math.round(Line.AbsoluteSize.X) * Percent
+
+		UpdateFixedPositions()
+		Button.Position = UDim2.new(0, Pos, 0.5, 0)
+	end)
 	
 	if not StartValue then return end
 	

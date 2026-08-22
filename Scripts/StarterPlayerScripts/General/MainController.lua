@@ -281,8 +281,8 @@ function MainController.SetCharacter()
     CharacterSetup = true
 
     while LocalPlayer.Character == nil do task.wait() end
+	while LocalPlayer.Character:FindFirstChild("HumanoidRootPart") == nil do task.wait() end
 
-    LocalPlayer.Character = LocalPlayer.Character
     PlayerInfo.Human = LocalPlayer.Character:WaitForChild("Humanoid")
     PlayerInfo.Root = LocalPlayer.Character:WaitForChild("HumanoidRootPart")
     PlayerInfo.Dead = false
