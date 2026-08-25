@@ -44,7 +44,7 @@ local Camera = Workspace.CurrentCamera
 
 local AnimTime = UIInfo.BaseAnimTime
 
-local UISounds = ReplicatedStorage.Assets.UISounds
+local UISounds = ReplicatedStorage.Assets.Sounds.UISounds
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions

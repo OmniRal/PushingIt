@@ -1,7 +1,7 @@
 -- OmniRal
 
 export type NPCRariry = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical"
-export type NPCMovement = "Roam" | "Stationary"
+export type NPCMovement = "Stationary" | "Roam" | "RoamRandom"
 
 local SkinTones = {
 	Pale = Color3.fromRGB(242, 232, 193),
@@ -87,9 +87,9 @@ NPCInfo["Common"] = {
 			},
         },
 
-        IdleAnimID = 507766666,
-        WalkAnimID = 125749145,
-        RunAnimID = 125749145,
+        IdleAnimID = 180435571,
+        WalkAnimID = 180426354,
+        RunAnimID = 180426354,
         
         SkinColor = Color3.fromRGB(255, 214, 101),
 
@@ -107,7 +107,7 @@ NPCInfo["Common"] = {
         Shirt = 109896445568652,
         Pants = 91543195374013,
 
-        Movement = "Stationary",
+        Movement = "Roam",
 	},
 
 	["OogDoogt"] = {
@@ -128,9 +128,9 @@ NPCInfo["Common"] = {
 			},
 		},
 
-        IdleAnimID = 507766666,
-        WalkAnimID = 125749145,
-        RunAnimID = 125749145,
+        IdleAnimID = 180435571,
+        WalkAnimID = 180426354,
+        RunAnimID = 180426354,
 
 		SkinColor = Color3.fromRGB(198, 169, 141),
 
@@ -148,7 +148,7 @@ NPCInfo["Common"] = {
 		Shirt = 105780963067603,
 		Pants = 82094953407006,
 
-		Movement = "Stationary",
+		Movement = "Roam",
 	},
 
 	["FelipeSantiago"] = {
@@ -169,9 +169,9 @@ NPCInfo["Common"] = {
 			},
 		},
 
-        IdleAnimID = 507766666,
-        WalkAnimID = 125749145,
-        RunAnimID = 125749145,
+        IdleAnimID = 180435571,
+        WalkAnimID = 180426354,
+        RunAnimID = 180426354,
 
 		SkinColor = Color3.fromRGB(255, 232, 187),
 
@@ -189,7 +189,7 @@ NPCInfo["Common"] = {
 		Shirt = 135589353230600,
 		Pants = 87716520120018,
 
-		Movement = "Stationary",
+		Movement = "Roam",
 	},
 }
 

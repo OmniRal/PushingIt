@@ -34,10 +34,9 @@ local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a 
 
 local MAX_NPCS = 2 -- How many can be on the map any given time
 
-local KEEP_NODES = true -- If TRUE, the NPC nodes will remain in game instead of being destroyed
+local KEEP_NODES = false -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
 local VOICELINE_COOLDOWN = 10
-
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -86,6 +85,8 @@ local NPCFolder: Folder
 
 local RunThread: thread?
 
+local LastSpawnChosen = 0
+
 local Assets = ReplicatedStorage.Assets
 local RNG = Random.new()
 
@@ -133,12 +134,33 @@ local function GetPathNodes()
             Connections = {},
         }
 
-        -- Get the other nodes this node is connected to
+		-- Get the other nodes this node is connected to
         for _, Connection in Node:GetChildren() do
             if not Connection:IsA("Beam") then continue end
             table.insert(Nodes[Node.Name].Connections, Connection.Attachment1.Parent.Name)
         end
     end
+
+	-- Finalize connections
+	for _, Node in List do
+		for _, OtherNode in List do
+			if OtherNode == Node then continue end
+			for _, Connection in OtherNode:GetChildren() do
+				if not Connection:IsA("Beam") then continue end
+				if Connection.Attachment0 ~= Node.Attachment and Connection.Attachment1 ~= Node.Attachment then continue end
+				
+				if not table.find(Nodes[Node.Name].Connections, OtherNode.Name) then
+					table.insert(Nodes[Node.Name].Connections, OtherNode.Name)
+				end
+
+				if not table.find(Nodes[OtherNode.Name].Connections, Node.Name) then
+					table.insert(Nodes[OtherNode.Name].Connections, Node.Name)
+				end
+			end
+		end
+	end
+
+	warn(Nodes)
 
     -- Destroy all the nodes in workspace
 	if KEEP_NODES then return end
@@ -147,7 +169,6 @@ local function GetPathNodes()
         Node:Destroy()
     end
 
-    warn(Nodes)
 end
 
 -- Find the closest node to a position
@@ -184,10 +205,19 @@ end
 -- @ThisPoint = Where to spawn; can be a CFrame or a spawn points name
 -- @Rarity = Which rarity of NPC it should pick from
 -- @Name = Optionally spawn in a very specific NPC
-function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry?, Name: string?)
+function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRariry?, Name: string?)
     if not ThisPoint then
 		-- Pick a random spawn from the cached list
-        ThisPoint = SpawnPoints[RNG:NextInteger(1, #SpawnPoints)]
+		
+		-- Try to pick one that wasn't used recently
+		local NextSpawn = RNG:NextInteger(1, #SpawnPoints)
+		for x = 1, 10 do
+			if NextSpawn ~= LastSpawnChosen then break end
+			NextSpawn = RNG:NextInteger(1, #SpawnPoints)
+		end
+		LastSpawnChosen = NextSpawn
+
+        ThisPoint = SpawnPoints[NextSpawn]
 
     elseif ThisPoint and type(ThisPoint) == "string" then
 		-- Attempt to look for the spawn point by name
@@ -373,15 +403,15 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 		local RunTrack = NewNPC.Humanoid.Animator:LoadAnimation(RunAnim)
 		RunTrack.Looped = true
 
-		--[[NewNPC.Humanoid.StateChanged:Connect(function(_, New: Enum.HumanoidStateType)
-			if New == Enum.HumanoidStateType.Running then
+		NewNPC.Humanoid.Running:Connect(function(Speed: number)
+			if Speed > 0 then
 				IdleTrack:Stop(0.1)
 				RunTrack:Play(0.1)
 			else
 				IdleTrack:Play(0.1)
 				RunTrack:Stop(0.1)
 			end
-		end)]]
+		end)
 		IdleTrack:Play()
 	end)
 end
@@ -470,8 +500,8 @@ function NPCService:Deferred()
     GetSpawnPoints()
     GetPathNodes()
 
-    NPCService.Spawn("A", "Common")
-    NPCService.Spawn("B", "Common")
+    --NPCService.Spawn("A", "Common")
+    --NPCService.Spawn("B", "Common")
 
     NPCService.Run()
 end

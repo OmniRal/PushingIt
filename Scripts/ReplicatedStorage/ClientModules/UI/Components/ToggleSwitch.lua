@@ -39,7 +39,7 @@ local ToggleStates: {
 
 local AnimTime = UIInfo.BaseAnimTime
 
-local UISounds = ReplicatedStorage.Assets.UISounds
+local UISounds = ReplicatedStorage.Assets.Sounds.UISounds
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
