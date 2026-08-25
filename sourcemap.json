@@ -35,76 +35,31 @@
 									"name": "Rock_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Rock_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Rock_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Rock_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "Wood_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Wood_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Wood_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Wood_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "Plain_Wood_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Wood_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Wood_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Wood_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
+								},
+								{
+									"name": "Clay_1",
+									"className": "MaterialVariant",
+									"filePaths": [],
+									"children": []
+								},
+								{
+									"name": "Grass_1",
+									"className": "MaterialVariant",
+									"filePaths": [],
+									"children": []
 								}
 							]
 						},
@@ -117,76 +72,19 @@
 									"name": "LightBrick_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "LightBrick_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "LightBrick_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "LightBrick_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "StonePathing_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "StonePathing_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "StonePathing_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "StonePathing_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "Building_Blue_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Building_Blue_1_roughness",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Building_Blue_1_normal",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										},
-										{
-											"name": "Building_Blue_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "Building_Plain_1",
@@ -198,27 +96,13 @@
 									"name": "Building_Red_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Building_Red_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								},
 								{
 									"name": "Building_Yellow_1",
 									"className": "MaterialVariant",
 									"filePaths": [],
-									"children": [
-										{
-											"name": "Building_Yellow_1_basecolor",
-											"className": "Decal",
-											"filePaths": [],
-											"children": []
-										}
-									]
+									"children": []
 								}
 							]
 						}
@@ -3785,7 +3669,14 @@
 											"name": "Humanoid",
 											"className": "Humanoid",
 											"filePaths": [],
-											"children": []
+											"children": [
+												{
+													"name": "Animator",
+													"className": "Animator",
+													"filePaths": [],
+													"children": []
+												}
+											]
 										},
 										{
 											"name": "HumanoidRootPart",

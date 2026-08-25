@@ -4,7 +4,14 @@ export type NPCRariry = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical"
 export type NPCMovement = "Roam" | "Stationary"
 
 local SkinTones = {
-    
+	Pale = Color3.fromRGB(242, 232, 193),
+	White = Color3.fromRGB(243, 214, 158),
+	Toast = Color3.fromRGB(212, 163, 97),
+	Brown = Color3.fromRGB(194, 133, 71),
+	Black = Color3.fromRGB(146, 97, 37),
+	Blacker = Color3.fromRGB(92, 69, 36),
+
+	ClassicYellow = Color3.fromRGB(245, 205, 48),
 }
 
 local NPCInfo: {
@@ -18,6 +25,8 @@ local NPCInfo: {
             VoiceLines: {
 				-- Triggered when a player gets near the NPC
                 Normal: {
+					-- Line = the written text of the voiceline; this will appear as speech bubbles above the NPC
+					-- ID = The sound ID for the voiceline
                     {Line: string, ID: number}
                 },
 
@@ -27,7 +36,7 @@ local NPCInfo: {
                 },
             },
 
-            IdleAnimID: number,
+            IdleAnimID: number, -- 
             WalkAnimID: number,
             RunAnimID: number,
             
@@ -78,9 +87,9 @@ NPCInfo["Common"] = {
 			},
         },
 
-        IdleAnimID = 0,
-        WalkAnimID = 0,
-        RunAnimID = 0,
+        IdleAnimID = 507766666,
+        WalkAnimID = 125749145,
+        RunAnimID = 125749145,
         
         SkinColor = Color3.fromRGB(255, 214, 101),
 
@@ -119,9 +128,9 @@ NPCInfo["Common"] = {
 			},
 		},
 
-		IdleAnimID = 0,
-		WalkAnimID = 0,
-		RunAnimID = 0,
+        IdleAnimID = 507766666,
+        WalkAnimID = 125749145,
+        RunAnimID = 125749145,
 
 		SkinColor = Color3.fromRGB(198, 169, 141),
 
@@ -141,6 +150,7 @@ NPCInfo["Common"] = {
 
 		Movement = "Stationary",
 	},
+
 	["FelipeSantiago"] = {
 		FirstName = "Felipe",
 		LastName = "Santiago",
@@ -159,9 +169,9 @@ NPCInfo["Common"] = {
 			},
 		},
 
-		IdleAnimID = 0,
-		WalkAnimID = 0,
-		RunAnimID = 0,
+        IdleAnimID = 507766666,
+        WalkAnimID = 125749145,
+        RunAnimID = 125749145,
 
 		SkinColor = Color3.fromRGB(255, 232, 187),
 

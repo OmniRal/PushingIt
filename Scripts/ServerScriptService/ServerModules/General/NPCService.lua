@@ -32,9 +32,12 @@ local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.Sh
 local USE_DEFAULT = false -- Set this to true when you want all NPCs to spawn as the one below
 local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
 
+local MAX_NPCS = 2 -- How many can be on the map any given time
+
 local KEEP_NODES = true -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
 local VOICELINE_COOLDOWN = 10
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -300,6 +303,13 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 
 	NewNPC:SetAttribute("Voiceline", 0)
 	NewNPC:GetAttributeChangedSignal("Voiceline"):Connect(function()
+		--[[
+		
+		0 = No voice; reset
+		1 = Normal voicelines; walking, idling, etc
+		2 = WHen the NPC is being pushed voicelines
+
+		]]
 		local Voiceline = NewNPC:GetAttribute("Voiceline")
 
 		if Voiceline <= 0 then return end
@@ -314,6 +324,7 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 			end
 		end
 
+		-- Pick a random voiceline within the category
 		local Chosen = Info.VoiceLines[Category][RNG:NextInteger(1, #Info.VoiceLines[Category])]
 
 		if VoiceSound.IsPlaying then
@@ -330,6 +341,12 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 		task.delay(3, function() SpeechBox.Enabled = false end)
 	end)
 
+	NewNPC.Humanoid.HealthChanged:Connect(function()
+		if not NPCs[NewNPC] then return end
+		NPCs[NewNPC].Dead = true
+	end)
+
+	-- Set up ragdoll type
 	if not SharedGlobalValues.NPC_Use_R6 then
     	RagdollService.SetRagdoll(NewNPC)
 	else
@@ -341,6 +358,31 @@ function NPCService.Spawn(ThisPoint: CFrame? | string, Rarity: NPCInfo.NPCRariry
 			if not NewNPC:GetAttribute("Ragdoll") then return end
 			NewNPC:SetAttribute("Voiceline", 2)
 		end)
+
+		local IdleAnim = Instance.new("Animation")
+		IdleAnim.AnimationId = "rbxassetid://" .. Info.IdleAnimID
+		local WalkAnim = Instance.new("Animation")
+		WalkAnim.AnimationId = "rbxassetid://" .. Info.WalkAnimID
+		local RunAnim = Instance.new("Animation")
+		RunAnim.AnimationId = "rbxassetid://" .. Info.RunAnimID
+
+		local IdleTrack = NewNPC.Humanoid.Animator:LoadAnimation(IdleAnim)
+		IdleTrack.Looped = true
+		local WalkTrack = NewNPC.Humanoid.Animator:LoadAnimation(WalkAnim)
+		WalkTrack.Looped = true
+		local RunTrack = NewNPC.Humanoid.Animator:LoadAnimation(RunAnim)
+		RunTrack.Looped = true
+
+		--[[NewNPC.Humanoid.StateChanged:Connect(function(_, New: Enum.HumanoidStateType)
+			if New == Enum.HumanoidStateType.Running then
+				IdleTrack:Stop(0.1)
+				RunTrack:Play(0.1)
+			else
+				IdleTrack:Play(0.1)
+				RunTrack:Stop(0.1)
+			end
+		end)]]
+		IdleTrack:Play()
 	end)
 end
 
@@ -356,8 +398,17 @@ function NPCService.Run()
         while true do
             task.wait(1)
 
+			local TotalNPCs = 0
+
             for Model, Data in NPCs do
                 if not Model or not Data then continue end
+
+				TotalNPCs += 1
+				if Data.Dead then
+					NPCs[Model] = nil
+					Model:Destroy()
+					continue
+				end
                 
                 if Data.Movement == "Stationary" then continue end
 
@@ -384,6 +435,10 @@ function NPCService.Run()
                     Data.GoToNextPointAt = os.clock() + RNG:NextInteger(1, 3)
                 end
             end
+
+			if TotalNPCs >= MAX_NPCS then continue end
+
+			NPCService.Spawn(nil, "Common")
         end
     end)
 end
