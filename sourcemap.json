@@ -3703,6 +3703,14 @@
 									]
 								},
 								{
+									"name": "NodeConnectBeam",
+									"className": "Beam",
+									"children": [],
+									"filePaths": [
+										"Assets/Replicated/Other/NodeConnectBeam.rbxm"
+									]
+								},
+								{
 									"name": "StickerPickup",
 									"className": "Part",
 									"children": [
@@ -3747,14 +3755,6 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Other/StickerPickup.rbxm"
-									]
-								},
-								{
-									"name": "NodeConnectBeam",
-									"className": "Beam",
-									"children": [],
-									"filePaths": [
-										"Assets/Replicated/Other/NodeConnectBeam.rbxm"
 									]
 								}
 							],
@@ -4774,6 +4774,38 @@
 							],
 							"filePaths": [
 								"Assets/Replicated/Player"
+							]
+						},
+						{
+							"name": "Sounds",
+							"className": "Folder",
+							"children": [
+								{
+									"name": "Music",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "Theme",
+											"className": "Sound",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Sounds/Music.rbxm"
+									]
+								},
+								{
+									"name": "UISounds",
+									"className": "Folder",
+									"children": [],
+									"filePaths": [
+										"Assets/Replicated/Sounds/UISounds.rbxm"
+									]
+								}
+							],
+							"filePaths": [
+								"Assets/Replicated/Sounds"
 							]
 						},
 						{
@@ -7480,38 +7512,6 @@
 							"filePaths": [
 								"Assets/Replicated/UIs"
 							]
-						},
-						{
-							"name": "Sounds",
-							"className": "Folder",
-							"children": [
-								{
-									"name": "Music",
-									"className": "Folder",
-									"children": [
-										{
-											"name": "Theme",
-											"className": "Sound",
-											"filePaths": [],
-											"children": []
-										}
-									],
-									"filePaths": [
-										"Assets/Replicated/Sounds/Music.rbxm"
-									]
-								},
-								{
-									"name": "UISounds",
-									"className": "Folder",
-									"children": [],
-									"filePaths": [
-										"Assets/Replicated/Sounds/UISounds.rbxm"
-									]
-								}
-							],
-							"filePaths": [
-								"Assets/Replicated/Sounds"
-							]
 						}
 					],
 					"filePaths": [
@@ -9355,19 +9355,19 @@
 											]
 										},
 										{
-											"name": "WorldUIController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/StarterPlayerScripts/General/WorldUIController.lua"
-											]
-										},
-										{
 											"name": "SoundController",
 											"className": "ModuleScript",
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/SoundController.lua"
+											]
+										},
+										{
+											"name": "WorldUIController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/StarterPlayerScripts/General/WorldUIController.lua"
 											]
 										}
 									],
