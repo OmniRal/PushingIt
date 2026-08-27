@@ -409,7 +409,7 @@ function RagdollService.SetRagdoll_R6(Model: Model)
         if not Model:HasTag("NPC") then return end
 
 		if not Model:GetAttribute("Ragdoll") then
-			Human.Health -= 100
+			Human.Health -= 1
 		end
 
         task.spawn(function()

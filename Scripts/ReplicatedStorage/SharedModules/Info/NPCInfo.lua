@@ -36,6 +36,8 @@ local NPCInfo: {
                 },
             },
 
+			Health: number,
+
             IdleAnimID: number, -- 
             WalkAnimID: number,
             RunAnimID: number,
@@ -87,6 +89,8 @@ NPCInfo["Common"] = {
 			},
         },
 
+		Health = 3,
+
         IdleAnimID = 180435571,
         WalkAnimID = 180426354,
         RunAnimID = 180426354,
@@ -128,6 +132,8 @@ NPCInfo["Common"] = {
 			},
 		},
 
+		Health = 3,
+
         IdleAnimID = 180435571,
         WalkAnimID = 180426354,
         RunAnimID = 180426354,
@@ -168,6 +174,8 @@ NPCInfo["Common"] = {
 				{Line = "Oh no!", ID = 132170778691513}
 			},
 		},
+
+		Health = 3,
 
         IdleAnimID = 180435571,
         WalkAnimID = 180426354,

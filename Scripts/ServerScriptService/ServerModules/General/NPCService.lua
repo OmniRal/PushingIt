@@ -29,10 +29,12 @@ local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.Sh
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local USE_DEFAULT = false -- Set this to true when you want all NPCs to spawn as the one below
-local DEFAULT_NPC = {Rarity = "Common", Name = "John"} -- Change this to test a specific NPC
+local USE_DEFAULT = false -- Set this to TRUE when you want all NPCs to spawn as the one below
+local DEFAULT_NPC = {Rarity = "Common", Name = "JohnDink"} -- Change this to test a specific NPC
 
 local MAX_NPCS = 2 -- How many can be on the map any given time
+
+local NPCS_STAND_STILL = true -- If TRUE, NPCs won't move around anywhere
 
 local KEEP_NODES = false -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
@@ -371,8 +373,10 @@ function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRarir
 		task.delay(3, function() SpeechBox.Enabled = false end)
 	end)
 
+	NewNPC.Humanoid.Health = Info.Health
 	NewNPC.Humanoid.HealthChanged:Connect(function()
 		if not NPCs[NewNPC] then return end
+		if NewNPC.Humanoid.Health > 0 then return end
 		NPCs[NewNPC].Dead = true
 	end)
 
@@ -440,6 +444,7 @@ function NPCService.Run()
 					continue
 				end
                 
+				if NPCS_STAND_STILL then continue end
                 if Data.Movement == "Stationary" then continue end
 
 				-- Handle NPC movement

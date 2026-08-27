@@ -276,7 +276,7 @@ local function SetupBasics()
 	end)
 	Menu.Position = MENU_OFF_POSITION
 	Menu.GroupTransparency = 1
-	Menu.Visible = true
+	Menu.Visible = false
 
 	-- Set up top tab buttons
 	for _, Tab in Menu.Tabs:GetChildren() do
@@ -401,13 +401,9 @@ local function SetupSettings()
 		warn("Voiceover: ", PlayerInfo.Data.Settings.VoiceoversVolume)
 		warn("Sound FX: ", PlayerInfo.Data.Settings.SoundFXVolume)
 
-
-
 		SoundService.Music.Volume = PlayerInfo.Data.Settings.MusicVolume
 		SoundService.Voiceovers.Volume = PlayerInfo.Data.Settings.VoiceoversVolume
 		SoundService.SoundFX.Volume = PlayerInfo.Data.Settings.SoundFXVolume
-
-
 	end)
 end
 
@@ -520,6 +516,7 @@ function MainMenuUI.UpdateStuff_Stickers()
 
 			Frame.Container.Title.StickerName.Text = Name
 			Frame.Container.Main.Icon.Image = "rbxassetid://" .. Info.ID
+			Frame.Container.Main.FlavorText.Text = Info.FlavorText
 			Frame.Container.Info.Date.Text = Utility.FormatTime(Data.Time)
 			Frame.Container.Info.Amount.Text = Data.Amount
 			Frame.Visible = true
