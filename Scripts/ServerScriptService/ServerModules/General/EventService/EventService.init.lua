@@ -1,19 +1,16 @@
 -- OmniRal
 
-local HazardService = {}
+local EventService = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CollectionService = game:GetService("CollectionService")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local Modules: {[string]: ModuleScript} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -27,6 +24,30 @@ local Modules: {[string]: ModuleScript} = {}
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local AllEvents: {
+	[string]: {
+		State: "None" | "Active" | "OnCooldown",
+		ActiveTime: number, -- How many seconds it runs when active
+		CooldownTime: number, -- How many seconds the event is on cooldown before being usable again
+		FromPlayer: Player?, -- Which player purchased this event
+		DisplayName: string,
+		Ref: Configuration?,
+	}
+} = {
+	RainBananas = {
+		State = "None",
+		ActiveTime = 30,
+		CooldownTime = 60 * 5,
+		DisplayName = "Rain Bananas!",
+	}
+}
+
+local Modules = {} -- Modules for the individual events functionality
+
+local EventTracker = Workspace.EventTracker 
+-- Folder that contains references for all the events
+-- Purely for the client to display each events data on their UI
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -35,28 +56,24 @@ local Modules: {[string]: ModuleScript} = {}
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function HazardService:Deferred()
-	-- Get all the hazard modules
+function EventService:Deferred()
+	-- Get all the event modules
 	for _, Script in script:GetChildren() do
 		if not Script:IsA("ModuleScript") then continue end
 		Modules[Script.Name] = require(Script)
 	end
-	
-	-- Find all the hazards and set them up
-	for Name, Module in Modules do
-		for _, Hazard in CollectionService:GetTagged(Name) do
-			if not Hazard then continue end
-			if not Module.Setup then continue end
-			
-			Module.Setup(Hazard)
-			Hazard.Parent = Workspace.Hazards
-		end
-	end
 
-	-- New hazards 
-	CollectionService:GetInstanceAddedSignal("Hazard"):Connect(function()
-		
-	end)
+	-- Fill the folder with all the event references
+	for Name, Data in AllEvents do
+		local Ref = Instance.new("Configuration")
+		Ref.Name = Name
+		Ref:SetAttribute("State", "None")
+		Ref:SetAttribute("FromPlayer", "None")
+		Ref:SetAttribute("TimeStartedAt", 0)
+		Ref.Parent = EventTracker
+
+		Data.Ref = Ref
+	end
 end
 
-return HazardService
+return EventService

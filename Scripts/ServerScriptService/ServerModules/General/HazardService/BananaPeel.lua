@@ -1,23 +1,22 @@
 -- OmniRal
 
-local HazardService = {}
+local BananaPeel = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CollectionService = game:GetService("CollectionService")
-local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Modules: {[string]: ModuleScript} = {}
-
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local COOLDOWN = 7
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -35,28 +34,28 @@ local Modules: {[string]: ModuleScript} = {}
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function HazardService:Deferred()
-	-- Get all the hazard modules
-	for _, Script in script:GetChildren() do
-		if not Script:IsA("ModuleScript") then continue end
-		Modules[Script.Name] = require(Script)
-	end
-	
-	-- Find all the hazards and set them up
-	for Name, Module in Modules do
-		for _, Hazard in CollectionService:GetTagged(Name) do
-			if not Hazard then continue end
-			if not Module.Setup then continue end
-			
-			Module.Setup(Hazard)
-			Hazard.Parent = Workspace.Hazards
-		end
-	end
+function BananaPeel.Setup(Peel: BasePart)
+	Peel.Touched:Connect(function(Hit: BasePart)
+		if not Hit then return end
+		if not Hit.Parent then return end
+		local Human, Root = Hit.Parent:FindFirstChild("Humanoid") :: Humanoid, Hit.Parent:FindFirstChild("HumanoidRootPart") :: BasePart
+		if not Human or not Root then return end
 
-	-- New hazards 
-	CollectionService:GetInstanceAddedSignal("Hazard"):Connect(function()
+		Peel.CanTouch = false
+		Peel.Transparency = 1
+		Debris:AddItem(Peel, 3)
+		-- TODO: play sound and FX
 		
+		local Velocity = Root.AssemblyLinearVelocity.Magnitude
+		
+		Hit.Parent:SetAttribute("Ragdoll", true)
+		
+		-- Push the NPC or player forward more
+		if Velocity < 10 then return end
+
+		Root.AssemblyLinearVelocity *= Vector3.new(1.5, 1, 1.5)
+		Root.AssemblyLinearVelocity += Vector3.new(0, 40, 0)
 	end)
 end
 
-return HazardService
+return BananaPeel

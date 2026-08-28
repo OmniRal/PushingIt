@@ -41,8 +41,9 @@ local ControlModule
 
 local VOICELINE_REQUEST_COOLDOWN = 3
 
-local AIM_UP_DEGREES = 40
-local AIM_DOWN_DEGREES = -60
+local AIM_1_DEGREES = 40
+local AIM_2_DEGREES = 25
+local AIM_4_DEGREES = -60
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -169,11 +170,13 @@ end
 local function UpdatePushAim(GetID: boolean?): number?
 	local Degrees = math.deg(math.asin(Camera.CFrame.LookVector.Y))
 
-	local LineID = 2
-	if Degrees >= AIM_UP_DEGREES then
+	local LineID = 3
+	if Degrees >= AIM_1_DEGREES then
 		LineID = 1
-	elseif Degrees <= AIM_DOWN_DEGREES then
-		LineID = 3
+	elseif Degrees >= AIM_2_DEGREES and Degrees < AIM_1_DEGREES then
+		LineID = 2
+	elseif Degrees <= AIM_4_DEGREES then
+		LineID = 4
 	end
 
 	MainUIController.Modules.AimerUI.SetAimerLine(LineID)

@@ -236,7 +236,9 @@ function PushService.AttemptPush(Player: Player, AimDirection: number)
 	local RootCF = Root.CFrame
 	if AimDirection == 1 then
 		RootCF *= CFrame.Angles(math.rad(75), 0, 0)
-	elseif AimDirection == 3 then
+	elseif AimDirection == 2 then
+		RootCF *= CFrame.Angles(math.rad(45), 0, 0)
+	elseif AimDirection == 4 then
 		RootCF *= CFrame.Angles(math.rad(-75), 0, 0)
 	end
 

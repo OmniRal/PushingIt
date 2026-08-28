@@ -7753,6 +7753,19 @@
 													"className": "UIListLayout",
 													"filePaths": [],
 													"children": []
+												},
+												{
+													"name": "A_4",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
+														}
+													]
 												}
 											]
 										},
@@ -7798,6 +7811,51 @@
 													"className": "ImageButton",
 													"filePaths": [],
 													"children": []
+												}
+											]
+										},
+										{
+											"name": "EventDisplay",
+											"className": "CanvasGroup",
+											"filePaths": [],
+											"children": [
+												{
+													"name": "ListLayout",
+													"className": "UIListLayout",
+													"filePaths": [],
+													"children": []
+												},
+												{
+													"name": "OG",
+													"className": "Frame",
+													"filePaths": [],
+													"children": [
+														{
+															"name": "TimeBar",
+															"className": "Frame",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Icon",
+															"className": "ImageLabel",
+															"filePaths": [],
+															"children": []
+														},
+														{
+															"name": "Player",
+															"className": "TextLabel",
+															"filePaths": [],
+															"children": [
+																{
+																	"name": "Stroke",
+																	"className": "UIStroke",
+																	"filePaths": [],
+																	"children": []
+																}
+															]
+														}
+													]
 												}
 											]
 										}
@@ -7996,6 +8054,14 @@
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
 													]
+												},
+												{
+													"name": "BananaPeel",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BananaPeel.lua"
+													]
 												}
 											],
 											"filePaths": [
@@ -8080,6 +8146,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WorldUIService.lua"
+											]
+										},
+										{
+											"name": "EventService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/EventService/EventService.init.lua"
 											]
 										}
 									],
