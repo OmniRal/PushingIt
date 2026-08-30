@@ -47,7 +47,7 @@ function HazardService:Deferred()
 		for _, Hazard in CollectionService:GetTagged(Name) do
 			if not Hazard then continue end
 			if not Module.Setup then continue end
-			if Hazard.Parent ~= Workspace then continue end
+			if not Hazard:IsDescendantOf(Workspace) then continue end
 			
 			Module.Setup(Hazard)
 			Hazard.Parent = Workspace.Hazards
@@ -61,6 +61,8 @@ function HazardService:Deferred()
 		local Module = Modules[NewHazard.Name]
 		if not Module then return end
 		if not Module.Setup then return end
+
+		warn(NewHazard)
 
 		Module.Setup(NewHazard)
 	end)

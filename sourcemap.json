@@ -438,14 +438,6 @@
 											]
 										},
 										{
-											"name": "SoundControlService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/General/SoundControlService.lua"
-											]
-										},
-										{
 											"name": "Utility",
 											"className": "ModuleScript",
 											"children": [
@@ -500,6 +492,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/General/WindowUpdater.lua"
+											]
+										},
+										{
+											"name": "SoundController",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/General/SoundController.lua"
 											]
 										}
 									],
@@ -1365,6 +1365,14 @@
 							"className": "Folder",
 							"children": [
 								{
+									"name": "BananaPeel",
+									"className": "MeshPart",
+									"children": [],
+									"filePaths": [
+										"Assets/Replicated/Hazards/BananaPeel.rbxm"
+									]
+								},
+								{
 									"name": "BounceAwning",
 									"className": "Model",
 									"children": [
@@ -1475,14 +1483,6 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
-									]
-								},
-								{
-									"name": "BananaPeel",
-									"className": "MeshPart",
-									"children": [],
-									"filePaths": [
-										"Assets/Replicated/Hazards/BananaPeel.rbxm"
 									]
 								}
 							],
@@ -4801,6 +4801,21 @@
 									],
 									"filePaths": [
 										"Assets/Replicated/Sounds/Music.rbxm"
+									]
+								},
+								{
+									"name": "Stickers",
+									"className": "Folder",
+									"children": [
+										{
+											"name": "CollectedNew",
+											"className": "Sound",
+											"filePaths": [],
+											"children": []
+										}
+									],
+									"filePaths": [
+										"Assets/Replicated/Sounds/Stickers.rbxm"
 									]
 								},
 								{
@@ -9784,14 +9799,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/StarterPlayerScripts/General/MainUIController/MainUIController.init.lua"
-											]
-										},
-										{
-											"name": "SoundController",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/StarterPlayerScripts/General/SoundController.lua"
 											]
 										},
 										{

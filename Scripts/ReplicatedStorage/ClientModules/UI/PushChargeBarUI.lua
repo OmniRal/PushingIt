@@ -106,6 +106,8 @@ end
 -- Tweens the fill on the bar to go full
 function PushChargeBarUI.StartCharge(ChargeSpeed: number, ChargePower: number)
 	if DelayToggleThread then task.cancel(DelayToggleThread); DelayToggleThread = nil end
+	if not Bar then return end
+
 	PushChargeBarUI.StopCharge()
 
 	Bar.Fill.Size = UDim2.fromScale(0, 1)

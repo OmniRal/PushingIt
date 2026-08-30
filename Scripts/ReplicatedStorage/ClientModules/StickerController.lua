@@ -21,6 +21,8 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
 
+local SoundController = require(ReplicatedStorage.Source.SharedModules.General.SoundController)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -49,6 +51,8 @@ local Assets = ReplicatedStorage.Assets
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 -- Replace the simple basic verion of hazards with better looking models
 local function SetAllStickers()
@@ -79,8 +83,8 @@ local function SetAllStickers()
 		Sticker:GetAttributeChangedSignal("AmountCollected"):Connect(function() 
 			local AmountCollected = Sticker:GetAttribute("AmountCollected")
 			
-			-- First time collecting it should be more special
 			if AmountCollected == 1 then
+				-- First time collecting it should be more special
 				Sticker.FXPoint.Pulse:Emit(1)
 				Sticker.FXPoint.Pulse_2:Emit(1)
 				
@@ -88,6 +92,9 @@ local function SetAllStickers()
 				Sticker.UI.Icon.ImageTransparency = 0.5
 				Sticker.UI.Icon.ImageColor3 = Color3.fromRGB(100, 100, 100)
 				Sticker.Sparkles.Enabled = false
+
+				SoundController.TweenSoundVolume(Assets.Sounds.Music.Theme, 0, 0.1, 3, 1)
+				SoundController.PlayCopyAndClean(Assets.Sounds.Stickers.CollectedNew)
 				
 			else
 				-- TODO: add sound effect
