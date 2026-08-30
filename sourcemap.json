@@ -1476,6 +1476,14 @@
 									"filePaths": [
 										"Assets/Replicated/Hazards/SpringLauncher.rbxm"
 									]
+								},
+								{
+									"name": "BananaPeel",
+									"className": "MeshPart",
+									"children": [],
+									"filePaths": [
+										"Assets/Replicated/Hazards/BananaPeel.rbxm"
+									]
 								}
 							],
 							"filePaths": [
@@ -8004,9 +8012,34 @@
 											]
 										},
 										{
+											"name": "EventService",
+											"className": "ModuleScript",
+											"children": [
+												{
+													"name": "RainBananas",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/EventService/RainBananas.lua"
+													]
+												}
+											],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/General/EventService/EventService.init.lua"
+											]
+										},
+										{
 											"name": "HazardService",
 											"className": "ModuleScript",
 											"children": [
+												{
+													"name": "BananaPeel",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BananaPeel.lua"
+													]
+												},
 												{
 													"name": "BounceAwning",
 													"className": "ModuleScript",
@@ -8053,14 +8086,6 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/SpringLauncher.lua"
-													]
-												},
-												{
-													"name": "BananaPeel",
-													"className": "ModuleScript",
-													"children": [],
-													"filePaths": [
-														"Scripts/ServerScriptService/ServerModules/General/HazardService/BananaPeel.lua"
 													]
 												}
 											],
@@ -8146,14 +8171,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/General/WorldUIService.lua"
-											]
-										},
-										{
-											"name": "EventService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/General/EventService/EventService.init.lua"
 											]
 										}
 									],

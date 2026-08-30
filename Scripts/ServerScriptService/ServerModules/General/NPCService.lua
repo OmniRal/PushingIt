@@ -203,6 +203,18 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Returns an array of all the nodes positions
+function NPCService.GetNodePositions(): {Vector3}
+	local List: {Vector3} = {}
+
+	for _, Data in Nodes do
+		if not Data then continue end
+		table.insert(List, Data.Pos)
+	end
+
+	return List
+end
+
 -- Spawn in an NPC
 -- @ThisPoint = Where to spawn; can be a CFrame or a spawn points name
 -- @Rarity = Which rarity of NPC it should pick from

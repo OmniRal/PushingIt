@@ -1,23 +1,29 @@
 -- OmniRal
 
-local BananaPeel = {}
+local RainBananas = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Debris = game:GetService("Debris")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local NPCService = require(ServerScriptService.Source.ServerModules.General.NPCService)
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CLEAN_UP = 4
-local RAGDOLL_TIME = 2
+local Y_OFFSET = 50 -- How far up should the banana peel spawn from their drop location
+local DROP_SPEED = 10
+local PEEL_OFFSET_Y = 0.75 / 2
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -27,6 +33,8 @@ local RAGDOLL_TIME = 2
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local RNG = Random.new()
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -35,37 +43,31 @@ local RAGDOLL_TIME = 2
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function BananaPeel.Setup(Peel: BasePart)
-	Peel.Touched:Connect(function(Hit: BasePart)
-		if Peel:GetAttribute("Locked") then return end
-		if not Hit then return end
-		if not Hit.Parent then return end
-		local Human, Root = Hit.Parent:FindFirstChild("Humanoid") :: Humanoid, Hit.Parent:FindFirstChild("HumanoidRootPart") :: BasePart
-		if not Human or not Root then return end
+function RainBananas.Run(Duration: number)
+	local DropPositions = NPCService.GetNodePositions()
 
-		Peel.CanTouch = false
-		Peel.Transparency = 1
-		Debris:AddItem(Peel, CLEAN_UP)
-		-- TODO: play sound and FX
-		
-		local Velocity = Root.AssemblyLinearVelocity.Magnitude
-		
-		if not Hit.Parent:GetAttribute("Ragdoll") then
-			-- Only ragdoll them if they are NOT already ragdolled
-			Hit.Parent:SetAttribute("Ragdoll", true)
-			task.delay(RAGDOLL_TIME, function()
-				if not Hit then return end
-				if not Hit.Parent then return end
-				Hit.Parent:SetAttribute("Ragdoll", false)
-			end)
-		end
-		
-		-- Push the NPC or player forward more
-		if Velocity < 10 then return end
+	for _ = 1, Duration do
+		task.wait(1)
 
-		Root.AssemblyLinearVelocity *= Vector3.new(1.5, 1, 1.5)
-		Root.AssemblyLinearVelocity += Vector3.new(0, 40, 0)
-	end)
+		if #DropPositions <= 0 then break end -- Incase it runs out of locations to drop bananas
+
+		local RandIndex = RNG:NextInteger(1, #DropPositions)
+		local StartCFrame = CFrame.new(DropPositions[RandIndex] + Vector3.new(0, Y_OFFSET, 0)) * CFrame.Angles(0, RNG:NextNumber(0, math.pi), 0)
+		local FinishCFrame = CFrame.new(DropPositions[RandIndex] + Vector3.new(0, PEEL_OFFSET_Y, 0)) * CFrame.Angles(0, RNG:NextNumber(0, math.pi), 0)
+		table.remove(DropPositions, RandIndex) -- Avoid spawning peels to the same location
+
+		local NewPeel = ReplicatedStorage.Assets.Hazards.BananaPeel:Clone()
+		NewPeel.CFrame = StartCFrame
+		NewPeel.Parent = Workspace.Hazards
+		NewPeel:SetAttribute("Locked", true)
+
+		TweenService:Create(NewPeel, TweenInfo.new(Y_OFFSET / DROP_SPEED, Enum.EasingStyle.Linear), {CFrame = FinishCFrame}):Play()
+
+		task.delay(Y_OFFSET / DROP_SPEED, function()
+			-- Banana is ready to be slipped on
+			NewPeel:SetAttribute("Locked", false)
+		end)
+	end
 end
 
-return BananaPeel
+return RainBananas

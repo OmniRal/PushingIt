@@ -74,6 +74,10 @@ function EventService:Deferred()
 
 		Data.Ref = Ref
 	end
+
+	task.delay(2, function()
+		Modules.RainBananas.Run(AllEvents.RainBananas.ActiveTime)
+	end)
 end
 
 return EventService

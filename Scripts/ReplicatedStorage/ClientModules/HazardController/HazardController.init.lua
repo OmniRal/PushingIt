@@ -28,8 +28,6 @@ local Workspace = game:GetService("Workspace")
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-HazardController.SpeedReduction = 0
-
 local LocalPlayer = Players.LocalPlayer
 local RunHeartbeat: RBXScriptConnection? = nil
 
@@ -133,13 +131,13 @@ function HazardController.Run()
 		for _, Hazard in AllHazards do
 			if not Hazard then continue end
 			
-			if Hazard.Name == "GrassBush" then
+			--[[if Hazard.Name == "GrassBush" then
 				if (Hazard.Position - Root.Position).Magnitude <= 4 then
 					if not Slows[Hazard] then Slows[Hazard] = 4 end
 				else
 					if Slows[Hazard] then Slows[Hazard] = nil end
 				end
-			end
+			end]]
 		end
 		
 		CalculateSpeedReduction()

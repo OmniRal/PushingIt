@@ -47,15 +47,22 @@ function HazardService:Deferred()
 		for _, Hazard in CollectionService:GetTagged(Name) do
 			if not Hazard then continue end
 			if not Module.Setup then continue end
+			if Hazard.Parent ~= Workspace then continue end
 			
 			Module.Setup(Hazard)
 			Hazard.Parent = Workspace.Hazards
 		end
 	end
 
-	-- New hazards 
-	CollectionService:GetInstanceAddedSignal("Hazard"):Connect(function()
-		
+	-- Fires when new hazards are added into the game
+	CollectionService:GetInstanceAddedSignal("Hazard"):Connect(function(NewHazard: DataModel)
+		-- Make sure its a model and has a module matching its name
+		if not NewHazard:IsA("Model") and not NewHazard:IsA("BasePart") then return end
+		local Module = Modules[NewHazard.Name]
+		if not Module then return end
+		if not Module.Setup then return end
+
+		Module.Setup(NewHazard)
 	end)
 end
 
