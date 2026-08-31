@@ -22,7 +22,9 @@ local List_4 = ServerGlobalValues.PlayerTestList
 
 ServerGlobalValues["CleanupAssetDump"] = true
 
-
+ServerGlobalValues["NPCs_StandStill"] = true -- If TRUE, NPCs won't move around anywhere
+ServerGlobalValues["NPCs_TestMode"] = true -- When true, NPCs will reposition themselves to their original position after a push
+-- (If this is TRUE, StandStill will automatically be true, too)
 
 --------------------------------------------------------------------------------------------
 

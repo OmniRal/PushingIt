@@ -62,8 +62,6 @@ function HazardService:Deferred()
 		if not Module then return end
 		if not Module.Setup then return end
 
-		warn(NewHazard)
-
 		Module.Setup(NewHazard)
 	end)
 end

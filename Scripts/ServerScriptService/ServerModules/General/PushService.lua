@@ -18,9 +18,11 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
-local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -228,6 +230,7 @@ function PushService.AttemptPush(Player: Player, AimDirection: number)
 	local Power = math.clamp((TimePassed / SecondPerGain), 0.1, PData.ChargePower)
 	
 	local FinalPower = BASE_POWER * math.clamp(Power, 0.1, 6)
+	if ServerGlobalValues.NPCs_TestMode then FinalPower += 200 end
 	
 	warn("___")
 	print("Level: ", Power)

@@ -20,10 +20,13 @@ local Workspace = game:GetService("Workspace")
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+
 local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
 local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
-local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -33,8 +36,6 @@ local USE_DEFAULT = false -- Set this to TRUE when you want all NPCs to spawn as
 local DEFAULT_NPC = {Rarity = "Common", Name = "JohnDink"} -- Change this to test a specific NPC
 
 local MAX_NPCS = 2 -- How many can be on the map any given time
-
-local NPCS_STAND_STILL = true -- If TRUE, NPCs won't move around anywhere
 
 local KEEP_NODES = false -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
@@ -456,7 +457,7 @@ function NPCService.Run()
 					continue
 				end
                 
-				if NPCS_STAND_STILL then continue end
+				if ServerGlobalValues.NPCs_StandStill or ServerGlobalValues.NPCs_TestMode then continue end
                 if Data.Movement == "Stationary" then continue end
 
 				-- Handle NPC movement

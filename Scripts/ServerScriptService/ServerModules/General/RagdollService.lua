@@ -20,6 +20,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 
+local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
@@ -393,6 +394,7 @@ function RagdollService.SetRagdoll_R6(Model: Model)
 
 
     SetCollisions(Model, RagdollCollisions)
+	local OriginalCFrame = Model:GetPivot()
 
     Model:SetAttribute("Ragdoll", false)
     Model:GetAttributeChangedSignal("Ragdoll"):Connect(function()
@@ -408,8 +410,18 @@ function RagdollService.SetRagdoll_R6(Model: Model)
 
         if not Model:HasTag("NPC") then return end
 
+
 		if not Model:GetAttribute("Ragdoll") then
-			Human.Health -= 1
+			if not ServerGlobalValues.NPCs_TestMode then
+				Human.Health -= 1
+			else
+				task.wait(2)
+				Root.Anchored = true
+				task.wait(0.25)
+				Model:PivotTo(OriginalCFrame * CFrame.new(0, 1, 0))
+				task.wait(0.25)
+				Root.Anchored = false
+			end
 		end
 
         task.spawn(function()

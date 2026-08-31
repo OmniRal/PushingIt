@@ -6,6 +6,7 @@ local EventService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local MarketplaceService = game:GetService("MarketplaceService")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -34,11 +35,11 @@ local AllEvents: {
 		Ref: Configuration?,
 	}
 } = {
-	RainBananas = {
+	RainBananaPeels = {
 		State = "None",
 		ActiveTime = 30,
 		CooldownTime = 60 * 5,
-		DisplayName = "Rain Bananas!",
+		DisplayName = "Rain Banana Peels!",
 	}
 }
 
@@ -55,6 +56,19 @@ local EventTracker = Workspace.EventTracker
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Run the specific event
+function EventService.RunEvent(ThisEvent: string)
+	local Info = AllEvents[ThisEvent]
+	local Module = Modules[ThisEvent]
+	if not Info or not Module then return end
+	if Module.Run == nil then return end
+
+	Module.Run(Info.ActiveTime)
+end
+
+function EventService:Init()
+end
 
 function EventService:Deferred()
 	-- Get all the event modules
@@ -76,7 +90,7 @@ function EventService:Deferred()
 	end
 
 	task.delay(2, function()
-		Modules.RainBananas.Run(AllEvents.RainBananas.ActiveTime)
+		--Modules.RainBananas.Run(AllEvents.RainBananas.ActiveTime)
 	end)
 end
 

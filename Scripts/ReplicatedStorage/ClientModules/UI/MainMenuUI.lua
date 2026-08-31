@@ -46,6 +46,7 @@ local MENU_OFF_POSITION = UDim2.fromScale(0.5, 0.7)
 type TabType = "Shop" | "Stats" | "Skills" | "Settings"
 
 local DataService = Remotes.Client.DataService
+local ShopService = Remotes.Client.ShopService
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
@@ -407,6 +408,15 @@ local function SetupSettings()
 	end)
 end
 
+local function SetupShop()
+	if not Menu then return end
+	local Shop = Base.Windows.Shop
+
+	Shop.All.Scroller.RainBananaPeels.Button.Activated:Connect(function()
+		ShopService:RequestBuyGlobalEvent("RainBananaPeels")
+	end)
+end
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -579,8 +589,9 @@ function MainMenuUI.Setup(Gui: ScreenGui)
 	task.wait(1)
 
 	SetupBasics()
-	SetupSkills()
+	SetupShop()
 	SetupStuff()
+	SetupSkills()
 	SetupSettings()
 
 	TestViewportDummy()
