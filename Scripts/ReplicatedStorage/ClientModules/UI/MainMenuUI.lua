@@ -101,7 +101,7 @@ local function UpdateBase()
 	}
 
 	-- Update which window is open
-	for _, Window in Base.Windows:GetChildren() do
+	for _, Window in Base.Tabs:GetChildren() do
 		if not Window then continue end
 		Window.Visible = Window.Name == CurrentTab
 	end
@@ -231,7 +231,7 @@ end
 local function TestViewportDummy()
 	if not Menu then return end
 
-	local Frame = Menu.Base.Windows.Stuff:FindFirstChild("Frame")
+	local Frame = Menu.Base.Tabs.Stuff:FindFirstChild("Frame")
 	if not Frame then return end
 
 	local Dummy = ReplicatedStorage.Assets.Other.AnimDummy:Clone()
@@ -299,7 +299,7 @@ end
 -- Stuff window
 local function SetupStuff()
 	if not Menu then return end
-	local Stuff = Base.Windows.Stuff
+	local Stuff = Base.Tabs.Stuff
 	
 	-- Wire sub tabs
 	local SubTabs: {[string]: any} = {}
@@ -332,7 +332,7 @@ end
 -- Skills window
 local function SetupSkills()
 	-- Wire tab buttosn
-	for _, Frame in Base.Windows.Skills.List:GetChildren() do
+	for _, Frame in Base.Tabs.Skills.List:GetChildren() do
 		if not Frame:IsA("Frame") then continue end
 
 		Frame.Right.Plus.AutoButtonColor = false
@@ -354,7 +354,7 @@ end
 -- Settings window
 local function SetupSettings()
 	if not Menu then return end
-	local Settings = Base.Windows.Settings
+	local Settings = Base.Tabs.Settings
 
 	local TimerFormatSwitch = Settings.Box.Scroller.TimerFormat.Switch
 
@@ -410,7 +410,7 @@ end
 
 local function SetupShop()
 	if not Menu then return end
-	local Shop = Base.Windows.Shop
+	local Shop = Base.Tabs.Shop
 
 	Shop.All.Scroller.RainBananaPeels.Button.Activated:Connect(function()
 		ShopService:RequestBuyGlobalEvent("RainBananaPeels")
@@ -425,7 +425,7 @@ function MainMenuUI.UpdateStuff_NPC()
 	local PData = PlayerInfo.Data
 	if not PData then return end
 
-	local Stuff = Base.Windows.Stuff
+	local Stuff = Base.Tabs.Stuff
 
 	local TotalCells = 0
 	for Name, Data in PData.NPCs do
@@ -510,7 +510,7 @@ function MainMenuUI.UpdateStuff_Stickers()
 	local PData = PlayerInfo.Data
 	if not PData then return end
 
-	local Stuff = Base.Windows.Stuff
+	local Stuff = Base.Tabs.Stuff
 
 	local TotalCells = 0
 	for Name, Data in PData.Stickers do
@@ -551,9 +551,9 @@ function MainMenuUI.UpdateSkills()
 	local Points = PlayerInfo.Data.SkillPoints
 
 		-- Update skill points left
-	Base.Windows.Skills.Info.PointsLeft.Text = Points
+	Base.Tabs.Skills.Info.PointsLeft.Text = Points
 	
-	for _, Frame in Base.Windows.Skills.List:GetChildren() do
+	for _, Frame in Base.Tabs.Skills.List:GetChildren() do
 		if not Frame:IsA("Frame") then continue end
 		
 		local Skill = PlayerInfo.Data.Skills[Frame.Name]

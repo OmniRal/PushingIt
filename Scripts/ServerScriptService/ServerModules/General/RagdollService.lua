@@ -396,6 +396,27 @@ function RagdollService.SetRagdoll_R6(Model: Model)
     SetCollisions(Model, RagdollCollisions)
 	local OriginalCFrame = Model:GetPivot()
 
+	if ServerGlobalValues.NPCs_TestMode then
+		local Attach0 = Instance.new("Attachment")
+		Attach0.Name = "A0"
+		Attach0.Position = Vector3.new(0, 1, 0)
+		Attach0.Parent = Root
+
+		local Attach1 = Instance.new("Attachment")
+		Attach1.Name = "A1"
+		Attach1.Position = Vector3.new(0, -1, 0)
+		Attach1.Parent = Root
+
+		local Trail = Instance.new("Trail")
+		Trail.Attachment0 = Attach0
+		Trail.Attachment1 = Attach1
+		Trail.Brightness = 2
+		Trail.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(1, 1)}
+		Trail.FaceCamera = true
+		Trail.Lifetime = 15
+		Trail.Parent = Root
+	end
+
     Model:SetAttribute("Ragdoll", false)
     Model:GetAttributeChangedSignal("Ragdoll"):Connect(function()
         local Toggle = Model:GetAttribute("Ragdoll")
