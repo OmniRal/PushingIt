@@ -24,4 +24,10 @@ StickerInfo["Bolt"] = {ID = 75880762057830, FlavorText = "Test", Difficulty = 1}
 StickerInfo["Green Apple"] = {ID = 104376350963703, FlavorText = "Test", Difficulty = 1} -- The Beatles' own record label (Apple Corps / Apple Records)
 StickerInfo["The Gun"] = {ID = 99502942848633, FlavorText = "Test", Difficulty = 1} -- Artillery gun
 
+StickerInfo["Crown"] = {ID = 131149469130566, FlavorText = "Test", Difficulty = 1} -- Reference to the crown Ben wore with his old look
+StickerInfo["Knight"] = {ID = 87046531940284, FlavorText = "Test", Difficulty = 1} -- Reference to me being a knight primarily for my look
+StickerInfo["Cactus"] = {ID = 75490219230199, FlavorText = "Test", Difficulty = 1} -- Reference to your old cactus look
+StickerInfo["Prism"] = {ID = 127260135899288, FlavorText = "Test", Difficulty = 1} -- Pink Floyd
+StickerInfo["Zeppelin"] = {ID = 114982453115954, FlavorText = "Test", Difficulty = 1} -- Led Zeppelin
+
 return StickerInfo
