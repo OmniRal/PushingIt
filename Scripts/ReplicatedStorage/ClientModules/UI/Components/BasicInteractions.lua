@@ -122,7 +122,7 @@ function BasicInteractions.AddButton(
 	ToggleFromActivation: boolean?,
 	ControlOnIndependently: boolean?,
 	DraggableElement: any?,
-	DragCondition: (() -> (boolean))?,
+	DragCondition: ((...any) -> (boolean))?,
 	StartDrag: ((any) -> ())?,
 	Dragging: ((UDim2, Vector3, Vector3) -> ())?,
 	StopDrag: ((GuiObject) -> ())?,
@@ -171,6 +171,7 @@ function BasicInteractions.AddButton(
 		Button:SetAttribute("Hover", false) 
 	end)
 	
+	local DragStartComplete = false
 	Button.InputBegan:Connect(function(Input: InputObject)
 		if Button:GetAttribute("Locked") then return end
 		if Input.UserInputType ~= Enum.UserInputType.MouseButton1 and Input.UserInputType ~= Enum.UserInputType.Touch then return end
@@ -187,11 +188,14 @@ function BasicInteractions.AddButton(
 			DragHandler = UserInputService.InputChanged:Connect(function(MoveInput: InputObject)
 				if MoveInput.UserInputType ~= Enum.UserInputType.MouseMovement and MoveInput.UserInputType ~= Enum.UserInputType.Touch then return end
 				if not Dragging or not Button:GetAttribute("Dragging") then return end
+				if not DragStartComplete and StartDrag then return end
 				Dragging(ElementPosition, DragStart, MoveInput.Position)
 			end)
 			
 			if not StartDrag then return end
 			StartDrag(DraggableElement)
+			ElementPosition = DraggableElement.Position
+			DragStartComplete = true
 		end
 		
 		-- Disconnect when the player releases the button
