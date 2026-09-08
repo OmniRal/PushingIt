@@ -56,6 +56,8 @@ end
 -- @Range = The min and max value that the slider represents
 -- @Increments = How many pieces Range (must exist) should be cut up in
 -- @StartValue = Moves the slider to this start value
+-- @EndFn - Runs after the slider is released
+-- @IntegersOnly = If TRUE, all the increments will be whole numbers
 function DragSlider.Set(Slider: Frame, Fn: (number, ...any) -> (...any), Range: NumberRange, Increments: number?, StartValue: number?, EndFn: (...any) -> (...any)?, IntegersOnly: boolean?)
 	local Bar = Slider:FindFirstChild("Bar") :: Frame
 	if not Bar then warn("Missing Bar in Slider!") return end
@@ -97,7 +99,7 @@ function DragSlider.Set(Slider: Frame, Fn: (number, ...any) -> (...any), Range: 
 	end
 	
 	local function MoveSliderHere(ThisValue: number)
-		local Percent = ThisValue / Range.Max
+		local Percent = ThisValue / (Range.Max - Range.Min)
 		local Pos = math.round(Line.AbsoluteSize.X) * Percent
 		if not Range or not Increments then
 			Button.Position = UDim2.new(0, Pos, 0.5, 0)
@@ -137,7 +139,7 @@ function DragSlider.Set(Slider: Frame, Fn: (number, ...any) -> (...any), Range: 
 
 			if not Val then Revert = true; end
 			if Val and (Val < Range.Min or Val > Range.Max) then Revert = true; end
-			if IntegersOnly and string.match(TextBar.Box.Text, "^%d+$") then Revert = true; end
+			if IntegersOnly and not string.match(TextBar.Box.Text, "^%d+$") then Revert = true; end
 
 			if not Revert then
 				-- Make sure it's a number with no decimals
@@ -169,7 +171,7 @@ function DragSlider.Set(Slider: Frame, Fn: (number, ...any) -> (...any), Range: 
 
 		local Revert = false
 		if Val and (Val < Range.Min or Val > Range.Max) then Revert = true; end
-		if IntegersOnly and string.match(TextBar.Box.Text, "^%d+$") then Revert = true; end
+		if IntegersOnly and not string.match(Val, "^%d+$") then Revert = true; end
 
 		if not Revert then
 			MoveSliderHere(Val)

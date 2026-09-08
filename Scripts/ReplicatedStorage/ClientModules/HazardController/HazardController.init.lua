@@ -62,7 +62,14 @@ local function ReplaceHazardModels()
 			ChosenModel = Assets.Hazards:FindFirstChild("Breakable")
 		end
 
-		if not ChosenModel then continue end
+		if not ChosenModel then
+			-- Model is not going to be replaced
+			if not ChosenModule then continue end
+			if not Modules[ChosenModule] then continue end
+			if not Modules[ChosenModule].Setup then continue end
+			Modules[ChosenModule].Setup(Replace)
+			continue 
+		end
 		
 		local PlaceHere: CFrame
 		if Replace:IsA("BasePart") then

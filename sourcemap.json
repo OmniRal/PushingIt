@@ -224,6 +224,14 @@
 											]
 										},
 										{
+											"name": "BounceUmbrella",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/HazardController/BounceUmbrella.lua"
+											]
+										},
+										{
 											"name": "Breakable",
 											"className": "ModuleScript",
 											"children": [],
@@ -8096,6 +8104,14 @@
 													"children": [],
 													"filePaths": [
 														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceDoor.lua"
+													]
+												},
+												{
+													"name": "BounceUmbrella",
+													"className": "ModuleScript",
+													"children": [],
+													"filePaths": [
+														"Scripts/ServerScriptService/ServerModules/General/HazardService/BounceUmbrella.lua"
 													]
 												},
 												{
