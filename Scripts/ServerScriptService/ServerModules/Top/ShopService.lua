@@ -51,7 +51,7 @@ local function ProcessReceipt(Info)
 	for Name, Data in ShopInfo do
 		if not Name or not Data then continue end
 		if Data.Category == "GlobalEvents" then
-			EventService.RunEvent(Name)
+			EventService.RunEvent(Name, ThisPlayer)
 		end
 	end
 

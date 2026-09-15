@@ -322,6 +322,14 @@
 											]
 										},
 										{
+											"name": "EventDisplayUI",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/ClientModules/UI/EventDisplayUI.lua"
+											]
+										},
+										{
 											"name": "GeneralUILibrary",
 											"className": "ModuleScript",
 											"children": [],

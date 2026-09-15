@@ -1,7 +1,7 @@
 -- OmniRal
 
 export type NPCRariry = "Common" | "Rare" | "Epic" | "Legendary" | "Mythical"
-export type NPCMovement = "Stationary" | "Roam" | "RoamRandom"
+export type NPCMovement = "Stationary" | "Roam" | "RoamRandom" | "SingleNodePath"
 
 local SkinTones = {
 	Pale = Color3.fromRGB(242, 232, 193),

@@ -19,6 +19,7 @@ local Workspace = game:GetService("Workspace")
 
 local New = require(ReplicatedStorage.Source.Pronghorn.New)
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
 local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
@@ -35,7 +36,7 @@ local RagdollService = require(ServerScriptService.Source.ServerModules.General.
 local USE_DEFAULT = false -- Set this to TRUE when you want all NPCs to spawn as the one below
 local DEFAULT_NPC = {Rarity = "Common", Name = "JohnDink"} -- Change this to test a specific NPC
 
-local MAX_NPCS = 2 -- How many can be on the map any given time
+local MAX_NPCS = 1 -- How many can be on the map any given time
 
 local KEEP_NODES = false -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
@@ -75,11 +76,14 @@ local NPCs: {
         GoalPoint: CFrame, -- Which point the NPC should walk to
         ReachedPoint: false, -- If they've reached that point
         GoToNextPointAt: number,  -- After reaching the point, pick when to walk to a new point
+		NodeNum: number,
+		NodePath: {},
         
         Dead: boolean,
     }
 } = {}
 
+local TotalNodes = 0
 local Nodes: {
     [string]: {Pos: Vector3, Connections: {string}}
 } = {}
@@ -163,6 +167,7 @@ local function GetPathNodes()
 		end
 	end
 
+	TotalNodes = #List
 	warn(Nodes)
 
     -- Destroy all the nodes in workspace
@@ -198,6 +203,86 @@ local function PickNodeFromConnections(Node: string): string
     local Data = Nodes[Node]
 
     return Data.Connections[RNG:NextInteger(1, #Data.Connections)]
+end
+
+local function PickRandomGoal(Avoid: number?): string
+	local RandIndex = 1
+	for _ = 1, 10 do
+		RandIndex = RNG:NextInteger(1, TotalNodes)
+		if RandIndex == Avoid then continue end
+		break
+	end
+
+	return "N_" .. RandIndex
+end
+
+local function FindPath(Start: string, Goal: string): (boolean, {string}?)
+	-- This contains scores for each node
+	local ScoreList: {[string]: {G: number, H: number, F: number}} = {
+		[Start] = {
+			G = 0, 
+			H = (Nodes[Start].Pos - Nodes[Goal].Pos).Magnitude, 
+			F = (Nodes[Start].Pos - Nodes[Goal].Pos).Magnitude
+		}
+	}
+
+	local Open: {string} = {Start}
+	local Closed: {string} = {}
+	local CameFrom: {[string]: string} = {}
+
+	while #Open > 0 do
+		task.wait()
+
+		local Current = Open[1]
+		local Index = 1
+
+		for n, Node in ipairs(Open) do
+			if ScoreList[Node].F < ScoreList[Current].F then continue end
+			Current = Node
+			Index = n
+		end
+		
+		-- If the goal is reached, walk backward on it
+		if Current == Goal then
+			local Path: {string} = {Current}
+			while CameFrom[Current] do
+				Current = CameFrom[Current]
+				table.insert(Path, 1, Current)
+			end
+
+			return true, Path
+		end
+
+		-- Current moves from Open to Closed
+		table.remove(Open, Index)
+		table.insert(Closed, Current)
+
+		-- Check through connections
+		for _, Connection in Nodes[Current].Connections do
+			if table.insert(Closed, Connection) then continue end
+
+			local PotentialG = ScoreList[Current].G + (Nodes[Current].Pos - Nodes[Connection].Pos).Magnitude
+
+			local IsNew = not ScoreList[Connection]
+			local FoundBetter = IsNew or PotentialG < ScoreList[Connection].G
+
+			if not FoundBetter then continue end
+
+			CameFrom[Connection] = Current
+
+			local H = (Nodes[Connection].Pos - Nodes[Goal].Pos).Magnitude
+			ScoreList[Connection] = {
+				G = PotentialG,
+				H = H,
+				F = PotentialG + H
+			}
+
+			if table.find(Open, Connection) then continue end
+			table.insert(Open, Connection)
+		end
+	end
+
+	return false
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -330,6 +415,8 @@ function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRarir
         GoalPoint = GoalPoint,
         ReachedPoint = true,
         GoToNextPointAt = 0,
+		NodeNum = 0,
+		NodePath = {},
         
         Dead = false,
     }
@@ -443,7 +530,7 @@ function NPCService.Run()
 
     RunThread = task.spawn(function()
         while true do
-            task.wait(1)
+            task.wait()
 
 			local TotalNPCs = 0
 
@@ -462,14 +549,55 @@ function NPCService.Run()
 
 				-- Handle NPC movement
                 if Data.ReachedPoint then
-                    if os.clock() < Data.GoToNextPointAt then continue end
                     
-					-- Pick node
-                    local NextNode = PickNodeFromConnections(Data.GoalNode)
-                    Data.GoalNode = NextNode
-                    Data.GoalPoint = Nodes[NextNode].Pos
-                    Data.ReachedPoint = false
-                    Data.Human:MoveTo(Data.GoalPoint)
+					if Data.Movement == "NodeToNode" then
+						-- Pick a random connection from this node
+						if os.clock() < Data.GoToNextPointAt then continue end
+						local NextNode = PickNodeFromConnections(Data.GoalNode)
+						Data.GoalNode = NextNode
+						Data.GoalPoint = Nodes[NextNode].Pos
+						Data.ReachedPoint = false
+						Data.Human:MoveTo(Data.GoalPoint)
+					
+					else
+						-- Continue moving through a specific path
+						if Data.NodeNum > #Data.NodePath or #Data.NodePath <= 0 then
+							-- Reached
+							local CurrntNode = Data.NodePath[Data.NodeNum] or FindClosestNode(Model:GetPivot().Position)
+							local NodeID = tonumber(string.sub(CurrntNode, 3, string.len(CurrntNode)))
+
+							-- Reset old path values
+							Data.NodeNum = 1
+							table.clear(Data.NodePath)
+
+							local NewGoal = nil
+							local NewPath = {}
+							
+							-- Make sure there's a new goal
+							while not NewGoal do
+								local GotGoal = PickRandomGoal(NodeID)
+								if GotGoal then
+									NewGoal = GotGoal
+									Utility.CreateDot(CFrame.new(Nodes[NewGoal].Pos), Vector3.new(2, 100, 2), Enum.PartType.Block, Color3.fromRGB(255, 0, 0))
+								end
+								task.wait()
+							end
+
+							-- Make sure there's a new path
+							while #NewPath <= 0 do
+								local _, GotPath = FindPath(CurrntNode, NewGoal)
+								if GotPath then
+									NewPath = GotPath
+								end
+								task.wait()
+							end
+
+							Data.NodePath = NewPath
+							Data.GoalPoint = Nodes[NewPath[1]].Pos -- Move to the first one
+						end
+						
+						Data.ReachedPoint = false
+					end
 
                 else
 					-- Move NPC here
@@ -478,9 +606,16 @@ function NPCService.Run()
                     local Distance = (Model:GetPivot().Position - Data.GoalPoint).Magnitude
                     if Distance > 5 then continue end
 
-					-- Once they get close, pick a new node
                     Data.ReachedPoint = true
-                    Data.GoToNextPointAt = os.clock() + RNG:NextInteger(1, 3)
+
+					if Data.Movement == "NodeToNode" then
+						-- Once they get close, pick a new node
+                    	Data.GoToNextPointAt = os.clock() + RNG:NextInteger(1, 3)
+					elseif Data.Movement == "Roam" then
+						Data.NodeNum += 1
+						if Data.NodeNum > #Data.NodePath then continue end
+						Data.GoalPoint = Nodes[Data.NodePath[Data.NodeNum]].Pos
+					end
                 end
             end
 

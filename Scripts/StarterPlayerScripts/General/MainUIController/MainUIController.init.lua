@@ -13,7 +13,6 @@ local StarterPlayer = game:GetService("StarterPlayer")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 --local TweenService = game:GetService("TweenService")
---local TweenService = game:GetService("TweenService")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -31,8 +30,9 @@ local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.Playe
 local TimerUI = require(ReplicatedStorage.Source.ClientModules.UI.TimerUI)
 local AimerUI = require(ReplicatedStorage.Source.ClientModules.UI.AimerUI)
 local MainMenuUI = require(ReplicatedStorage.Source.ClientModules.UI.MainMenuUI)
-local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
 local PushChargeBarUI = require(ReplicatedStorage.Source.ClientModules.UI.PushChargeBarUI)
+local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDisplayUI)
+local EventDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.EventDisplayUI)
 local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
 local ModalWindowUI = require(ReplicatedStorage.Source.ClientModules.UI.ModalWindowUI)
 
@@ -123,6 +123,7 @@ local function SetupGui()
 	AimerUI.Setup(Gui)
 	MainMenuUI.Setup(Gui)
     ScoreDisplayUI.Setup(Gui)
+	EventDisplayUI.Setup(Gui)
 	PushChargeBarUI.Setup(Gui)
 	ErrorMessageUI.Setup(Gui)
 	ModalWindowUI.Setup(Gui)
