@@ -197,7 +197,7 @@ end
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Set up ragdoll stuff for a model.
-function RagdollService.SetRagdoll(Model: Model)
+function RagdollService.SetRagdoll(Model: Model, ThisCollisionGroup: string?)
     if not Model then return end
     local Human, Root = Model:FindFirstChild("Humanoid") :: Humanoid, Model:FindFirstChild("HumanoidRootPart")
     if not Human or not Root then return end
@@ -339,7 +339,7 @@ function RagdollService.SetRagdoll(Model: Model)
     end)
 end
 
-function RagdollService.SetRagdoll_R6(Model: Model)
+function RagdollService.SetRagdoll_R6(Model: Model, ThisCollisionGroup: string?)
     if not Model then return end
     local Human, Root = Model:FindFirstChild("Humanoid") :: Humanoid, Model:FindFirstChild("HumanoidRootPart")
     if not Human or not Root then return end
@@ -415,6 +415,14 @@ function RagdollService.SetRagdoll_R6(Model: Model)
 		Trail.FaceCamera = true
 		Trail.Lifetime = 15
 		Trail.Parent = Root
+	end
+
+	if ThisCollisionGroup then
+		for _, Part in Model:GetChildren() do
+			if not Part then continue end
+			if not Part:IsA("BasePart") then continue end
+			Part.CollisionGroup = ThisCollisionGroup
+		end
 	end
 
     Model:SetAttribute("Ragdoll", false)

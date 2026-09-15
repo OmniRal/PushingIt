@@ -36,7 +36,7 @@ local RagdollService = require(ServerScriptService.Source.ServerModules.General.
 local USE_DEFAULT = false -- Set this to TRUE when you want all NPCs to spawn as the one below
 local DEFAULT_NPC = {Rarity = "Common", Name = "JohnDink"} -- Change this to test a specific NPC
 
-local MAX_NPCS = 1 -- How many can be on the map any given time
+local MAX_NPCS = 10 -- How many can be on the map any given time
 
 local KEEP_NODES = false -- If TRUE, the NPC nodes will remain in game instead of being destroyed
 
@@ -237,7 +237,7 @@ local function FindPath(Start: string, Goal: string): (boolean, {string}?)
 		local Index = 1
 
 		for n, Node in ipairs(Open) do
-			if ScoreList[Node].F < ScoreList[Current].F then continue end
+			if ScoreList[Node].F >= ScoreList[Current].F then continue end
 			Current = Node
 			Index = n
 		end
@@ -259,7 +259,7 @@ local function FindPath(Start: string, Goal: string): (boolean, {string}?)
 
 		-- Check through connections
 		for _, Connection in Nodes[Current].Connections do
-			if table.insert(Closed, Connection) then continue end
+			if table.find(Closed, Connection) then continue end
 
 			local PotentialG = ScoreList[Current].G + (Nodes[Current].Pos - Nodes[Connection].Pos).Magnitude
 
@@ -387,15 +387,16 @@ function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRarir
     NewNPC:AddTag("NPC")
     NewNPC.Parent = NPCFolder
 
+	
     local Success, Error = pcall(function() 
         NewNPC.Humanoid:ApplyDescriptionAsync(Description)
     end)
-
+	
     if not Success then
         warn(Error)
         return
     end
-
+	
     NewNPC:PivotTo(ThisPoint)
 
 	-- Give the NPC a starting node to move to
@@ -482,9 +483,9 @@ function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRarir
 
 	-- Set up ragdoll type
 	if not SharedGlobalValues.NPC_Use_R6 then
-    	RagdollService.SetRagdoll(NewNPC)
+    	RagdollService.SetRagdoll(NewNPC, "NPCs")
 	else
-		RagdollService.SetRagdoll_R6(NewNPC)
+		RagdollService.SetRagdoll_R6(NewNPC, "NPCs")
 	end
 
 	task.defer(function()
@@ -530,7 +531,7 @@ function NPCService.Run()
 
     RunThread = task.spawn(function()
         while true do
-            task.wait()
+            task.wait(1)
 
 			local TotalNPCs = 0
 
@@ -578,7 +579,7 @@ function NPCService.Run()
 								local GotGoal = PickRandomGoal(NodeID)
 								if GotGoal then
 									NewGoal = GotGoal
-									Utility.CreateDot(CFrame.new(Nodes[NewGoal].Pos), Vector3.new(2, 100, 2), Enum.PartType.Block, Color3.fromRGB(255, 0, 0))
+									--Utility.CreateDot(CFrame.new(Nodes[NewGoal].Pos), Vector3.new(2, 100, 2), Enum.PartType.Block, Color3.fromRGB(255, 0, 0))
 								end
 								task.wait()
 							end

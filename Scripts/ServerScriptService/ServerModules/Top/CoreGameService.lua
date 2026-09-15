@@ -106,6 +106,7 @@ end
 
 local function SetupCollisions()
     PhysicsService:RegisterCollisionGroup("Players")
+	PhysicsService:RegisterCollisionGroup("NPCs")
     PhysicsService:RegisterCollisionGroup("NoClip")
 	PhysicsService:RegisterCollisionGroup("Debris")
 
@@ -115,6 +116,11 @@ local function SetupCollisions()
 
     PhysicsService:CollisionGroupSetCollidable("Players", "Players", true)
     PhysicsService:CollisionGroupSetCollidable("Players", "Debris", false)
+
+	PhysicsService:CollisionGroupSetCollidable("Players", "NPCs", true)
+	PhysicsService:CollisionGroupSetCollidable("NPCs", "NPCs", false)
+	PhysicsService:CollisionGroupSetCollidable("NoClip", "NPCs", false)
+	PhysicsService:CollisionGroupSetCollidable("Debris", "NPCs", false)
 end
 
 local function ToggleParticles(Player: Player, Parts: {BasePart}, Particles: {{Name: string, Set: boolean}})
