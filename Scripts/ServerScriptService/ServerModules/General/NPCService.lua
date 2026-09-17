@@ -496,15 +496,11 @@ function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRarir
 
 		local IdleAnim = Instance.new("Animation")
 		IdleAnim.AnimationId = "rbxassetid://" .. Info.IdleAnimID
-		local WalkAnim = Instance.new("Animation")
-		WalkAnim.AnimationId = "rbxassetid://" .. Info.WalkAnimID
 		local RunAnim = Instance.new("Animation")
 		RunAnim.AnimationId = "rbxassetid://" .. Info.RunAnimID
 
 		local IdleTrack = NewNPC.Humanoid.Animator:LoadAnimation(IdleAnim)
 		IdleTrack.Looped = true
-		local WalkTrack = NewNPC.Humanoid.Animator:LoadAnimation(WalkAnim)
-		WalkTrack.Looped = true
 		local RunTrack = NewNPC.Humanoid.Animator:LoadAnimation(RunAnim)
 		RunTrack.Looped = true
 

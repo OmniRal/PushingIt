@@ -474,7 +474,7 @@ function MainMenuUI.UpdateStuff_NPC()
 
 			Description.Parent = NewNPC
 
-			Frame.Container.Title.NoobName.Text = Info.FirstName .. " " .. Info.LastName
+			Frame.Container.Title.NoobName.Text = Info.DisplayName
 			Frame.Container.Title.RarityName.Text = ThisRarity
 			Frame.Container.Title.BackgroundColor3 = ColorPalette[ThisRarity].RGB
 

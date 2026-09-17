@@ -585,14 +585,6 @@
 											]
 										},
 										{
-											"name": "NPCInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/NPCInfo.lua"
-											]
-										},
-										{
 											"name": "ObjectInfo",
 											"className": "ModuleScript",
 											"children": [],
