@@ -29,8 +29,8 @@ local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local Util_UI = require(ReplicatedStorage.Source.SharedModules.General.Utility.UI)
 
-local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
+local NPCInfo
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -573,6 +573,11 @@ function MainMenuUI.UpdateSkills()
 end
 
 function MainMenuUI.Setup(Gui: ScreenGui)
+	local NPCInfo_Module = ReplicatedStorage.Source.SharedModules.Info:FindFirstChild("NPCInfo") :: ModuleScript
+	if not NPCInfo_Module then return end
+	
+	NPCInfo = require(NPCInfo_Module)
+
 	if not Gui then return end
 
 	Menu = Gui:FindFirstChild("Menu")

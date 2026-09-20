@@ -25,8 +25,8 @@ local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 local Roll = require(ReplicatedStorage.Source.SharedModules.General.Utility.Roll)
-local NPCInfo = require(ReplicatedStorage.Source.SharedModules.Info.NPCInfo)
 local RagdollService = require(ServerScriptService.Source.ServerModules.General.RagdollService)
+local NPCInfo
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ local NPCList: {
 local NPCs: {
     [Model]: {
         Name: string,
-        Movement: NPCInfo.NPCMovement,
+        Movement: string,
 
         Human: Humanoid,
 
@@ -305,7 +305,7 @@ end
 -- @ThisPoint = Where to spawn; can be a CFrame or a spawn points name
 -- @Rarity = Which rarity of NPC it should pick from
 -- @Name = Optionally spawn in a very specific NPC
-function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: NPCInfo.NPCRariry?, Name: string?)
+function NPCService.Spawn(ThisPoint: CFrame? | string?, Rarity: string?, Name: string?)
     if not ThisPoint then
 		-- Pick a random spawn from the cached list
 		
@@ -624,6 +624,10 @@ function NPCService.Run()
 end
 
 function NPCService:Init()
+	local NPCInfo_Module = ReplicatedStorage.Source.SharedModules.Info:FindFirstChild("NPCInfo") :: ModuleScript
+	if not NPCInfo_Module then return end
+	
+	NPCInfo = require(NPCInfo_Module)
     NPCFolder = New.Instance("Folder", "NPCs", Workspace)
 
 	Remotes.Server:CreateToServer("RequestNormalNPCVoiceline", {"Model"}, "Unreliable", function(Player: Player, ThisNPC: Model)

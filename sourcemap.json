@@ -8331,6 +8331,14 @@
 											]
 										},
 										{
+											"name": "LeaderboardService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Top/LeaderboardService.lua"
+											]
+										},
+										{
 											"name": "ServerGlobalValues",
 											"className": "ModuleScript",
 											"children": [],

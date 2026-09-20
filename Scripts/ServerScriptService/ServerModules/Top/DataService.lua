@@ -23,6 +23,7 @@ local Workspace = game:GetService("Workspace")
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 local ProfileService = require(ServerScriptService.Source.ProfileService)
+local LeaderboardService = require(ServerScriptService.Source.ServerModules.Top.LeaderboardService)
 
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
@@ -30,6 +31,8 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local LEADERBOARD_STATS_REFRESH_RATE = 15
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -48,8 +51,13 @@ local ProfileTemplate = {
 	LastLoggedIn = 0,
 	
 	PlayStats = {
-		TimerRecord = 0,
-		PlayTime = 0
+		PlayTime = 0,
+		Pushes = 0,
+		NPCPushes = 0,
+		PlayerPushes = 0,
+		TimeNotPushed = 0,
+		HighestScore = 0,
+		RobuxSpent = 0,
 	},
 	
 	XP = 0,
@@ -90,7 +98,7 @@ local ProfileTemplate = {
 	}
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_48', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_49', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -278,6 +286,17 @@ local function RequestChangeSetting(Player: Player, ThisSetting: string, Value: 
 	end
 
 	return Success, PData.Settings[ThisSetting]
+end
+
+local function SavePlayerLeaderstats(Player: Player)
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return end
+
+	for Key, Value in PData.PlayStats do
+		if Key == "PlayTime" then continue end -- Ignore these ones
+		LeaderboardService.UpdateStat(Player, Key, Value)
+	end
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -510,24 +529,32 @@ function DataService:Init()
 	end]]
 
 	self.ProfileReady = true
-
-	print("Data Service Init...")
 end
 
 function DataService:Deferred()
 	self.ServiceReady = true
+
+	while true do
+		task.wait(LEADERBOARD_STATS_REFRESH_RATE)
+
+		for _, Player in Players:GetPlayers() do
+			if not Player then continue end
+			SavePlayerLeaderstats(Player)
+		end
+	end
 	
-	print("Data Service Deferred...")
 end
 
 function DataService.PlayerAdded(Player: Player)
 	task.spawn(function()
 		PlayerAdded(Player)
+		SavePlayerLeaderstats(Player)
 	end)
 end
 
 function DataService.PlayerRemoving(Player: Player)
 	task.spawn(function()
+		SavePlayerLeaderstats(Player)
 		PlayerRemoving(Player)
 	end)
 end
