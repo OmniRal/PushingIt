@@ -20,6 +20,7 @@ local TweenService = game:GetService("TweenService")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
+local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local LevelXPCurve = require(ReplicatedStorage.Source.SharedModules.General.Utility.LevelXPCurve)
 
 --local CustomEnum = require(ReplicatedStorage.Source.SharedModules.Info.CustomEnum)
@@ -243,13 +244,9 @@ function MainUIController:Deferred()
         print("Main UI Controller Device ", DeviceController.CurrentDevice:Get())
     end)
 
-	while true do
-		task.wait()
-		if not Remotes.Client.DataService or not Remotes.Client.PushService then continue end
-		DataService = Remotes.Client.DataService
-		PushService = Remotes.Client.PushService
-		break
-	end
+	Utility.CheckRemotesLoaded({"DataService", "PushService"})
+	DataService = Remotes.Client.DataService
+	PushService = Remotes.Client.PushService
 
 	DataService.FullDataUpdate:Connect(function()
 		task.defer(function() MainUIController.UpdateAllUI() end)

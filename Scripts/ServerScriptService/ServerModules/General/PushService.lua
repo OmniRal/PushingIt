@@ -258,6 +258,7 @@ function PushService.AttemptPush(Player: Player, AimDirection: number)
 			task.spawn(function()
 				-- Push player
 				PushService.PushModel(Player, OtherPlayer.Character)
+				DataService.IncrementIndex(Player, {"PlayStats", "PlayerPushes"}, 1, true)
 
 				OtherRoot.AssemblyLinearVelocity = RootCF.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 

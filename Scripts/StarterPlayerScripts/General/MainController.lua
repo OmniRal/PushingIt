@@ -369,15 +369,9 @@ function MainController:Deferred()
         ControlModule = require(GotControlModule)
     end
 
-	--[[while true do
-		task.wait()
-		if not Remotes.Client.DataService or not Remotes.Client.PushService then continue end
-		DataService = Remotes.Client.DataService
-		PushService = Remotes.Client.PushService
-		break
-	end]]
-
 	Utility.CheckRemotesLoaded({"DataService", "PushService"})
+	DataService = Remotes.Client.DataService
+	PushService = Remotes.Client.PushService
 
     DataService.FullDataUpdate:Connect(function(Data: any)
         PlayerInfo.Data = Data

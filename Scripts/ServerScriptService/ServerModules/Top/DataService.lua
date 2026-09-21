@@ -6,6 +6,7 @@ local DataService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -32,7 +33,7 @@ local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local LEADERBOARD_STATS_REFRESH_RATE = 15
+local LEADERBOARD_STATS_REFRESH_RATE = 3
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -352,7 +353,7 @@ function DataService.SetIndex(Player: Player, Index: string | {}, Value: string?
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, Value)
 end
 
-function DataService.IncrementIndex(Player: Player, Index: string, Increment: number, DoNotSendUpdate: boolean?)
+function DataService.IncrementIndex(Player: Player, Index: string | {}, Increment: number, DoNotSendUpdate: boolean?)
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
 	
@@ -392,7 +393,15 @@ function DataService.IncrementIndex(Player: Player, Index: string, Increment: nu
 		return
 	end
 	
-	PData[Index] += Increment
+	if typeof(Index) == "string" then
+		PData[Index] += Increment
+	else
+		local ThisData = PData
+		for n = 1, #Index - 1 do
+			ThisData = ThisData[Index[n]]
+		end
+		ThisData[Index[#Index]] += Increment
+	end
 	
 	if DoNotSendUpdate then return end
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
@@ -458,6 +467,8 @@ function DataService.AddNPCPushCount(Player: Player, NPCName: string)
 	local PData = Profiles[Player].Data
 	if not PData then return end
 	if not PData.NPCs then return end
+
+	PData.PlayStats.NPCPushes += 1
 
 	if not PData.NPCs[NPCName] then
 		-- If the NPC isn't added already, add it
@@ -540,6 +551,12 @@ function DataService:Deferred()
 		for _, Player in Players:GetPlayers() do
 			if not Player then continue end
 			SavePlayerLeaderstats(Player)
+		end
+
+		for _, Board in CollectionService:GetTagged("Leaderboard") do
+			if not Board then continue end
+			if Board:GetAttribute("Stat") == nil then continue end
+			LeaderboardService.UpdateBoard(Board:GetAttribute("Stat"), 100, Board)
 		end
 	end
 	

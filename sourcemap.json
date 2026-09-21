@@ -389,6 +389,14 @@
 									"filePaths": [
 										"Scripts/ReplicatedStorage/ClientModules/UI"
 									]
+								},
+								{
+									"name": "LeaderboardController",
+									"className": "ModuleScript",
+									"children": [],
+									"filePaths": [
+										"Scripts/ReplicatedStorage/ClientModules/LeaderboardController.lua"
+									]
 								}
 							],
 							"filePaths": [
