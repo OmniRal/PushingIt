@@ -6,10 +6,11 @@ local DataService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local CollectionService = game:GetService("CollectionService")
+local BadgeService = game:GetService("BadgeService")
 local Workspace = game:GetService("Workspace")
 --local MarketplaceService = game:GetService("MarketplaceService")
 
@@ -19,15 +20,17 @@ local Workspace = game:GetService("Workspace")
 
 --local ProductInfo = require(ReplicatedStorage.Source.SharedModules.Info.ProductInfo)
 --local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
---local BadgeInfo = require(ReplicatedStorage.Source.SharedModules.Info.BadgeInfo)
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
+
 
 local ProfileService = require(ServerScriptService.Source.ProfileService)
 local LeaderboardService = require(ServerScriptService.Source.ServerModules.Top.LeaderboardService)
 
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
+
+local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -96,13 +99,17 @@ local ProfileTemplate = {
 		MusicVolume = 1,
 		VoiceoversVolume = 1,
 		SoundFXVolume = 1,
-	}
+	},
+
+	Trophies = {},
 }
 
 local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_49', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
+
+local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -407,6 +414,27 @@ function DataService.IncrementIndex(Player: Player, Index: string | {}, Incremen
 	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, Index, PData[Index])
 end
 
+-- Incrememnt progress on a trophy
+function DataService.UpdateTrophyProgress(Player: Player, TrophyName: string, By: number)
+	local PData = Profiles[Player].Data
+    local ThisInfo = TrophyInfo[TrophyName]
+	
+    PData.Trophies[TrophyName].Progress = math.clamp(PData.Trophies[TrophyName].Progress + By, 0, ThisInfo.TimesToComplete)
+	
+    if PData.Trophies[TrophyName].Progress < ThisInfo.TimesToComplete then return end
+	
+	-- Goal reached; save that the player has the trophy
+    local CurrentTime = os.date("*t")
+    PData.Trophies[TrophyName].Complete = true
+    PData.Trophies[TrophyName].Date = CurrentTime.year .. ":" .. CurrentTime.month .. ":" .. CurrentTime.day .. ":" .. CurrentTime.hour .. ":" .. CurrentTime.min
+end
+
+-- Save that the player has claimed the reward from a trophy, and give the reward
+function DataService.ClaimTrophyReward(Player: Player, TrophyName: string)
+	local PData = Profiles[Player].Data
+    PData.Trophies[TrophyName].RewardClaimed = true
+end
+
 function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
@@ -538,6 +566,15 @@ function DataService:Init()
 	Assists = 0,
 	}
 	end]]
+
+	for TrophyName, _ in TrophyInfo do
+        ProfileTemplate.Trophies[TrophyName] = {
+			Complete = false, 
+			Date = "2024:" .. RNG:NextInteger(1, 12) .. ":30:" .. RNG:NextInteger(1, 23) .. ":00", -- Test 
+			Progress = 0, 
+			RewardClaimed = false
+		}
+    end
 
 	self.ProfileReady = true
 end

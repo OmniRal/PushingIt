@@ -253,6 +253,14 @@
 									]
 								},
 								{
+									"name": "LeaderboardController",
+									"className": "ModuleScript",
+									"children": [],
+									"filePaths": [
+										"Scripts/ReplicatedStorage/ClientModules/LeaderboardController.lua"
+									]
+								},
+								{
 									"name": "StickerController",
 									"className": "ModuleScript",
 									"children": [],
@@ -388,14 +396,6 @@
 									],
 									"filePaths": [
 										"Scripts/ReplicatedStorage/ClientModules/UI"
-									]
-								},
-								{
-									"name": "LeaderboardController",
-									"className": "ModuleScript",
-									"children": [],
-									"filePaths": [
-										"Scripts/ReplicatedStorage/ClientModules/LeaderboardController.lua"
 									]
 								}
 							],
@@ -536,14 +536,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "BadgeInfo",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ReplicatedStorage/SharedModules/Info/BadgeInfo.lua"
-											]
-										},
-										{
 											"name": "ColorPalette",
 											"className": "ModuleScript",
 											"children": [],
@@ -622,6 +614,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ReplicatedStorage/SharedModules/Info/StickerInfo.lua"
+											]
+										},
+										{
+											"name": "TrophyInfo",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ReplicatedStorage/SharedModules/Info/TrophyInfo.lua"
 											]
 										}
 									],
@@ -8290,14 +8290,6 @@
 									"className": "Folder",
 									"children": [
 										{
-											"name": "BadgeService",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Player/BadgeService.lua"
-											]
-										},
-										{
 											"name": "CharacterService",
 											"className": "ModuleScript",
 											"children": [],
@@ -8311,6 +8303,14 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Player/PartyService.lua"
+											]
+										},
+										{
+											"name": "TrophyService",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Player/TrophyService.lua"
 											]
 										}
 									],
