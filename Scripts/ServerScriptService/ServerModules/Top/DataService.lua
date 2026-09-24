@@ -23,7 +23,6 @@ local Workspace = game:GetService("Workspace")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
-
 local ProfileService = require(ServerScriptService.Source.ProfileService)
 local LeaderboardService = require(ServerScriptService.Source.ServerModules.Top.LeaderboardService)
 
@@ -104,7 +103,7 @@ local ProfileTemplate = {
 	Trophies = {},
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_49', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_51', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -115,62 +114,7 @@ local RNG = Random.new()
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local function PlayerAdded(Player)
-	while not DataService.ProfileReady or not DataService.ServiceReady do
-		task.wait()
-	end
-	
-	Player:SetAttribute("Joined", os.time())
-	
-	local profile = ProfileStore:LoadProfileAsync("Player_" .. Player.UserId)
-	print("Loaded profile : ", profile)
-	if profile ~= nil then
-		profile:AddUserId(Player.UserId) -- GDPR compliance
-		profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
-		--print("R: ", profile)
-		profile:ListenToRelease(function()
-			Profiles[Player] = nil
-			-- The profile could"ve been loaded on another Roblox server:
-			Player:Kick("Could not load player data (1)")
-		end)
-		
-		if Player:IsDescendantOf(Players) == true then
-			Profiles[Player] = profile
-			-- A profile has been successfully loaded:
-			profile.Data.LogInTimes += 1
-			profile.Data.LastLoggedIn = os.time()
-			
-			Player:SetAttribute("DataLoaded", true)
-			Remotes.Server.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
-		else
-			-- Player left before the profile loaded:
-			profile:Release()
-		end
-	else
-		-- The profile couldn"t be loaded possibly due to other
-		--   Roblox servers trying to load this profile at the same time:
-		Player:Kick("Could not load player data (2)")
-	end
-end
 
-local function PlayerRemoving(Player: Player)
-	local Profile = Profiles[Player]
-	if not Profile then return end
-
-	local Joined = Player:GetAttribute("Joined")
-	
-	Profile.Data.LoggedInDuration += os.time() - Joined
-
-	if Profile.Data.PVPMode then
-		Profile.Data.SavedTime += os.time() - Profile.Data.LastPVPChange
-	else
-		Profile.Data.SavedTime = 0
-	end
-	
-	warn("SAVED TIME: ", os.time() - Joined)
-	
-	Profile:Release()
-end
 
 --[[function DataService.Client:GetIndex(...)
 return DataService:GetIndex(...)
@@ -296,15 +240,85 @@ local function RequestChangeSetting(Player: Player, ThisSetting: string, Value: 
 	return Success, PData.Settings[ThisSetting]
 end
 
-local function SavePlayerLeaderstats(Player: Player)
+local function SavePlayerLeaderstats(Player: Player, OtherPData: {}?)
 	DataService.WaitForPlayerDataLoaded(Player)
-	local PData = Profiles[Player].Data
+	local PData = Profiles[Player].Data or OtherPData
 	if not PData then return end
+
+	warn("CHECK - ", PData.TimerActive, PData)
+
+	-- Save current timer
+	if PData.TimerActive then
+		warn("TIMER TRUE")
+		local CurrentTime = Workspace:GetServerTimeNow() - PData.TimerStartedAt + PData.SavedTime
+		if math.floor(CurrentTime * 100) > PData.PlayStats.TimeNotPushed then
+			PData.PlayStats.TimeNotPushed = math.floor(CurrentTime * 100)
+		end
+	end
 
 	for Key, Value in PData.PlayStats do
 		if Key == "PlayTime" then continue end -- Ignore these ones
 		LeaderboardService.UpdateStat(Player, Key, Value)
 	end
+end
+
+local function PlayerAdded(Player)
+	while not DataService.ProfileReady or not DataService.ServiceReady do
+		task.wait()
+	end
+	
+	Player:SetAttribute("Joined", os.time())
+	
+	local profile = ProfileStore:LoadProfileAsync("Player_" .. Player.UserId)
+	print("Loaded profile : ", profile)
+	if profile ~= nil then
+		profile:AddUserId(Player.UserId) -- GDPR compliance
+		profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
+		--print("R: ", profile)
+		profile:ListenToRelease(function()
+			Profiles[Player] = nil
+			-- The profile could"ve been loaded on another Roblox server:
+			Player:Kick("Could not load player data (1)")
+		end)
+		
+		if Player:IsDescendantOf(Players) == true then
+			Profiles[Player] = profile
+			-- A profile has been successfully loaded:
+			profile.Data.LogInTimes += 1
+			profile.Data.LastLoggedIn = os.time()
+			
+			Player:SetAttribute("DataLoaded", true)
+			Remotes.Server.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
+		else
+			-- Player left before the profile loaded:
+			profile:Release()
+		end
+	else
+		-- The profile couldn"t be loaded possibly due to other
+		--   Roblox servers trying to load this profile at the same time:
+		Player:Kick("Could not load player data (2)")
+	end
+end
+
+local function PlayerRemoving(Player: Player)
+	local Profile = Profiles[Player]
+	if not Profile then return end
+	local PData = Profiles[Player].Data
+
+	local Joined = Player:GetAttribute("Joined")
+	
+	PData.LoggedInDuration += os.time() - Joined
+
+	if PData.PVPMode then
+		PData.SavedTime += os.time() - PData.LastPVPChange
+	else
+		PData.SavedTime = 0
+	end
+	
+	warn("SAVED TIME: ", os.time() - Joined)
+
+	SavePlayerLeaderstats(Player, PData)
+	Profile:Release()
 end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -442,6 +456,7 @@ function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 
 	-- Make sure player is in PVP mode
 	if not PData.PVPMode then
+		PData.TimerActive = false
 		Player:SetAttribute("TimerActive", false)
 		return 
 	end
@@ -454,6 +469,8 @@ function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 		Player:SetAttribute("SavedTime", 0)
 	end
 
+	PData.TimerActive = true
+	PData.TimerStartedAt = Workspace:GetServerTimeNow()
 	PData.LastPVPChange = os.time()
 	Player:SetAttribute("TimerActive", true)
 	Player:SetAttribute("TimerStartedAt", Workspace:GetServerTimeNow())
@@ -490,12 +507,22 @@ function DataService.StopTimer(Player: Player)
 	Player:SetAttribute("TimerActive", PData.TimerActive)
 end
 
+-- Check if the players current score is higher than their last
+function DataService.CheckUpdateHighestScore(Player: Player, Score: number)
+	DataService.WaitForPlayerDataLoaded(Player)
+	local PData = Profiles[Player].Data
+	if not PData then return end
+	if Score < PData.PlayStats.HighestScore then return end
+	PData.PlayStats.HighestScore = Score
+end
+
 function DataService.AddNPCPushCount(Player: Player, NPCName: string)
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
 	if not PData then return end
 	if not PData.NPCs then return end
 
+	PData.PlayStats.Pushes += 1
 	PData.PlayStats.NPCPushes += 1
 
 	if not PData.NPCs[NPCName] then
@@ -582,21 +609,22 @@ end
 function DataService:Deferred()
 	self.ServiceReady = true
 
-	while true do
-		task.wait(LEADERBOARD_STATS_REFRESH_RATE)
+	task.spawn(function()
+		while true do
+			task.wait(LEADERBOARD_STATS_REFRESH_RATE)
 
-		for _, Player in Players:GetPlayers() do
-			if not Player then continue end
-			SavePlayerLeaderstats(Player)
-		end
+			for _, Player in Players:GetPlayers() do
+				if not Player then continue end
+				SavePlayerLeaderstats(Player)
+			end
 
-		for _, Board in CollectionService:GetTagged("Leaderboard") do
-			if not Board then continue end
-			if Board:GetAttribute("Stat") == nil then continue end
-			LeaderboardService.UpdateBoard(Board:GetAttribute("Stat"), 100, Board)
+			for _, Board in CollectionService:GetTagged("Leaderboard") do
+				if not Board then continue end
+				if Board:GetAttribute("Stat") == nil then continue end
+				LeaderboardService.UpdateBoard(Board:GetAttribute("Stat"), 10, Board)
+			end
 		end
-	end
-	
+	end)
 end
 
 function DataService.PlayerAdded(Player: Player)
@@ -608,7 +636,6 @@ end
 
 function DataService.PlayerRemoving(Player: Player)
 	task.spawn(function()
-		SavePlayerLeaderstats(Player)
 		PlayerRemoving(Player)
 	end)
 end

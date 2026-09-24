@@ -17,7 +17,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
---local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
 local ShopInfo = require(ReplicatedStorage.Source.SharedModules.Info.ShopInfo)
 
 local EventService = require(ServerScriptService.Source.ServerModules.General.EventService)
@@ -70,8 +70,10 @@ function ShopService:Init()
     end)
 
 	Remotes.Server:CreateToServer("RequestBuyGlobalEvent", {"string"}, "Returns", function(Player: Player, ItemName: string)
-		if not ShopInfo[ItemName] then return false end
-		MarketplaceService:PromptProductPurchase(Player, ShopInfo[ItemName].DevProductID)
+		local ThisInfo = ShopInfo[ItemName]
+		if not ThisInfo then return false end
+		MarketplaceService:PromptProductPurchase(Player, ThisInfo.DevProductID)
+		DataService.IncrementIndex(Player, {"PlayStats", "RobuxSpent"}, ThisInfo.RobuxCost, true)
 
 		return true
 	end)

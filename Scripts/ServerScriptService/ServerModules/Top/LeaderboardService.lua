@@ -20,7 +20,7 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local LEADERSTATS_VERSION = "Alpha_1"
+local LEADERSTATS_VERSION = "Alpha_3"
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -102,14 +102,17 @@ function LeaderboardService.UpdateBoard(Key: string, Count: number, ThisBoard: M
 		local NewEntry = Display.Gui.ScrollFrame.OG_Entry:Clone()
 		NewEntry.Name = x
 		NewEntry.Box.Rank.Num.Text = x
-		NewEntry.Box.Value.Text = Data.Value
-		NewEntry.Box.Headshot.PlayerName.Text = Players:GetPlayerByUserId(Data.UserID).Name
+		if Key == "TimeNotPushed" then
+			NewEntry.Box.Value.Text = string.format("%.2f", Data.Value / 100)
+		else
+			NewEntry.Box.Value.Text = Data.Value
+		end
 		NewEntry.Visible = true
 		NewEntry:SetAttribute("UserID", Data.UserID)
 		NewEntry.Parent = Display.Gui.ScrollFrame
 	end
 
-	Display.Gui.ScrollFrame.CanvasSize = UDim2.fromOffset(0, Display.Gui.ScrollFrame.OG_Entry.AbsoluteSize.Y * 100)
+	Display.Gui.ScrollFrame.CanvasSize = UDim2.fromOffset(0, Display.Gui.ScrollFrame.OG_Entry.AbsoluteSize.Y * Count)
 
 	Remotes.Server.LeaderboardService.UpdateBoard:FireAll(ThisBoard)
 end

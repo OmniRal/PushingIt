@@ -400,9 +400,9 @@ local function SetupSettings()
 		VoiceoversVolumeSlider:SetAttribute("SetVal", PlayerInfo.Data.Settings.VoiceoversVolume)
 		SoundFXVolumeSlider:SetAttribute("SetVal", PlayerInfo.Data.Settings.SoundFXVolume)
 
-		warn("Music: ", PlayerInfo.Data.Settings.MusicVolume)
-		warn("Voiceover: ", PlayerInfo.Data.Settings.VoiceoversVolume)
-		warn("Sound FX: ", PlayerInfo.Data.Settings.SoundFXVolume)
+		--warn("Music: ", PlayerInfo.Data.Settings.MusicVolume)
+		--warn("Voiceover: ", PlayerInfo.Data.Settings.VoiceoversVolume)
+		--warn("Sound FX: ", PlayerInfo.Data.Settings.SoundFXVolume)
 
 		SoundService.Music.Volume = PlayerInfo.Data.Settings.MusicVolume
 		SoundService.Voiceovers.Volume = PlayerInfo.Data.Settings.VoiceoversVolume

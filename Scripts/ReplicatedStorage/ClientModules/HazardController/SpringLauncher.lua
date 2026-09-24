@@ -33,7 +33,6 @@ local TweenService = game:GetService("TweenService")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function SpringLauncher.Setup(Original: any, _: CFrame, NicerModel: any)
-	warn(Original)
 	Original.Transparency = 1
 	local BaseCushionCFrame = NicerModel.Cushion.CFrame
 	

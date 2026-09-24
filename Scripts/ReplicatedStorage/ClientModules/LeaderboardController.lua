@@ -36,6 +36,7 @@ local LeaderboardService
 
 local LocalPlayer = Players.LocalPlayer
 local HeadshotCache: {[string]: string} = {}
+local PlayerNameCache: {[string]: string} = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -44,15 +45,29 @@ local HeadshotCache: {[string]: string} = {}
 local function GetHeadshot(UserID: number): (boolean, string)
 	-- Check cache first
 	if HeadshotCache[tostring(UserID)] then return true, HeadshotCache[tostring(UserID)] end
-	local Success, Content = pcall(function()
+	local Success, Result = pcall(function()
 		return Players:GetUserThumbnailAsync(UserID, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 	end)
 	
 	if Success then
-		HeadshotCache[tostring(UserID)] = Content
+		HeadshotCache[tostring(UserID)] = Result
 	end
 
-	return Success, Content or DEFAULT_HEADSHOT
+	return Success, Result or DEFAULT_HEADSHOT
+end
+
+local function GetPlayerName(UserID: number): (boolean, string)
+	-- Check cache first
+	if PlayerNameCache[tostring(UserID)] then return true, PlayerNameCache[tostring(UserID)] end
+	local Success, Result = pcall(function()
+		return Players:GetNameFromUserIdAsync(UserID)
+	end)
+
+	if Success then
+		PlayerNameCache[tostring(UserID)] = Result
+	end
+
+	return Success, Result or "Unknown"
 end
 
 local function UpdateBoard(ThisBoard: Model)
@@ -64,10 +79,14 @@ local function UpdateBoard(ThisBoard: Model)
 		if Entry.Name == "OG_Entry" or Entry.Name == "ListLayout" then continue end
 		local UserID = Entry:GetAttribute("UserID")
 		if UserID == nil then continue end
-		local _, Content = GetHeadshot(UserID)
-		Entry.Box.Headshot.Image = Content
 
-		if UserID ~= LocalPlayer.UserId then return end
+		local _, ThisHeadshot = GetHeadshot(UserID)
+		Entry.Box.Headshot.Image = ThisHeadshot
+
+		local _, ThisPlayerName = GetPlayerName(UserID)
+		Entry.Box.Headshot.PlayerName.Text = ThisPlayerName
+
+		if UserID ~= LocalPlayer.UserId then continue end
 		Entry.Box.Headshot.PlayerName.Text = "YOU!"
 	end
 end
@@ -83,11 +102,13 @@ function LeaderboardController:Deferred()
 	LeaderboardService.UpdateBoard:Connect(UpdateBoard)
 	
 	-- Update all boards at the start
-	for _, Board in CollectionService:GetTagged("Leaderboard") do
-		if not Board then continue end
-		if Board:GetAttribute("Stat") == nil then continue end
-		UpdateBoard(Board)
-	end
+	task.delay(3, function()
+		for _, Board in CollectionService:GetTagged("Leaderboard") do
+			if not Board then continue end
+			if Board:GetAttribute("Stat") == nil then continue end
+			UpdateBoard(Board)
+		end
+	end)
 end
 
 return LeaderboardController

@@ -368,6 +368,9 @@ function PushService.ResetScore(ThisPlayer: Player)
 	
 	local Vals = PlayerVals[ThisPlayer]
 	if not Vals then return end
+
+	-- Check if the players current score is higher than their last
+	DataService.CheckUpdateHighestScore(ThisPlayer, Vals.Points)
 	
 	-- Add current points to grand total points
 	DataService.IncrementIndex(ThisPlayer, "Points", Vals.Points)
