@@ -623,6 +623,8 @@ function NPCService.Run()
     end)
 end
 
+
+
 function NPCService:Init()
 	local NPCInfo_Module = ReplicatedStorage.Source.SharedModules.Info:FindFirstChild("NPCInfo") :: ModuleScript
 	if not NPCInfo_Module then return end
@@ -637,6 +639,8 @@ function NPCService:Init()
 
 		ThisNPC:SetAttribute("Voiceline", 1)
 	end)
+
+	Workspace.NPCDisplayPlate:Destroy()
 end
 
 function NPCService:Deferred()

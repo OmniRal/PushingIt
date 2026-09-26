@@ -8279,6 +8279,14 @@
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Other/VisualService.lua"
 											]
+										},
+										{
+											"name": "NPCDisplaySpawner",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Other/NPCDisplaySpawner.lua"
+											]
 										}
 									],
 									"filePaths": [
