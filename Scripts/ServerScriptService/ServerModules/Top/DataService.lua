@@ -245,11 +245,11 @@ local function SavePlayerLeaderstats(Player: Player, OtherPData: {}?)
 	local PData = Profiles[Player].Data or OtherPData
 	if not PData then return end
 
-	warn("CHECK - ", PData.TimerActive, PData)
+	--warn("CHECK - ", PData.TimerActive, PData)
 
 	-- Save current timer
 	if PData.TimerActive then
-		warn("TIMER TRUE")
+		--warn("TIMER TRUE")
 		local CurrentTime = Workspace:GetServerTimeNow() - PData.TimerStartedAt + PData.SavedTime
 		if math.floor(CurrentTime * 100) > PData.PlayStats.TimeNotPushed then
 			PData.PlayStats.TimeNotPushed = math.floor(CurrentTime * 100)

@@ -6,11 +6,14 @@ local EventService = {}
 -- Services
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Constants
@@ -26,11 +29,12 @@ local Workspace = game:GetService("Workspace")
 
 local AllEvents: {
 	[string]: {
-		State: "None" | "Active" | "OnCooldown",
+		State: "Inactive" | "Active" | "OnCooldown",
 		ActiveTime: number, -- How many seconds it runs when active
 		CooldownTime: number, -- How many seconds the event is on cooldown before being usable again
 		FromPlayer: Player?, -- Which player purchased this event
 		DisplayName: string,
+		Color: Color3,
 		Icon: number,
 		Ref: Configuration?,
 	}
@@ -40,13 +44,16 @@ local AllEvents: {
 		ActiveTime = 30,
 		CooldownTime = 60 * 5,
 		DisplayName = "Rain Banana Peels!",
+		Color = Color3.fromRGB(255, 227, 54),
 		Icon = 108754125315510,
 	}
 }
 
 local Modules = {} -- Modules for the individual events functionality
 
-local EventTracker = Workspace.EventTracker 
+local EventTracker = Instance.new("Folder")
+EventTracker.Name = "EventTracker"
+EventTracker.Parent = ReplicatedStorage
 -- Folder that contains references for all the events
 -- Purely for the client to display each events data on their UI
 
@@ -69,12 +76,25 @@ function EventService.RunEvent(ThisEvent: string, FromPlayer: Player)
 	Data.State = "Active"
 	Data.Ref:SetAttribute("State", "Active")
 	Data.Ref:SetAttribute("FromPlayer", FromPlayer.Name)
+	Data.Ref:SetAttribute("FromPlayerUserID", FromPlayer.UserId)
 	Data.Ref:SetAttribute("TimeStartedAt", Workspace:GetServerTimeNow())
+
+	task.delay(Data.ActiveTime, function()
+		Data.State = "OnCooldown"
+		Data.Ref:SetAttribute("State", "OnCooldown")
+		
+		task.wait(Data.CooldownTime)
+
+		Data.State = "Inactive"
+		Data.Ref:SetAttribute("State", "Inactive")
+	end)
+	Remotes.Server.EventService.NewEventStarted:FireAll(ThisEvent, FromPlayer.Name)
 
 	Module.Run(Data.ActiveTime)
 end
 
 function EventService:Init()
+	Remotes.Server:CreateToClient("NewEventStarted", {"string", "string"}, "Reliable")
 end
 
 function EventService:Deferred()
@@ -90,8 +110,10 @@ function EventService:Deferred()
 		Ref.Name = Name
 		Ref:SetAttribute("State", "None")
 		Ref:SetAttribute("FromPlayer", "None")
+		Ref:SetAttribute("FromPlayerUserID", 0)
 		Ref:SetAttribute("TimeStartedAt", 0)
 		Ref:SetAttribute("Duration", Data.ActiveTime)
+		Ref:SetAttribute("Color", Data.Color)
 		Ref:SetAttribute("Icon", Data.Icon)
 		Ref.Parent = EventTracker
 

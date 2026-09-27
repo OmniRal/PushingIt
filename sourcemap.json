@@ -7912,6 +7912,12 @@
 																	"children": []
 																}
 															]
+														},
+														{
+															"name": "Stroke",
+															"className": "UIStroke",
+															"filePaths": [],
+															"children": []
 														}
 													]
 												}
@@ -8257,6 +8263,14 @@
 											]
 										},
 										{
+											"name": "NPCDisplaySpawner",
+											"className": "ModuleScript",
+											"children": [],
+											"filePaths": [
+												"Scripts/ServerScriptService/ServerModules/Other/NPCDisplaySpawner.lua"
+											]
+										},
+										{
 											"name": "PathConnector",
 											"className": "ModuleScript",
 											"children": [],
@@ -8278,14 +8292,6 @@
 											"children": [],
 											"filePaths": [
 												"Scripts/ServerScriptService/ServerModules/Other/VisualService.lua"
-											]
-										},
-										{
-											"name": "NPCDisplaySpawner",
-											"className": "ModuleScript",
-											"children": [],
-											"filePaths": [
-												"Scripts/ServerScriptService/ServerModules/Other/NPCDisplaySpawner.lua"
 											]
 										}
 									],
