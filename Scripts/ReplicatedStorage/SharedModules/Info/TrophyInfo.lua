@@ -1,9 +1,7 @@
 -- OmniRal
 
--- Test branch commit
-
 local TrophyInfo = {} :: {
-	{
+	[string]: {
 		Name: string, 
 		Icon: number, 
 		BadgeID: number, -- Roblox badge ID
@@ -25,6 +23,36 @@ TrophyInfo.TestTrophy = {
     RewardType = "Coins",
     RewardAmount = 1000,
     DisplayProgress = true,
+}
+
+TrophyInfo.Push5NPCs = {
+	Name = "Push 5 Unique NPCs",
+	Icon = 0,
+	BadgeID = 0,
+	TimesToComplete = 5,
+	RewardType = "None",
+	RewardAmount = 0,
+	DisplayProgress = false,
+}
+
+TrophyInfo.Push10NPCs = {
+	Name = "Push 10 Unique NPCs",
+	Icon = 0,
+	BadgeID = 0,
+	TimesToComplete = 10,
+	RewardType = "None",
+	RewardAmount = 0,
+	DisplayProgress = false,
+}
+
+TrophyInfo.Push25NPCs = {
+	Name = "Push 25 Unique NPCs",
+	Icon = 0,
+	BadgeID = 0,
+	TimesToComplete = 25,
+	RewardType = "None",
+	RewardAmount = 0,
+	DisplayProgress = false,
 }
 
 return TrophyInfo

@@ -24,6 +24,7 @@ local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.
 local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 
 local DataService = require(ServerScriptService.Source.ServerModules.Top.DataService)
+local TrophyService = require(ServerScriptService.Source.ServerModules.Player.TrophyService)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -288,7 +289,12 @@ function PushService.AttemptPush(Player: Player, AimDirection: number)
 		
 		task.spawn(function()
 			PushService.PushModel(Player, NPC)
-			DataService.AddNPCPushCount(Player, NPC.Name)
+			local FirstPush = DataService.AddNPCPushCount(Player, NPC.Name)
+			if FirstPush then
+				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
+				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
+				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
+			end
 			task.wait()
 			OtherRoot.AssemblyLinearVelocity = RootCF.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
 		end)

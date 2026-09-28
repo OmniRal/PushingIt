@@ -7,20 +7,14 @@ local CharacterService = {}
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
-local PhysicsService = game:GetService("PhysicsService")
 local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
-local New = require(ReplicatedStorage.Source.Pronghorn.New)
-
-local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
-
+--local ServerGlobalValues = require(ServerScriptService.Source.ServerModules.Top.ServerGlobalValues)
 local UnitManagerService = require(ServerScriptService.Source.ServerModules.General.UnitManagerService)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,9 +24,6 @@ local UnitManagerService = require(ServerScriptService.Source.ServerModules.Gene
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-local Sides = {-1, 1}
-local RNG = Random.new()
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
@@ -82,7 +73,7 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
         warn("Loading", Player, "'s character!")
         Character:SetAttribute("Loaded", true)
 
-        local Human, Root = Character:WaitForChild("Humanoid"), Character:WaitForChild("HumanoidRootPart")
+        --local Human, Root = Character:WaitForChild("Humanoid"), Character:WaitForChild("HumanoidRootPart")
 
         if SpawnHere then
             Character:PivotTo(SpawnHere)
@@ -94,7 +85,7 @@ function CharacterService:SetupCharacter(Player: Player, SpawnHere: CFrame?)
         end
 
         task.delay(0.25, function()
-            if not ServerGlobalValues.InLevel then return end
+            --if not ServerGlobalValues.InLevel then return end
             UnitManagerService:AddUnit(Player)
         end)
 
@@ -109,7 +100,7 @@ end
 
 -- Plainly adds or subtracts to a units attribute; e.g. players passively gaining health over time.
 function CharacterService:IncrementAttribute(Source: Player | Model | string, Receiver: Player | Model, Amount: number)
-    if not Source or not Receiver then return end
+    if not Source or not Receiver or not Amount then return end
 
     local ReceiverModel = Receiver
     if Receiver:IsA("Player") then
@@ -120,7 +111,7 @@ function CharacterService:IncrementAttribute(Source: Player | Model | string, Re
 end
 
 function CharacterService:Init()
-    --TestButtons()
+    TestButtons()
 end
 
 return CharacterService

@@ -10,7 +10,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local CollectionService = game:GetService("CollectionService")
-local BadgeService = game:GetService("BadgeService")
 local Workspace = game:GetService("Workspace")
 --local MarketplaceService = game:GetService("MarketplaceService")
 
@@ -23,10 +22,10 @@ local Workspace = game:GetService("Workspace")
 
 local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 
+local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
+
 local ProfileService = require(ServerScriptService.Source.ProfileService)
 local LeaderboardService = require(ServerScriptService.Source.ServerModules.Top.LeaderboardService)
-
-local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 
 local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInfo)
@@ -325,14 +324,26 @@ end
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function DataService.GetProfileTable(Player: Player)
-	while not DataService.ServiceReady do
-		task.wait()
+function DataService.GetProfileTable(Player: Player, Specific: string?)
+	-- Make sure all the data is ready
+	if not DataService.ServiceReady then
+		while not DataService.ServiceReady do
+			task.wait()
+		end
 	end
-	while Profiles[Player] == nil do
-		task.wait()
+
+	if not Profiles[Player] then
+		while Profiles[Player] == nil do
+			task.wait()
+		end
 	end
-	return Profiles[Player].Data
+
+	if (not Specific) or (Specific and not Profiles[Player].Data[Specific]) then
+		return Profiles[Player].Data
+	else
+		-- Return only a specific bit of data
+		return Profiles[Player].Data[Specific]
+	end
 end
 
 function DataService.GetIndex(Player: Player, Index: string): boolean | number | string | {}
@@ -516,11 +527,13 @@ function DataService.CheckUpdateHighestScore(Player: Player, Score: number)
 	PData.PlayStats.HighestScore = Score
 end
 
-function DataService.AddNPCPushCount(Player: Player, NPCName: string)
+-- Incrememnts the push count for this specific NPC
+-- Returns TRUE if it was the FIRST push on this NPC
+function DataService.AddNPCPushCount(Player: Player, NPCName: string): boolean
 	DataService.WaitForPlayerDataLoaded(Player)
 	local PData = Profiles[Player].Data
-	if not PData then return end
-	if not PData.NPCs then return end
+	if not PData then return false end
+	if not PData.NPCs then return false end
 
 	PData.PlayStats.Pushes += 1
 	PData.PlayStats.NPCPushes += 1
@@ -529,10 +542,12 @@ function DataService.AddNPCPushCount(Player: Player, NPCName: string)
 		-- If the NPC isn't added already, add it
 		PData.NPCs[NPCName] = {Time = os.time(), Pushes = 1, New = true}
 		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName}, PData.NPCs[NPCName])
+		return true
 	else
 		-- NPC exists, just add up the total pushes
 		PData.NPCs[NPCName].Pushes += 1
 		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName, "Pushes"}, PData.NPCs[NPCName].Pushes)
+		return false
 	end
 end
 
