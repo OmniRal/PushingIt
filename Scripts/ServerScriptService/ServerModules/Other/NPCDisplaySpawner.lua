@@ -21,6 +21,7 @@ function NPCDisplaySpawner.SpawnAllInRow()
 	local Offset = 0
 	
 	for Rarity, List in NPCInfo do
+		local AmountInCategory = 0
 		for Name, Info in List do
 			local NewNPC = ReplicatedStorage.Assets.Other.BaseNPC_R6:Clone()
 			NewNPC.Name = Name .. "_" .. Rarity
@@ -63,7 +64,11 @@ function NPCDisplaySpawner.SpawnAllInRow()
 			
 			NewNPC:PivotTo(Plate.CFrame * CFrame.new(Offset, 2.5, 0))
 			Offset -= 4
+			AmountInCategory += 1
 		end
+
+		Offset -= 4
+		warn(Rarity, " :", AmountInCategory)
 	end
 end
 
