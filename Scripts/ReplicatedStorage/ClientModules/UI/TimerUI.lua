@@ -19,9 +19,12 @@ local Workspace = game:GetService("Workspace")
 
 --local SharedGlobalValues = require(ReplicatedStorage.Source.SharedModules.Top.SharedGlobalValues)
 --local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
+
+local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local ColorPalette = require(ReplicatedStorage.Source.SharedModules.Info.ColorPalette)
+local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInfo)
 local PlayerInfo = require(StarterPlayer.StarterPlayerScripts.Source.Other.PlayerInfo)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -41,6 +44,8 @@ local ALLOW_TIMER_ON_SELF = false -- If true, the timer over avatars can be plac
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local TrophyService = Remotes.Client.TrophyService
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,12 +56,35 @@ local Timer: any -- Personal timer; displayed at the top
 local CharTimers: {[Player]: {Timer: any, Dead: boolean}} = {} -- Other players timers; billboard guis above their heads
 local OtherPlayerConnections: {[Player]: {RBXScriptConnection?}} = {}
 
+local LastTrophyRequest = 0
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local function CheckTimerTrophies(Seconds: number)
+	if not PlayerInfo.Data then return end
+	if not PlayerInfo.Data.Trophies then return end
+	if os.clock() < LastTrophyRequest + 1 then return end
+	LastTrophyRequest = os.clock()
+
+	local Nums = {"90", "300", "600"}
+	for _, Num in Nums do
+		local Data = PlayerInfo.Data.Trophies["Timer_" .. Num]
+		local ThisInfo = TrophyInfo["Timer_" .. Num]
+		if not Data then continue end
+		if Data.Complete then continue end
+
+		if Seconds < ThisInfo.ScoreNeeded then continue end
+		TrophyService:RequestUpdateTrophyProgress("Timer_" .. Num, 1, Seconds)
+	end
+end
+
 local function CalculateTimePassed(SavedTime: number, StartedAt: number): string
 	local TotalSeconds = tostring(Workspace:GetServerTimeNow() - StartedAt + SavedTime)
+
+	CheckTimerTrophies(tonumber(TotalSeconds) :: number)
+
 	local FinalVersion: string = ""
 	
 	local LeftToCheck = 3
@@ -209,6 +237,9 @@ end
 function TimerUI.Setup(Gui: ScreenGui)
 	Timer = Gui:FindFirstChild("Timer") :: Frame
 	if not Timer then return end
+
+	Utility.CheckRemotesLoaded({"TrophyService", "PushService"})
+	TrophyService = Remotes.Client.TrophyService
 	
 	Timer:SetAttribute("Enabled", false)
 	Timer:GetAttributeChangedSignal("Enabled"):Connect(function()

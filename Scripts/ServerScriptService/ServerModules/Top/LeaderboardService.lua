@@ -21,6 +21,7 @@ local Remotes = require(ReplicatedStorage.Source.Pronghorn.Remotes)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local LEADERSTATS_VERSION = "Alpha_3"
+local MAX_RETRIES = 3
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
@@ -39,12 +40,8 @@ local Stores = {
 	["RobuxSpent"] = DataStoreService:GetOrderedDataStore("PushingIt_RobuxSpent_" .. LEADERSTATS_VERSION)
 }
 
-local PlayerStatsInfo: {
-	[Player]: {
-		LastWriteTime: number,
-		CachedStats: {[string]: number},
-		Writing: boolean,
-	}
+local PlayerCachedStats: {
+	[Player]: {[string]: number}
 } = {}
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -60,12 +57,27 @@ function LeaderboardService.UpdateStat(Player: Player, Key: string, Value: numbe
 	local ThisStore = Stores[Key]
 	if not ThisStore then warn(Key, " is not a valid Leaderboard Stat!"); return end
 
-	local Success, Error = pcall(function()
-		ThisStore:SetAsync(tostring(Player.UserId), Value)
-	end)
+	if not PlayerCachedStats[Player] then
+		PlayerCachedStats[Player] = {}
+	end
+	local Cache = PlayerCachedStats[Player]
 
-	if Success then return end
-	warn("LeaderboardService failed to write", Key, "for", Player.Name, "---", Error)
+	if Cache[Key] and Cache[Key] == Value then return end -- Don't update if Value is the same as before
+	Cache[Key] = Value
+
+	for x = 1, MAX_RETRIES do
+		local Success, Error = pcall(function()
+			ThisStore:SetAsync(tostring(Player.UserId), Value)
+		end)
+
+		if Success then return end
+
+		if x < MAX_RETRIES then
+			task.wait(2 ^ x)
+		else
+			warn("LeaderboardService failed to write", Key, "for", Player.Name, "---", Error)
+		end
+	end
 end
 
 function LeaderboardService.UpdateBoard(Key: string, Count: number, ThisBoard: Model)

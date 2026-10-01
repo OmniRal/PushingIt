@@ -260,6 +260,9 @@ function MainUIController:Deferred()
 					PushChargeBarUI.UpdateDivBars()
 				elseif Entry == "PVPMode" then
 					PVPSwitch.Button:SetAttribute("On", Value)
+
+				elseif Entry == "Trophies" then
+					MainMenuUI.UpdateStuff_Trophies()
 				end
 			end
 		end)
@@ -281,6 +284,9 @@ function MainUIController:Deferred()
 
 				elseif Index[1] == "Stickers" then
 					MainMenuUI.UpdateStuff_Stickers()
+
+				elseif Index[1] == "Trophies" then
+					MainMenuUI.UpdateStuff_Trophies()
                 end
             end
         end)

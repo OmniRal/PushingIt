@@ -291,9 +291,7 @@ function PushService.AttemptPush(Player: Player, AimDirection: number)
 			PushService.PushModel(Player, NPC)
 			local FirstPush = DataService.AddNPCPushCount(Player, NPC.Name)
 			if FirstPush then
-				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
-				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
-				TrophyService.UpdateTrophyProgress(Player, "Push5NPCs", 1)
+				TrophyService.UpdateMultipleTrophiesProgress(Player, {"PushNPCs_5", "PushNPCs_10", "PushNPCs_25"}, {1, 1, 1})
 			end
 			task.wait()
 			OtherRoot.AssemblyLinearVelocity = RootCF.LookVector * FinalPower + Vector3.new(0, FinalPower * 0.2, 0)
@@ -377,6 +375,11 @@ function PushService.ResetScore(ThisPlayer: Player)
 
 	-- Check if the players current score is higher than their last
 	DataService.CheckUpdateHighestScore(ThisPlayer, Vals.Points)
+
+	warn(Vals.Points)
+
+	-- Check trophies / badges
+	TrophyService.UpdateMultipleTrophiesProgress(ThisPlayer, {"Score_500", "Score_1000", "Score_10000"}, {1, 1, 1}, Vals.Points)
 	
 	-- Add current points to grand total points
 	DataService.IncrementIndex(ThisPlayer, "Points", Vals.Points)

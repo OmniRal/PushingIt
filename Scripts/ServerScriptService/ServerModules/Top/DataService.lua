@@ -75,9 +75,9 @@ local ProfileTemplate = {
 	
 	SkillPoints = 100,
 	Skills = {
-		ChargePower = 1,
-		ChargeSpeed = 1,
-		PushCooldown = 1,
+		ChargePower = 5,
+		ChargeSpeed = 5,
+		PushCooldown = 5,
 		
 		DodgeRange = 1,
 		DodgeCooldown = 1,
@@ -102,7 +102,7 @@ local ProfileTemplate = {
 	Trophies = {},
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_51', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_67', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -268,29 +268,31 @@ local function PlayerAdded(Player)
 	
 	Player:SetAttribute("Joined", os.time())
 	
-	local profile = ProfileStore:LoadProfileAsync("Player_" .. Player.UserId)
-	print("Loaded profile : ", profile)
-	if profile ~= nil then
-		profile:AddUserId(Player.UserId) -- GDPR compliance
-		profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
+	local Profile = ProfileStore:LoadProfileAsync("Player_" .. Player.UserId)
+	print("Loaded profile : ", Profile)
+	if Profile ~= nil then
+		Profile:AddUserId(Player.UserId) -- GDPR compliance
+		Profile:Reconcile() -- Fill in missing variables from ProfileTemplate (optional)
 		--print("R: ", profile)
-		profile:ListenToRelease(function()
+		Profile:ListenToRelease(function()
 			Profiles[Player] = nil
 			-- The profile could"ve been loaded on another Roblox server:
 			Player:Kick("Could not load player data (1)")
 		end)
 		
 		if Player:IsDescendantOf(Players) == true then
-			Profiles[Player] = profile
+			Profiles[Player] = Profile
 			-- A profile has been successfully loaded:
-			profile.Data.LogInTimes += 1
-			profile.Data.LastLoggedIn = os.time()
+			Profile.Data.LogInTimes += 1
+			Profile.Data.LastLoggedIn = os.time()
+			
+			Profile.Data.TimerStartedAt = Workspace:GetServerTimeNow()
 			
 			Player:SetAttribute("DataLoaded", true)
 			Remotes.Server.DataService.FullDataUpdate:Fire(Player, Profiles[Player].Data)
 		else
 			-- Player left before the profile loaded:
-			profile:Release()
+			Profile:Release()
 		end
 	else
 		-- The profile couldn"t be loaded possibly due to other
@@ -308,14 +310,16 @@ local function PlayerRemoving(Player: Player)
 	
 	PData.LoggedInDuration += os.time() - Joined
 
+	local Now = Workspace:GetServerTimeNow()
 	if PData.PVPMode then
-		PData.SavedTime += os.time() - PData.LastPVPChange
+		PData.SavedTime += Now - PData.TimerStartedAt
 	else
 		PData.SavedTime = 0
 	end
-	
+
 	warn("SAVED TIME: ", os.time() - Joined)
 
+	PData.TimerStartedAt = Now
 	SavePlayerLeaderstats(Player, PData)
 	Profile:Release()
 end
@@ -440,18 +444,20 @@ function DataService.IncrementIndex(Player: Player, Index: string | {}, Incremen
 end
 
 -- Incrememnt progress on a trophy
-function DataService.UpdateTrophyProgress(Player: Player, TrophyName: string, By: number)
+function DataService.UpdateTrophyProgress(Player: Player, TrophyName: string, By: number): boolean
 	local PData = Profiles[Player].Data
     local ThisInfo = TrophyInfo[TrophyName]
 	
     PData.Trophies[TrophyName].Progress = math.clamp(PData.Trophies[TrophyName].Progress + By, 0, ThisInfo.TimesToComplete)
 	
-    if PData.Trophies[TrophyName].Progress < ThisInfo.TimesToComplete then return end
+    if PData.Trophies[TrophyName].Progress < ThisInfo.TimesToComplete then return false end
 	
 	-- Goal reached; save that the player has the trophy
     local CurrentTime = os.date("*t")
     PData.Trophies[TrophyName].Complete = true
     PData.Trophies[TrophyName].Date = CurrentTime.year .. ":" .. CurrentTime.month .. ":" .. CurrentTime.day .. ":" .. CurrentTime.hour .. ":" .. CurrentTime.min
+
+	return true
 end
 
 -- Save that the player has claimed the reward from a trophy, and give the reward
@@ -480,9 +486,9 @@ function DataService.StartTimer(Player: Player, ResetSaveTime: boolean?)
 		Player:SetAttribute("SavedTime", 0)
 	end
 
-	PData.TimerActive = true
 	PData.TimerStartedAt = Workspace:GetServerTimeNow()
 	PData.LastPVPChange = os.time()
+	PData.TimerActive = true
 	Player:SetAttribute("TimerActive", true)
 	Player:SetAttribute("TimerStartedAt", Workspace:GetServerTimeNow())
 

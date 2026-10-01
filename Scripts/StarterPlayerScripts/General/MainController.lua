@@ -399,7 +399,7 @@ function MainController:Deferred()
 			PlayerInfo.Data[Entry] = Value
 		end
 
-        --warn("New Data: ", PlayerInfo.Data)
+        warn("New Data: ", PlayerInfo.Data)
 	end)
 
     DataService.SingleDataUpdate:Connect(function(Index: string | {}, Value: any)

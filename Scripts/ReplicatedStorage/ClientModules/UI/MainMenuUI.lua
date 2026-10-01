@@ -31,6 +31,7 @@ local UI_Info = require(ReplicatedStorage.Source.ClientModules.UI.UI_Info)
 local Utility = require(ReplicatedStorage.Source.SharedModules.General.Utility)
 local Util_UI = require(ReplicatedStorage.Source.SharedModules.General.Utility.UI)
 
+local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInfo)
 local StickerInfo = require(ReplicatedStorage.Source.SharedModules.Info.StickerInfo)
 local NPCInfo
 
@@ -325,6 +326,7 @@ local function SetupStuff()
 
 	Stuff.Noobs.Scroller.OG.Visible = false
 	Stuff.Stickers.Scroller.OG.Visible = false
+	Stuff.Trophies.Scroller.OG.Visible = false
 
 	task.delay(3, function()
 		MainMenuUI.UpdateStuff()
@@ -541,9 +543,36 @@ function MainMenuUI.UpdateStuff_Stickers()
 	Util_UI.UpdateSingleScroller(Stuff.Stickers.Scroller, Stuff.Stickers.Scroller.GridLayout, TotalCells, 3, "Portrait")
 end
 
+function MainMenuUI.UpdateStuff_Trophies()
+	local PData = PlayerInfo.Data
+	if not PData then return end
+
+	local Stuff = Base.Tabs.Stuff
+
+	for Name, Data in PData.Trophies do
+		local ThisInfo = TrophyInfo[Name]
+		if not Data.Complete or not ThisInfo then continue end
+		local Frame = Stuff.Trophies.Scroller:FindFirstChild(Name)
+		if Frame then Frame.Size = UDim2.new(1, 0, 0, Stuff.Trophies.Scroller.AbsoluteSize.Y / 2); continue end
+
+		Frame = Stuff.Trophies.Scroller.OG:Clone()
+		Frame.Name = Name
+		Frame.Container.Top.Title.Text = ThisInfo.DisplayName
+		Frame.Container.Main.Icon.Image = "rbxassetid://" .. ThisInfo.Icon
+		Frame.Container.Main.Box.Description.Text = ThisInfo.Description
+		Frame.Container.Bottom.Date.Text = Utility.FormatTime(Data.Time)
+		Frame.Size = UDim2.new(1, 0, 0, Stuff.Trophies.Scroller.AbsoluteSize.Y / 2)
+		Frame.Visible = true
+		Frame.Parent = Stuff.Trophies.Scroller
+	end
+
+	Util_UI.UpdateSingleScroller_B(Stuff.Trophies.Scroller, Stuff.Trophies.Scroller.ListLayout, "Y")
+end
+
 function MainMenuUI.UpdateStuff()
 	MainMenuUI.UpdateStuff_NPC()
 	MainMenuUI.UpdateStuff_Stickers()
+	MainMenuUI.UpdateStuff_Trophies()
 end
 
 function MainMenuUI.UpdateSkills()

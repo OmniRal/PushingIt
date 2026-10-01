@@ -9,6 +9,7 @@ local TrophyService = {}
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local BadgeService = game:GetService("BadgeService")
+local Workspace = game:GetService("Workspace")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Modules
@@ -22,6 +23,8 @@ local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInf
 -- Constants
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+local AWARD_BADGES = false -- Set to FALSE only when testing
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Remotes
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -30,45 +33,102 @@ local TrophyInfo = require(ReplicatedStorage.Source.SharedModules.Info.TrophyInf
 -- Variables
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- For when the player requests to claim a trophy, it will check through this
+local TrophyChecks: {[string]: (Player, ...any) -> (boolean)} = {
+	["Timer"] = function(Player: Player, FullName: string) -- 90s, 300s, 600s
+		local SavedTime = Player:GetAttribute("SavedTime")
+		local TimerStartedAt = Player:GetAttribute("TimerStartedAt")
+		if not SavedTime or not TimerStartedAt then return false end
+		local CurrentTime = Workspace:GetServerTimeNow() - TimerStartedAt + SavedTime
+
+		local ThisInfo = TrophyInfo[FullName]
+		if not ThisInfo then return false end
+
+		if CurrentTime <= 9 then return false end
+
+		return true
+	end,
+}
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Private Functions
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Runs when a player requests to make trophy progress
+local function HandlePlayerTrophyRequest(Player: Player, TrophyName: string, ...): boolean
+	if not TrophyChecks[TrophyName] then
+		-- Check for a function name without the "_"
+		local ShortName = (string.gsub(TrophyName, "_%d+$", ""))
+		warn(ShortName)
+		if not TrophyChecks[ShortName] then return false end
+		return TrophyChecks[ShortName](Player, TrophyName)
+	else
+		return TrophyChecks[TrophyName](Player, ...)
+	end
+end
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- Public API
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- Incrememnt progress on a trophy
-function TrophyService.UpdateTrophyProgress(Player: Player, TrophyName: string, By: number): boolean
+function TrophyService.UpdateTrophyProgress(Player: Player, TrophyName: string, By: number, Score: number?): boolean
 	local PData = DataService.GetProfileTable(Player, "Trophies")
 	if not PData then warn(Player, " has corrupted data while trying to make progress on trophy [" .. TrophyName .. "] info!"); return false end
-	if not PData.Trophys then warn(Player, " has corrupted data while trying to make progress on trophy [" .. TrophyName .. "] info!"); return false end
 
-	local SavedData = PData.Trophys[TrophyName]
+	local SavedData = PData[TrophyName]
+	local ThisInfo = TrophyInfo[TrophyName]
+	if not SavedData or not ThisInfo then return false end
 	if SavedData.Complete then return false end -- Trophy is already completed
+	if ThisInfo.ScoreNeeded and Score and Score < ThisInfo.ScoreNeeded then return false end -- Score isn't high enough to make progress
 
-	if PData.BadgeID then
-		local Success, Error = pcall(function() return BadgeService:AwardBadgeAsync(Player.UserId, TrophyInfo[TrophyName].BadgeID) end)
+	local Complete = DataService.UpdateTrophyProgress(Player, TrophyName, By)
+    Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Trophies", TrophyName}, PData[TrophyName])
+
+	if Complete and ThisInfo.BadgeID and AWARD_BADGES then
+		local Success, Error = pcall(function() return BadgeService:AwardBadgeAsync(Player.UserId, ThisInfo.BadgeID) end)
 		if not Success then
 			-- Don't award trophy if the badge wasn't awarded
-			warn("Failed to award badge", TrophyName, " (" .. TrophyInfo[TrophyName].BadgeID .. ") - ", Error)
+			warn("Failed to award badge", TrophyName, " (" .. ThisInfo.BadgeID .. ") - ", Error)
 			return false
 		end
 	end
-
-	DataService.UpdateTrophyProgress(Player, TrophyName, By)
-    Remotes.Server.TrophyService.TrophyUpdate:Fire(Player, TrophyName, PData.Trophies[TrophyName])
 	
 	return true
 end
 
+-- Incrememnt progress on multiple trophies
+function TrophyService.UpdateMultipleTrophiesProgress(Player: Player, TrophyNames: {string}, By: {number}, Score: number?)
+	local PData = DataService.GetProfileTable(Player, "Trophies")
+	if not PData then warn(Player, " has corrupted data while trying to make progress on trophies!"); return end
+
+	for n, TrophyName in ipairs(TrophyNames) do
+		local SavedData = PData[TrophyName]
+		local ThisInfo = TrophyInfo[TrophyName]
+		if not SavedData or not ThisInfo then continue end
+		if SavedData.Complete or not By[n] then continue end -- Trophy is already complete
+		if ThisInfo.ScoreNeeded and Score and Score < ThisInfo.ScoreNeeded then continue end -- Score isn't high enough to make progress
+
+		local Complete = DataService.UpdateTrophyProgress(Player, TrophyName, By[n])
+		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Trophies", TrophyName}, PData[TrophyName])
+
+		if Complete and TrophyInfo[TrophyName].BadgeID and AWARD_BADGES then
+			local Success, Error = pcall(function() return BadgeService:AwardBadgeAsync(Player.UserId, TrophyInfo[TrophyName].BadgeID) end)
+			if not Success then
+				-- Don't award trophy if the badge wasn't awarded
+				warn("Failed to award badge", TrophyName, " (" .. TrophyInfo[TrophyName].BadgeID .. ") - ", Error)
+				return -- Stop all updating
+			end
+		end
+	end
+end
+
 -- Try to claim a reward from a trophy
 function TrophyService.ClaimTrophyReward(Player: Player, TrophyName: string): boolean
-	local PData = DataService.GetProfileTable(Player)
+	local PData = DataService.GetProfileTable(Player, "Trophies")
 	if not PData then warn(Player, " has corrupted data while trying to collect trophy [" .. TrophyName .. "] info!"); return false end
-	if not PData.Trophys then warn(Player, " has corrupted data while trying to collect trophy [" .. TrophyName .. "] info!"); return false end
 
-	local SavedData = PData.Trophys[TrophyName]
+	local SavedData = PData[TrophyName]
 	local ThisInfo = TrophyInfo
 
 	if not SavedData or not ThisInfo then warn(Player, " has corrupted data or missing trophy [" .. TrophyName .. "] info!"); return false end
@@ -84,7 +144,7 @@ function TrophyService.ClaimTrophyReward(Player: Player, TrophyName: string): bo
         end)
     end
 
-	Remotes.Server.DataService.TrophyUpdate:Fire(Player, TrophyName, PData.Trophies[TrophyName])
+	Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"Trophies", TrophyName}, PData[TrophyName])
 	
 	return true
 end
@@ -111,10 +171,9 @@ function TrophyService.CheckPlayerHasMultipleTrophies(Player: Player, TrophyName
 end
 
 function TrophyService:Init()
-	Remotes.Server:CreateToClient("TrophyUpdate", {"string", "table"}, "Reliable")
-
-	Remotes.Server:CreateToServer("RequestUpdateTrophyProgress", {"string", "number?"}, "Returns", function(Player: Player, TrophyName: string, By: number)
-		return TrophyService.UpdateTrophyProgress(Player, TrophyName, By)
+	Remotes.Server:CreateToServer("RequestUpdateTrophyProgress", {"string", "number?", "number?"}, "Returns", function(Player: Player, TrophyName: string, By: number, Score: number?)
+		if not HandlePlayerTrophyRequest(Player, TrophyName) then return false end
+		return TrophyService.UpdateTrophyProgress(Player, TrophyName, By, Score)
 	end)
 	
 	Remotes.Server:CreateToServer("RequestClaimTrophyReward", {"string"}, "Returns", function(Player: Player, TrophyName: string)
