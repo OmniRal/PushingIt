@@ -36,6 +36,7 @@ local ScoreDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.ScoreDi
 local EventDisplayUI = require(ReplicatedStorage.Source.ClientModules.UI.EventDisplayUI)
 local ErrorMessageUI = require(ReplicatedStorage.Source.ClientModules.UI.ErrorMessageUI)
 local ModalWindowUI = require(ReplicatedStorage.Source.ClientModules.UI.ModalWindowUI)
+local ToastNotificationUI = require(ReplicatedStorage.Source.ClientModules.UI.ToastNotificationUI)
 
 --local BasicInteractions = require(ReplicatedStorage.Source.ClientModules.UI.Components.BasicInteractions)
 local ToggleSwitch = require(ReplicatedStorage.Source.ClientModules.UI.Components.ToggleSwitch)
@@ -128,6 +129,7 @@ local function SetupGui()
 	PushChargeBarUI.Setup(Gui)
 	ErrorMessageUI.Setup(Gui)
 	ModalWindowUI.Setup(Gui)
+	ToastNotificationUI.Setup(Gui)
 
 	SetupPVPButton()
 end

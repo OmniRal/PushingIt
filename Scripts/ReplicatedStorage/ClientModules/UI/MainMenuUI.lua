@@ -65,6 +65,7 @@ local MenuButton: any?
 local Tabs: {[string]: ImageButton} = {}
 
 local Assets = ReplicatedStorage.Assets
+local UISounds = Assets.Sounds.UISounds
 
 local AnimTime = UI_Info.BaseAnimTime
 
@@ -130,8 +131,10 @@ local function UpdateMenuButtonVisuals()
 			MenuButton.Container.Icon.Size = UDim2.fromScale(0.7, 0.7)
 		elseif Hover and not Pressed then
 			MenuButton.Container.Icon.Size = UDim2.fromScale(0.8, 0.8)
+			UISounds.Hover:Play()
 		elseif Pressed then
 			MenuButton.Container.Icon.Size = UDim2.fromScale(0.5, 0.5)
+			UISounds.Pressed:Play()
 		end
 	end
 
@@ -176,10 +179,12 @@ local function UpdateTabVisuals(Tab: ImageButton, CopyTab: ImageButton)
 		elseif Hover and not Pressed then
 			Tab.Size = UDim2.new(0.25, -3, 0.9, 0)
 			Cover.BackgroundTransparency = 0.85
+			UISounds.Hover:Play()
 
 		else -- Hover and Pressed
 			Tab.Size = UDim2.new(0.25, -3, 0.6, 0)
 			Cover.BackgroundTransparency = 0.65
+			UISounds.Pressed:Play()
 		end
 	end
 
@@ -197,8 +202,10 @@ local function UpdateSubTabVisuals(_, Tab: any, Window: any?)
 		Tab.Frame.Label.Size = UDim2.fromScale(0.9, 0.9)
 	elseif Hover and not Pressed then
 		Tab.Frame.Label.Size = UDim2.fromScale(1, 1)
+		UISounds.Hover:Play()
 	elseif Pressed then
 		Tab.Frame.Label.Size = UDim2.fromScale(0.6, 0.6)
+		UISounds.Pressed:Play()
 	end
 
 	-- Update which window is opened
@@ -267,8 +274,10 @@ local function SetupBasics()
 			GoalPosition = MENU_OFF_POSITION
 			GoalTransparency = 1
 			Direction = Enum.EasingDirection.In
+			UISounds.Close:Play()
 		else
 			Menu.Visible = true
+			UISounds.Open:Play()
 		end
 
 		MenuTween = TweenService:Create(Menu, TweenInfo.new(AnimTime, Enum.EasingStyle.Back, Direction), {Position = GoalPosition, GroupTransparency = GoalTransparency})
