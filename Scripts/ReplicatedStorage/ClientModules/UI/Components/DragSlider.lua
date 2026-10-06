@@ -104,6 +104,7 @@ function DragSlider.Set(Slider: Frame, Fn: (number, ...any) -> (...any), Range: 
 		if not Range or not Increments then
 			Button.Position = UDim2.new(0, Pos, 0.5, 0)
 		else
+			UpdateFixedPositions()
 			Button.Position = UDim2.new(0, GetNearestFixedPosition(FixedPositions, Pos), 0.5, 0)
 		end
 	end

@@ -406,6 +406,8 @@ local function SetupSettings()
 			break
 		end
 
+		warn("Settings Data: ", PlayerInfo.Data.Settings)
+
 		TimerFormatSwitch.Button:SetAttribute("On", PlayerInfo.Data.Settings.DisplayMinutes)
 		MusicVolumeSlider:SetAttribute("SetVal", PlayerInfo.Data.Settings.MusicVolume)
 		VoiceoversVolumeSlider:SetAttribute("SetVal", PlayerInfo.Data.Settings.VoiceoversVolume)

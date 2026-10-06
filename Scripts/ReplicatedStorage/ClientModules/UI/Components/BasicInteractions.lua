@@ -308,14 +308,14 @@ function BasicInteractions.AddStandardButton(Button: any, Fn: () -> (), ToggleFr
 	Button.Click:GetAttributeChangedSignal("Hover"):Connect(function()
 		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		if Button.Click:GetAttribute("Hover") then
-			--UISounds.StandardButtonHover:Play()
+			UISounds.Hover:Play()
 		end
 	end)
 	
 	Button.Click:GetAttributeChangedSignal("Pressed"):Connect(function()
 		UpdateStandardButtonAnimations(Button, ToggleFromActivation)
 		if Button.Click:GetAttribute("Pressed") then
-			--UISounds.StandardButtonPress:Play()
+			UISounds.Pressed:Play()
 		end
 	end)
 	
