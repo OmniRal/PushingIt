@@ -102,7 +102,7 @@ local ProfileTemplate = {
 	Trophies = {},
 }
 
-local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_67', ProfileTemplate)
+local ProfileStore = ProfileService.GetProfileStore('OmniBlot_PushingIt_Alpha_76', ProfileTemplate)
 local Profiles = {}
 
 local UpgradeSkillRequests: {[Player]: boolean} = {}
@@ -548,6 +548,7 @@ function DataService.AddNPCPushCount(Player: Player, NPCName: string): boolean
 		-- If the NPC isn't added already, add it
 		PData.NPCs[NPCName] = {Time = os.time(), Pushes = 1, New = true}
 		Remotes.Server.DataService.SingleDataUpdate:Fire(Player, {"NPCs", NPCName}, PData.NPCs[NPCName])
+		Remotes.Server.DataService.Notify:Fire(Player, "NPCs", NPCName)
 		return true
 	else
 		-- NPC exists, just add up the total pushes
@@ -585,6 +586,7 @@ function DataService:Init()
 	Remotes.Server:CreateToClient("SingleDataUpdate", {"string | table", "any"}, "Reliable")
 	Remotes.Server:CreateToClient("MultiDataUpdate", {"table"}, "Reliable")
 	Remotes.Server:CreateToClient("GiveAddXP", {"number"}, "Reliable")
+	Remotes.Server:CreateToClient("Notify", {"string", "...any"}, "Reliable")
 	
 	Remotes.Server:CreateToServer("RequestNotNew", {"table"}, "Returns", function(Player: Player, ItemDestination: {string}) RequestNotNew(Player, ItemDestination) end)
 	Remotes.Server:CreateToServer("RequestUpgradeSkill", {"string"}, "Returns", function(Player: Player, ThisSkill: string) return RequestUpgradeSkill(Player, ThisSkill) end)

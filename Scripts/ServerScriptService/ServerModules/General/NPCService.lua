@@ -34,7 +34,7 @@ local NPCInfo
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local USE_DEFAULT = false -- Set this to TRUE when you want all NPCs to spawn as the one below
-local DEFAULT_NPC = {Rarity = "Common", Name = "JohnDink"} -- Change this to test a specific NPC
+local DEFAULT_NPC = {Rarity = "Mythical", Name = "JohnDink"} -- Change this to test a specific NPC
 
 local MAX_NPCS = 10 -- How many can be on the map any given time
 
